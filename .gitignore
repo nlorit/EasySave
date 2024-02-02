@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs
+/App.Cmd/bin/Debug/net8.0
+/App.Cmd/obj
+/App.Core/obj/Debug/net8.0
+/App.Core/obj
