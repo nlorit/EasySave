@@ -10,11 +10,16 @@ namespace App.Core.Services
         {
             try
             {
+                FileService fileService = new FileService();
+
+                fileService.GetFileInfo(new FileModel { FilePath = model.SourcePath });
+
                 if (File.Exists(model.SourcePath))
                 {
-                    // Source is a file
-                    File.Copy(model.SourcePath, model.TargetPath, true);
+                    
+                    
                     Console.WriteLine("File copied successfully.");
+                    
                 }
                 else if (Directory.Exists(model.SourcePath))
                 {
