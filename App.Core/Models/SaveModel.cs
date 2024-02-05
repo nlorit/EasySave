@@ -12,7 +12,6 @@ namespace App.Core.Models
         public String OutPath { get; set; } = "";
         public bool Type { get; set; } = false; // false = Complete, true = Sequentiel
         public String SaveName { get; set; } = "";
-
         public DateTime Date { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace App.Core.Services
 
         public String ShowInfo(SaveModel model)
         {
-            return "IN : "+ model.InPath + ", OUT : " + model.OutPath + ", Type : " + model.Type + ", Name : " + model.SaveName;
+            return "IN : "+ model.InPath + ", OUT : " + model.OutPath + ", Type : " + model.Type + ", Name : " + model.SaveName + "DateTime : " + model.Date;
         }
     }
 }
