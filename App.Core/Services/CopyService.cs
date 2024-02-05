@@ -1,45 +1,24 @@
 ﻿using App.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace App.Core.Services
 {
     public class CopyService
     {
-        public void Copy(CopyModel model)
+        public void RunCopy(CopyModel model)
         {
-            Process process = new Process
+            try 
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    Arguments = $"/c {model.RobocopyCommand}"
-                }
-            };
-
-            process.Start();
-
-            String output = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(output);
+                File.Copy(model.SourcePath, model.TargetPath, true);
+                
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("An error occurred: " + e.Message);
+            }
 
         }
 
-        public void CopyFile()
-        {
 
-        }
-
-        public void CopyFolder()
-        {
-
-        }
     }
 }
