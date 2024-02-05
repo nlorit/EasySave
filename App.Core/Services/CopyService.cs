@@ -12,7 +12,7 @@ namespace App.Core.Services
     {
         public void RunCopy(CopyModel model)
         {
-            
+            File.Copy(model.SourcePath, model.TargetPath, true);
         }
 
 
