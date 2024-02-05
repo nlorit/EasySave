@@ -1,20 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, EasySave!");
-Console.WriteLine("Louis est de retour !");
+﻿using App.Cmd.Views;
 
-int Ajouter(int x, int y)
+namespace App.Cmd
 {
-    return x + y;
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Starting EasySave ...");
+            var view = new SaveView();
+            view.Initialize();
+            
+        }
+    }
 }
-int number1; 
-int number2;
-
-Console.WriteLine("Bienvenue sur la calculatrice qui ne fait que des additions");
-Console.WriteLine("");
-Console.WriteLine("");
-Console.WriteLine("Premier nombre :");
-number1 = int.Parse(Console.ReadLine());
-Console.WriteLine("Deuxième nombre :");
-number2 = int.Parse(Console.ReadLine());
-Console.WriteLine("Le résultat est :" + Ajouter(number1, number2));
-
