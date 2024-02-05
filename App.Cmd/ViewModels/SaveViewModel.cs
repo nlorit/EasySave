@@ -1,24 +1,73 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace App.Cmd.ViewModels
 {
     public class SaveViewModel
     {
-        private readonly Core.Services.SaveService service;
-        private readonly Core.Services.StringService stringService;
+        private readonly SaveService service;
+        private readonly StringService stringService;
         public SaveModel model { get; set; }
+        public List<SaveModel> ListSave { get; set; } = [];
     
         public SaveViewModel()
         {
-            service = new Core.Services.SaveService();
+            
+            stringService = new StringService();
+            service = new SaveService();
+            
+        }
+
+        public void add()
+        {
             model = new SaveModel();
-            stringService = new Core.Services.StringService();
+
+            model.IN_PATH = "C:/Users/Nathan/Desktop/safran";
+            model.OUT_PATH = "C:/Users/Nathan/Desktop/safran2";
+            model.TYPE = false;
+            model.SAVE_NAME = "Save1";
+
+            service.Create(model);
+            ListSave.Add(model);
+
+            model = new SaveModel();
+
+            model.IN_PATH = "C:/Users/Nathan/Desktop/Portfolio";
+            model.OUT_PATH = "C:/Users/Nathan/Desktop/Portfolio2";
+            model.TYPE = false;
+            model.SAVE_NAME = "Save2";
+
+            service.Create(model);
+            ListSave.Add(model);
+
+            model = new SaveModel();
+
+            model.IN_PATH = "C:/Users/Utilisateur/Documents/Projet/IN";
+            model.OUT_PATH = "C:/Users/Utilisateur/Documents/Projet/OUT";
+            model.TYPE = false;
+            model.SAVE_NAME = "Save3";
+
+            service.Create(model);
+            ListSave.Add(model);
+
+            model = new SaveModel();
+
+            model.IN_PATH = "C:/Users/Utilisateur/Documents/Projet/IN";
+            model.OUT_PATH = "C:/Users/Utilisateur/Documents/Projet/OUT";
+            model.TYPE = false;
+            model.SAVE_NAME = "Save4";
+
+            service.Create(model);
+            ListSave.Add(model);
+
         }
 
         public void Save()
         {
+            model = new SaveModel();
+
             Console.WriteLine("Fichier d'entrée");
             model.IN_PATH = Console.ReadLine();
 
@@ -48,35 +97,60 @@ namespace App.Cmd.ViewModels
                                               string.IsNullOrEmpty(model.SAVE_NAME))
                 throw new System.InvalidOperationException();
 
+
             service.Create(model);
+            ListSave.Add(model);
         }
 
         public void Run()
         {
-            Console.WriteLine("Que voulez exécuter / What do you want to execute ?");
+            Console.WriteLine("Que voulez-vous exécuter / What do you want to execute ?");
             Console.WriteLine("1-3 => 1 à/at 3 ");
             Console.WriteLine("1,3 => 1 et/and 3 ");
-            String input = Console.ReadLine();
-            switch (stringService.IsCommaSeparatedOrHyphen(input))
+
+            string input = Console.ReadLine();
+
+            bool isCommaSeparatedOrHyphen = stringService.IsCommaSeparatedOrHyphen(input);
+
+            switch (isCommaSeparatedOrHyphen)
             {
                 case true:
                     Console.WriteLine("Comma");
-                    string[] commaSeparatedParts = input.Split(',');
-                    Console.WriteLine(commaSeparatedParts[0] + " à " + commaSeparatedParts[1]);
+                    ProcessCommaSeparatedInput(input);
                     break;
+
                 case false:
                     Console.WriteLine("Hyphen");
-                    string[] hyphenSeparatedParts = input.Split('-');
-                    Console.WriteLine(hyphenSeparatedParts[0] + " et " + hyphenSeparatedParts[1]);
+                    ProcessHyphenSeparatedInput(input);
                     break;
             }
-
-            service.Run();
-
-
-
-
         }
+
+        private void ProcessCommaSeparatedInput(string input)
+        {
+            string[] commaSeparatedParts = input.Split(',');
+            Console.WriteLine(commaSeparatedParts[0] + " à " + commaSeparatedParts[1]);
+
+            int start = int.Parse(commaSeparatedParts[0]);
+            int end = int.Parse(commaSeparatedParts[1]);
+
+            service.Run(ListSave[start - 1]);
+            service.Run(ListSave[end - 1]);
+        }
+
+        private void ProcessHyphenSeparatedInput(string input)
+        {
+            string[] hyphenSeparatedParts = input.Split('-');
+            Console.WriteLine(hyphenSeparatedParts[0] + " à " + hyphenSeparatedParts[1]);
+
+            for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
+            {
+                service.Run(ListSave[i]);
+            }
+
+            
+        }
+
         public void ShowLogs()
         {
 
@@ -89,7 +163,10 @@ namespace App.Cmd.ViewModels
 
         public void ShowSchedule()
         {
-
+            foreach (var item in ListSave)
+            {
+                Console.WriteLine("- " + service.ShowInfo(item));
+            }
         }
     }
 
