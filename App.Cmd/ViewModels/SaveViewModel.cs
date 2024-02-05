@@ -24,40 +24,40 @@ namespace App.Cmd.ViewModels
         {
             model = new SaveModel();
 
-            model.IN_PATH = "C:/Users/Nathan/Desktop/safran";
-            model.OUT_PATH = "C:/Users/Nathan/Desktop/safran2";
-            model.TYPE = false;
-            model.SAVE_NAME = "Save1";
+            model.InPath = "C:/Users/Nathan/Desktop/safran";
+            model.OutPath = "C:/Users/Nathan/Desktop/safran2";
+            model.Type = false;
+            model.SaveName = "Save1";
 
             service.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
 
-            model.IN_PATH = "C:/Users/Nathan/Desktop/Portfolio";
-            model.OUT_PATH = "C:/Users/Nathan/Desktop/Portfolio2";
-            model.TYPE = false;
-            model.SAVE_NAME = "Save2";
+            model.InPath = "C:/Users/Nathan/Desktop/Portfolio";
+            model.OutPath = "C:/Users/Nathan/Desktop/Portfolio2";
+            model.Type = false;
+            model.SaveName = "Save2";
 
             service.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
 
-            model.IN_PATH = "C:/Users/Utilisateur/Documents/Projet/IN";
-            model.OUT_PATH = "C:/Users/Utilisateur/Documents/Projet/OUT";
-            model.TYPE = false;
-            model.SAVE_NAME = "Save3";
+            model.InPath = "C:/Users/Utilisateur/Documents/Projet/IN";
+            model.OutPath = "C:/Users/Utilisateur/Documents/Projet/OUT";
+            model.Type = false;
+            model.SaveName = "Save3";
 
             service.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
 
-            model.IN_PATH = "C:/Users/Utilisateur/Documents/Projet/IN";
-            model.OUT_PATH = "C:/Users/Utilisateur/Documents/Projet/OUT";
-            model.TYPE = false;
-            model.SAVE_NAME = "Save4";
+            model.InPath = "C:/Users/Utilisateur/Documents/Projet/IN";
+            model.OutPath = "C:/Users/Utilisateur/Documents/Projet/OUT";
+            model.Type = false;
+            model.SaveName = "Save4";
 
             service.Create(model);
             ListSave.Add(model);
@@ -69,10 +69,10 @@ namespace App.Cmd.ViewModels
             model = new SaveModel();
 
             Console.WriteLine("Fichier d'entrée");
-            model.IN_PATH = Console.ReadLine();
+            model.InPath = Console.ReadLine();
 
             Console.WriteLine("Fichier de sortie");
-            model.OUT_PATH = Console.ReadLine();
+            model.OutPath = Console.ReadLine();
 
             Console.WriteLine("Type de Sauvegarde : ");
             Console.WriteLine("1 - Complète");
@@ -81,20 +81,20 @@ namespace App.Cmd.ViewModels
             switch (choice)
             {
                 case 1:
-                    model.TYPE = false;
+                    model.Type = false;
                     break;
                 case 2:
-                    model.TYPE = true;
+                    model.Type = true;
                     break;
                 default:
                     break;
             }
             Console.WriteLine("Nom de la sauvegarde");
-            model.SAVE_NAME = Console.ReadLine();
+            model.SaveName = Console.ReadLine();
             //TODO Gérer l'exception du service
-            if (string.IsNullOrEmpty(model.IN_PATH) ||
-                               string.IsNullOrEmpty(model.OUT_PATH) ||
-                                              string.IsNullOrEmpty(model.SAVE_NAME))
+            if (string.IsNullOrEmpty(model.InPath) ||
+                               string.IsNullOrEmpty(model.OutPath) ||
+                                              string.IsNullOrEmpty(model.SaveName))
                 throw new System.InvalidOperationException();
 
 
