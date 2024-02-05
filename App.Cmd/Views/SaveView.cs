@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace App.Cmd.Views
 {
@@ -14,11 +15,13 @@ namespace App.Cmd.Views
         public SaveView()
         {
             ViewModel = new SaveViewModel();
+            ViewModel.add();
         }
 
-        public void Initialize()
+        public bool Initialize()
         {
             
+
             Console.WriteLine("Veuillez faire un choix / Please me a choise :\n");
             Console.WriteLine("1 - Planifier une savegarde / Plan a save");
             Console.WriteLine("2 - Exécuter une sauvegarde / Run a save");
@@ -35,38 +38,39 @@ namespace App.Cmd.Views
                     case 1:
                         Console.WriteLine("Planigier une savegarde / Plan a save");
                         ViewModel.Save();
-                        break;
+                        return true;
                     case 2:
                         Console.WriteLine("Executer une sauvegarde / Run a save");
                         ViewModel.Run();
-                        break;
+                        return true;
                     case 3:
                         Console.WriteLine("Afficher Logs / Show Logs");
                         ViewModel.ShowLogs();
-                        break;
+                        return true;
                     case 4:
                         Console.WriteLine("Afficher le fichier d'état / Show state file");
                         ViewModel.ShowStateFile();
-                        break;
+                        return true;
                     case 5:
                         Console.WriteLine("Afficher la plannification / Show schedule");
                         ViewModel.ShowSchedule();
-                        break;
+                        return true;
                     case 6:
                         Console.WriteLine("Quitter / Quit");
-                        break;
+                        Console.WriteLine("Exiting EasySave ...");
+                        return false;
                     default:
                         Console.WriteLine("Choix invalide / Invalid choice");
-
-                        break;
+                        return true;
                 }
-            }
-                
+            }    
             catch (System.FormatException)
             {
                 Console.WriteLine("Choix invalide / Invalid choice");
-                return;
+                return true;
             }
+
+            
 
 
             
@@ -74,3 +78,5 @@ namespace App.Cmd.Views
         }
     }
 }
+
+

@@ -8,7 +8,8 @@ namespace App.Cmd
         {
             Console.WriteLine("Starting EasySave ...");
             var view = new SaveView();
-            view.Initialize();
+
+            while (view.Initialize()) ;
             
         }
     }
