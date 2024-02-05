@@ -20,15 +20,17 @@ namespace App.Cmd.Views
 
         public bool Initialize()
         {
-            
-
-            Console.WriteLine("Veuillez faire un choix / Please me a choise :\n");
-            Console.WriteLine("1 - Planifier une savegarde / Plan a save");
-            Console.WriteLine("2 - Exécuter une sauvegarde / Run a save");
-            Console.WriteLine("3 - Afficher Logs / Show Logs");
+            Console.WriteLine("################################################");
+            Console.WriteLine("################### EasySave ###################");
+            Console.WriteLine("################################################\n");
+            Console.WriteLine("- - - - - - - - - - - Menu - - - - - - - - - - -");
+            Console.WriteLine("Veuillez faire un choix / Please make a choise :\n");
+            Console.WriteLine("1 - Planifier une savegarde / Plan a save.......");
+            Console.WriteLine("2 - Exécuter une sauvegarde / Run a save........");
+            Console.WriteLine("3 - Afficher Logs / Show Logs...................");
             Console.WriteLine("4 - Afficher le fichier d'état / Show state file");
-            Console.WriteLine("5 - Afficher la plannification / Show schedule");
-            Console.WriteLine("6 - Quitter / Quit");
+            Console.WriteLine("5 - Afficher la plannification / Show schedule..");
+            Console.WriteLine("6 - Quitter / Quit..............................\n");
 
             try {
                 int choice = Convert.ToInt32(Console.ReadLine());
@@ -36,7 +38,7 @@ namespace App.Cmd.Views
                 switch (choice)
                 {
                     case 1:
-                        Console.WriteLine("Planigier une savegarde / Plan a save");
+                        Console.WriteLine("Planifier une sauvegarde / Plan a save");
                         ViewModel.Save();
                         return true;
                     case 2:

@@ -8,10 +8,11 @@ namespace App.Core.Models
 {
     public class SaveModel
     {
-        public String IN_PATH { get; set; } = "";
-        public String OUT_PATH { get; set; } = "";
-        public bool TYPE { get; set; } = false; // false = Complete, true = Sequentiel
-        public String SAVE_NAME { get; set; } = "";
+        public String InPath { get; set; } = "";
+        public String OutPath { get; set; } = "";
+        public bool Type { get; set; } = false; // false = Complete, true = Sequentiel
+        public String SaveName { get; set; } = "";
 
+        public DateTime Date { get; set; }
     }
 }

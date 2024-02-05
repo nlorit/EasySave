@@ -8,6 +8,6 @@ namespace App.Core.Models
 {
     public class LoggerModel
     {
-        public String File_Path { get; set; } = "";
+        public String FilePath { get; set; } = "";
     }
 }
