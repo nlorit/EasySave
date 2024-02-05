@@ -21,7 +21,7 @@ namespace App.Core.Services
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    Arguments = $"/c {model.robocopyCommand}"
+                    Arguments = $"/c {model.RobocopyCommand}"
                 }
             };
 
