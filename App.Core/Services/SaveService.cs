@@ -15,13 +15,13 @@ namespace App.Core.Services
             Console.WriteLine("Save created");
         }
 
-        public void Run(SaveModel model) 
+        public void Run(SaveModel saveModel) 
 
         {
             CopyService copyService = new CopyService();
-            copyService.RunCopy(new CopyModel { SourcePath = model.InPath, TargetPath = model.OutPath });
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel);
 
-            Console.WriteLine("Save "+ model.SaveName +" running ");
+            //Console.WriteLine("Save "+ model.SaveName +" running ");
         }
 
         public void ShowInfo(SaveModel model)
@@ -70,7 +70,6 @@ namespace App.Core.Services
   
             Console.WriteLine("+-------------------------------------------------+");
             
-
         }
 
         /*public void TableScreen()
