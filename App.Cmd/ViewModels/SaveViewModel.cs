@@ -25,7 +25,7 @@ namespace App.Cmd.ViewModels
         {
             model = new SaveModel();
 
-            model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
+            model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-210p.mkv";
             model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
             model.Type = false;
             model.SaveName = "Save1";

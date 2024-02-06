@@ -46,6 +46,15 @@ namespace App.Core.Services
                 else
                 {
                     Console.WriteLine("Source does not exist or is neither a file nor a directory.");
+                    LoggerModel loggerModel = new LoggerModel();
+
+                    loggerModel.FileSource = model.SourcePath;
+                    loggerModel.FileTarget = model.TargetPath;
+                    loggerModel.FileSize = "";
+
+                    loggerModel.FileTransferTime = "-1";
+                    loggerService.WriteLog(loggerModel, saveModel); ;
+                    
                 }
             }
             catch (Exception e)
@@ -74,9 +83,20 @@ namespace App.Core.Services
                 loggerModel.FileSource = filePath;
                 loggerModel.FileTarget = destFilePath;
                 loggerModel.FileSize = new FileInfo(filePath).Length / 1024.0 + " kb";
-                File.Copy(filePath, destFilePath, true);
-                loggerModel.FileTransferTime = DateTime.Now - loggerModel.Time;
-                loggerService.WriteLog(loggerModel, saveModel); ;
+
+                try 
+                {
+                    File.Copy(filePath, destFilePath, true);
+                    loggerModel.FileTransferTime = (DateTime.Now - loggerModel.Time).ToString();
+                    loggerService.WriteLog(loggerModel, saveModel); ;
+
+                }
+                catch (Exception)
+                {
+                    loggerModel.FileTransferTime = "-1";
+                    loggerService.WriteLog(loggerModel, saveModel); ;
+                }
+                
 
             }
 
