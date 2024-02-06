@@ -154,16 +154,32 @@ namespace App.Cmd.ViewModels
            }
            else
            {
-                Console.WriteLine("Vous avez atteint le nombre maximum de sauvegardes / You have reached the maximum number of saves");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Erreur : Vous avez atteint le nombre maximum de sauvegardes / Error : You have reached the maximum number of saves");
+                Console.ResetColor();
            }
 
         }
 
         public void Run()
         {
-            Console.WriteLine("Que voulez-vous exécuter / What do you want to execute ?");
-            Console.WriteLine("1-3 => 1 à/to 3 ");
-            Console.WriteLine("1,3 => 1 et/and 3 ");
+            Console.WriteLine("");
+            Console.WriteLine("+----------------------------------------------------------+");
+            Console.WriteLine("| Que voulez-vous exécuter / What do you want to execute ? |");
+            Console.WriteLine("|                                                          |");
+            Console.Write("| ");
+            Console.ForegroundColor= ConsoleColor.Cyan;
+            Console.Write("Une liste / A list:");
+            Console.ResetColor();
+            Console.WriteLine(" 1-3 => 1 à/to 3                      |");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Certains éléments / Some element:");
+            Console.ResetColor();
+            Console.WriteLine("  1,3 => 1 et/and 3     |");
+            Console.WriteLine("|                                                          |");
+            Console.WriteLine("+----------------------------------------------------------+");
+
 
             string input = Console.ReadLine();
 
