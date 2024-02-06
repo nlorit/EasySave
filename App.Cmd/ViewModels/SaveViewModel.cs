@@ -74,17 +74,39 @@ namespace App.Cmd.ViewModels
             model = new SaveModel();
 
             Console.WriteLine("");
-            Console.WriteLine("Fichier d'entrée / Source file");
-            model.InPath = Console.ReadLine();
-
+            Console.WriteLine("+---------------------------------------------+");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("1- ");
+            Console.ResetColor();
+            Console.WriteLine("Répertoire d'entrée / Source Directory ? |");
+            Console.WriteLine("+---------------------------------------------+");
             Console.WriteLine("");
-            Console.WriteLine("Fichier de sortie / Target file");
+            model.InPath = Console.ReadLine();
+            
+            Console.WriteLine("");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("   2- ");
+            Console.ResetColor();
+            Console.WriteLine("Fichier de sortie / Target file ?     |");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.WriteLine("");
             model.OutPath = Console.ReadLine();
 
             Console.WriteLine("");
-            Console.WriteLine("Type de Sauvegarde / Save type : ");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("    3- ");
+            Console.ResetColor();
+            Console.WriteLine("Type de Sauvegarde / Save type ?     |");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.WriteLine("");
             Console.WriteLine("1 - Complète / Complet");
             Console.WriteLine("2 - Séquentielle / sequential");
+            Console.WriteLine("");
             int choice = int.Parse(Console.ReadLine());
             switch (choice)
             {
@@ -97,11 +119,26 @@ namespace App.Cmd.ViewModels
                 default:
                     break;
             }
+
             Console.WriteLine("");
-            Console.WriteLine("Nom de la sauvegarde / Save name");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("   4- ");
+            Console.ResetColor();
+            Console.WriteLine("Nom de la sauvegarde / Save name ?    |");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.WriteLine("");
             model.SaveName = Console.ReadLine();
+
             Console.WriteLine("");
-            Console.WriteLine("Date de la sauvegarde / Date name");
+            Console.WriteLine("+---------------------------------------------+");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("  5- ");
+            Console.ResetColor();
+            Console.WriteLine("Date de la sauvegarde / Date name ?    |");
+            Console.WriteLine("+---------------------------------------------+");
             model.Date = DateTime.Parse(Console.ReadLine());
             //TODO Gérer l'exception du service
             if (string.IsNullOrEmpty(model.InPath) ||
