@@ -61,7 +61,6 @@ namespace App.Core.Services
                         foreach (string filePath in files)
                         {
                             string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(filePath));
-
                         }
                     }
                     else
@@ -87,9 +86,6 @@ namespace App.Core.Services
                 Console.WriteLine($"Error: {e.Message}");
             }
         }
-
-
-
 
         private void CopyDirectory(string sourceDir, string targetDir, SaveModel saveModel)
         {
