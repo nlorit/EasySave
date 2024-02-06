@@ -15,18 +15,18 @@ namespace App.Core.Services
             Console.WriteLine("Save created");
         }
 
-        public void Run(SaveModel model) 
+        public void Run(SaveModel saveModel) 
 
         {
             CopyService copyService = new CopyService();
-            copyService.RunCopy(new CopyModel { SourcePath = model.InPath, TargetPath = model.OutPath });
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel);
 
-            Console.WriteLine("Save "+ model.SaveName +" running ");
+            //Console.WriteLine("Save "+ model.SaveName +" running ");
         }
 
-        public String ShowInfo(SaveModel model)
+        public String ShowInfo(SaveModel saveModel)
         {
-            return "IN : "+ model.InPath + ", OUT : " + model.OutPath + ", Type : " + model.Type + ", Name : " + model.SaveName;
+            return "IN : "+ saveModel.InPath + ", OUT : " + saveModel.OutPath + ", Type : " + saveModel.Type + ", Name : " + saveModel.SaveName;
         }
     }
 }

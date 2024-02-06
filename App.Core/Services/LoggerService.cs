@@ -1,37 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-
+using App.Core.Models;
 
 namespace App.Core.Services
 {
     public class LoggerService
     {
-        public void WriteLog(String message)
-        {
-            Console.WriteLine(message);
-        }
+        private readonly string logFilePath = "logs.json";
 
-        public void WriteError(String message)
-        {
-            Console.WriteLine("Error: "+ message);
 
-        }
-        public void WriteInfo(String message)
-        {
-            Console.WriteLine("Info: "+ message);
 
-        }
-        public void WriteWarning(String message)
+        public async Task WriteLog(LoggerModel model, SaveModel saveModel)
         {
-               Console.WriteLine("Warning: "+ message);
-        }
+            try
+            {
+                model.Name = saveModel.SaveName;
+                // Serialize the log model to JSON
+                string logEntry = JsonSerializer.Serialize(model)+",";
+                Console.WriteLine(logEntry);
 
-        public void ClearLog()
-        {
-            Console.Clear();
+                // Append the log entry to the log file or create if not exist
+                using (StreamWriter writer = File.AppendText(logFilePath))
+                {
+                    await writer.WriteLineAsync(logEntry);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error writing to log file: {ex.Message}");
+            }
         }
     }
 }
