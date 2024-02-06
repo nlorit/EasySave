@@ -19,7 +19,7 @@ namespace App.Core.Services
 
         {
             CopyService copyService = new CopyService();
-            copyService.Copy(new CopyModel { SourcePath = model.InPath, TargetPath = model.OutPath });
+            copyService.RunCopy(new CopyModel { SourcePath = model.InPath, TargetPath = model.OutPath });
 
             Console.WriteLine("Save "+ model.SaveName +" running ");
         }
