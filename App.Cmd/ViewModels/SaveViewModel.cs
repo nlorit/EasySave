@@ -21,13 +21,14 @@ namespace App.Cmd.ViewModels
             
         }
 
-        public void add()
+        public void add() //Jeux de test
         {
             model = new SaveModel();
 
-            model.InPath = "R:/FILMS/1917 (2019)";
-            model.OutPath = "C:/Users/Nathan/Desktop/safran3";
-            model.Type = false;
+
+            model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
+            model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
+            model.Type = true;
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
