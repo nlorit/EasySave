@@ -24,9 +24,60 @@ namespace App.Core.Services
             Console.WriteLine("Save "+ model.SaveName +" running ");
         }
 
-        public String ShowInfo(SaveModel model)
+        public void ShowInfo(SaveModel model)
         {
-            return "IN : "+ model.InPath + ", OUT : " + model.OutPath + ", Type : " + model.Type + ", Name : " + model.SaveName + "DateTime : " + model.Date;
+            Console.WriteLine("");
+            Console.WriteLine("+-------------------------------------------------+");
+
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Name : ");
+            Console.ResetColor();
+            Console.WriteLine(model.SaveName);
+
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("IN : ");
+            Console.ResetColor();
+            Console.WriteLine(model.InPath);
+
+
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("OUT : ");
+            Console.ResetColor();
+            Console.WriteLine(model.OutPath);
+            
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Type : ");
+            Console.ResetColor();
+            if(model.Type == false)
+            {
+                Console.WriteLine("Complete");
+            }
+            else
+            {
+                Console.WriteLine("Differential");
+            }
+
+
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Date : ");
+            Console.ResetColor();
+            Console.WriteLine(model.Date);
+  
+            Console.WriteLine("+-------------------------------------------------+");
+            
+
         }
+
+        /*public void TableScreen()
+        {
+            Console.WriteLine("+----------------------+----------------------+------------+-------------------+-------------------------+");
+            Console.WriteLine("|         IN           |         OUT          |    Type    |        Name       |          DateTime       |");
+            Console.WriteLine("+----------------------+----------------------+------------+-------------------+-------------------------+");
+        }*/
     }
 }
