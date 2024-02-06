@@ -163,6 +163,8 @@ namespace App.Cmd.ViewModels
             
         }
 
+
+        //TODO Show logs
         public void ShowLogs()
         {
 
