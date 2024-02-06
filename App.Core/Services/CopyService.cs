@@ -35,13 +35,16 @@ namespace App.Core.Services
                         foreach (string filePath in files)
                         {
                             string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(filePath));
-                            loggerService.WriteLog(new LoggerModel
-                            {
-                                FileSource = filePath,
-                                FileTarget = destFilePath,
-                                FileSize = new FileInfo(filePath).Length/1024.0 + " kb"
-                            }, saveModel);
+                            LoggerModel loggerModel = new LoggerModel();
+
+                            loggerModel.FileSource = filePath;
+                            loggerModel.FileTarget = destFilePath;
+                            loggerModel.FileSize = new FileInfo(filePath).Length / 1024.0 + " kb";
+                            loggerModel.FileTransferTime = DateTime.Now - loggerModel.Time;
+
+                            loggerService.WriteLog(loggerModel, saveModel); ;
                         }
+                        
                     }
                     else
                     {
