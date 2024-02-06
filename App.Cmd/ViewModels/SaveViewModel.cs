@@ -21,13 +21,14 @@ namespace App.Cmd.ViewModels
             
         }
 
-        public void add()
+        public void add() //Jeux de test
         {
             model = new SaveModel();
 
+
             model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
             model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
-            model.Type = false;
+            model.Type = true;
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
@@ -66,89 +67,96 @@ namespace App.Cmd.ViewModels
 
             service.Create(model);
             ListSave.Add(model);
-
         }
 
         public void Save()
         {
-            model = new SaveModel();
+           if (ListSave.Count < 5)
+             {
+              model = new SaveModel();
 
-            Console.WriteLine("");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("1- ");
-            Console.ResetColor();
-            Console.WriteLine("Répertoire d'entrée / Source Directory ? |");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.WriteLine("");
-            model.InPath = Console.ReadLine();
-            
-            Console.WriteLine("");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("   2- ");
-            Console.ResetColor();
-            Console.WriteLine("Fichier de sortie / Target file ?     |");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.WriteLine("");
-            model.OutPath = Console.ReadLine();
+              Console.WriteLine("");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.Write("| ");
+              Console.ForegroundColor = ConsoleColor.Cyan;
+              Console.Write("1- ");
+              Console.ResetColor();
+              Console.WriteLine("Répertoire d'entrée / Source Directory ? |");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.WriteLine("");
+              model.InPath = Console.ReadLine();
 
-            Console.WriteLine("");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("    3- ");
-            Console.ResetColor();
-            Console.WriteLine("Type de Sauvegarde / Save type ?     |");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.WriteLine("");
-            Console.WriteLine("1 - Complète / Complet");
-            Console.WriteLine("2 - Séquentielle / sequential");
-            Console.WriteLine("");
-            int choice = int.Parse(Console.ReadLine());
-            switch (choice)
-            {
-                case 1:
-                    model.Type = false;
-                    break;
-                case 2:
-                    model.Type = true;
-                    break;
-                default:
-                    break;
-            }
+              Console.WriteLine("");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.Write("| ");
+              Console.ForegroundColor = ConsoleColor.Cyan;
+              Console.Write("   2- ");
+              Console.ResetColor();
+              Console.WriteLine("Fichier de sortie / Target file ?     |");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.WriteLine("");
+              model.OutPath = Console.ReadLine();
 
-            Console.WriteLine("");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("   4- ");
-            Console.ResetColor();
-            Console.WriteLine("Nom de la sauvegarde / Save name ?    |");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.WriteLine("");
-            model.SaveName = Console.ReadLine();
+              Console.WriteLine("");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.Write("| ");
+              Console.ForegroundColor = ConsoleColor.Cyan;
+              Console.Write("    3- ");
+              Console.ResetColor();
+              Console.WriteLine("Type de Sauvegarde / Save type ?     |");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.WriteLine("");
+              Console.WriteLine("1 - Complète / Complet");
+              Console.WriteLine("2 - Séquentielle / sequential");
+              Console.WriteLine("");
+              int choice = int.Parse(Console.ReadLine());
+              switch (choice)
+              {
+                  case 1:
+                      model.Type = false;
+                      break;
+                  case 2:
+                      model.Type = true;
+                      break;
+                  default:
+                      break;
+              }
 
-            Console.WriteLine("");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("  5- ");
-            Console.ResetColor();
-            Console.WriteLine("Date de la sauvegarde / Date name ?    |");
-            Console.WriteLine("+---------------------------------------------+");
-            model.Date = DateTime.Parse(Console.ReadLine());
-            //TODO Gérer l'exception du service
-            if (string.IsNullOrEmpty(model.InPath) ||
-                               string.IsNullOrEmpty(model.OutPath) ||
-                                              string.IsNullOrEmpty(model.SaveName))
-                throw new System.InvalidOperationException();
+              Console.WriteLine("");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.Write("| ");
+              Console.ForegroundColor = ConsoleColor.Cyan;
+              Console.Write("   4- ");
+              Console.ResetColor();
+              Console.WriteLine("Nom de la sauvegarde / Save name ?    |");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.WriteLine("");
+              model.SaveName = Console.ReadLine();
+
+              Console.WriteLine("");
+              Console.WriteLine("+---------------------------------------------+");
+              Console.Write("| ");
+              Console.ForegroundColor = ConsoleColor.Cyan;
+              Console.Write("  5- ");
+              Console.ResetColor();
+              Console.WriteLine("Date de la sauvegarde / Date name ?    |");
+              Console.WriteLine("+---------------------------------------------+");
+              model.Date = DateTime.Parse(Console.ReadLine());
+              //TODO Gérer l'exception du service
+              if (string.IsNullOrEmpty(model.InPath) ||
+                                 string.IsNullOrEmpty(model.OutPath) ||
+                                                string.IsNullOrEmpty(model.SaveName))
+                  throw new System.InvalidOperationException();
 
 
-            service.Create(model);
-            ListSave.Add(model);
+              service.Create(model);
+              ListSave.Add(model);
+           }
+           else
+           {
+                Console.WriteLine("Vous avez atteint le nombre maximum de sauvegardes / You have reached the maximum number of saves");
+           }
+
         }
 
         public void Run()
@@ -196,12 +204,8 @@ namespace App.Cmd.ViewModels
             {
                 service.Run(ListSave[i]);
             }
-
-            
         }
 
-
-        //TODO Show logs
         public void ShowLogs()
         {
 
@@ -218,13 +222,7 @@ namespace App.Cmd.ViewModels
             {
                 //Console.WriteLine(service.ShowInfo(item));*
                 service.ShowInfo(item);
-
-
             }
         }
-
-
     }
-
-
 }

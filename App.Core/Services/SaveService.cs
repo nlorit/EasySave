@@ -21,7 +21,6 @@ namespace App.Core.Services
             CopyService copyService = new CopyService();
             copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel);
 
-            //Console.WriteLine("Save "+ model.SaveName +" running ");
         }
 
         public void ShowInfo(SaveModel model)
@@ -71,12 +70,5 @@ namespace App.Core.Services
             Console.WriteLine("+-------------------------------------------------+");
             
         }
-
-        /*public void TableScreen()
-        {
-            Console.WriteLine("+----------------------+----------------------+------------+-------------------+-------------------------+");
-            Console.WriteLine("|         IN           |         OUT          |    Type    |        Name       |          DateTime       |");
-            Console.WriteLine("+----------------------+----------------------+------------+-------------------+-------------------------+");
-        }*/
     }
 }
