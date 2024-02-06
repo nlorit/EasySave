@@ -19,8 +19,6 @@ namespace App.Core.Services
                 model.Name = saveModel.SaveName;
                 // Serialize the log model to JSON
                 string logEntry = JsonSerializer.Serialize(model)+",";
-                Console.WriteLine(logEntry);
-
                 // Append the log entry to the log file or create if not exist
                 using (StreamWriter writer = File.AppendText(logFilePath))
                 {

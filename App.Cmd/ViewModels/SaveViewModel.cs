@@ -24,8 +24,8 @@ namespace App.Cmd.ViewModels
         {
             model = new SaveModel();
 
-            model.InPath = "C:/Users/Nathan/Desktop/safran";
-            model.OutPath = "C:/Users/Nathan/Desktop/safran2";
+            model.InPath = "P:/ccsetup616";
+            model.OutPath = "P:/ccsetup616_copy";
             model.Type = false;
             model.SaveName = "Save1";
 
