@@ -18,8 +18,8 @@ namespace App.Core.Services
                     string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(model.SourcePath));
                     File.Copy(model.SourcePath, destFilePath, true);
                     Console.WriteLine("File copied successfully.");
-                    loggerService.WriteLog(new LoggerModel { FileSource = model.SourcePath, FileTarget = destFilePath }, saveModel);
                 }
+
                 else if (Directory.Exists(model.SourcePath))
                 {
                     // Source is a directory
@@ -28,20 +28,16 @@ namespace App.Core.Services
                     if (files.Length > 0)
                     {
                         CopyDirectory(model.SourcePath,
-                                      model.TargetPath);
+                                      model.TargetPath, saveModel);
                         Console.WriteLine("Directory copied successfully.");
 
                         // Log an entry for each file in the directory
                         foreach (string filePath in files)
                         {
                             string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(filePath));
-                            loggerService.WriteLog(new LoggerModel
-                            {
-                                FileSource = filePath,
-                                FileTarget = destFilePath,
-                                FileSize = new FileInfo(filePath).Length/1024.0 + " kb"
-                            }, saveModel);
+                            
                         }
+                        
                     }
                     else
                     {
@@ -61,7 +57,7 @@ namespace App.Core.Services
 
 
 
-        private void CopyDirectory(string sourceDir, string targetDir)
+        private void CopyDirectory(string sourceDir, string targetDir, SaveModel saveModel)
         {
             // Create the target directory if it doesn't exist
             if (!Directory.Exists(targetDir))
@@ -74,7 +70,15 @@ namespace App.Core.Services
             {
                 string fileName = Path.GetFileName(filePath);
                 string destFilePath = Path.Combine(targetDir, fileName);
+                LoggerModel loggerModel = new LoggerModel();
+
+                loggerModel.FileSource = filePath;
+                loggerModel.FileTarget = destFilePath;
+                loggerModel.FileSize = new FileInfo(filePath).Length / 1024.0 + " kb";
                 File.Copy(filePath, destFilePath, true);
+                loggerModel.FileTransferTime = DateTime.Now - loggerModel.Time;
+                loggerService.WriteLog(loggerModel, saveModel); ;
+
             }
 
             // Recursively copy subdirectories
@@ -82,7 +86,7 @@ namespace App.Core.Services
             {
                 string subDirName = Path.GetFileName(subDirPath);
                 string destSubDirPath = Path.Combine(targetDir, subDirName);
-                CopyDirectory(subDirPath, destSubDirPath);
+                CopyDirectory(subDirPath, destSubDirPath, saveModel);
             }
         }
     }
