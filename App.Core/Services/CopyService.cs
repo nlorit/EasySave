@@ -15,8 +15,7 @@ namespace App.Core.Services
                 if (File.Exists(model.SourcePath))
                 {
                     // Copy file
-                    string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(model.SourcePath));
-                    File.Copy(model.SourcePath, destFilePath, true);
+                    File.Copy(model.SourcePath, model.TargetPath, true);
                     Console.WriteLine("File copied successfully.");
                 }
 

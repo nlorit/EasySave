@@ -25,8 +25,8 @@ namespace App.Cmd.ViewModels
         {
             model = new SaveModel();
 
-            model.InPath = "R:/FILMS/1917 (2019)";
-            model.OutPath = "C:/Users/Nathan/Desktop/safran3";
+            model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
+            model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
             model.Type = false;
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
