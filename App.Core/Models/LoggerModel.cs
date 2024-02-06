@@ -8,6 +8,12 @@ namespace App.Core.Models
 {
     public class LoggerModel
     {
-        public String FilePath { get; set; } = "";
+        public String Name { get; set; } = "";
+        public String FileSource { get; set; } = "";
+        public String FileTarget { get; set; } = "";
+        public String FileSize { get; set; } = "";
+        public String FileTransferTime { get; set; } = "";
+        public DateTime Time { get; set; } = DateTime.Now;
+
     }
 }

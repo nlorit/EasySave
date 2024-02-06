@@ -6,26 +6,47 @@ namespace App.Core.Services
 {
     public class CopyService
     {
-        public void RunCopy(CopyModel model)
+        private readonly LoggerService loggerService = new LoggerService();
+
+        public void RunCopy(CopyModel model, SaveModel saveModel)
         {
             try
             {
-                FileService fileService = new FileService();
-
-                fileService.GetFileInfo(new FileModel { FilePath = model.SourcePath });
-
                 if (File.Exists(model.SourcePath))
                 {
-                    
-                    
+                    // Copy file
+                    string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(model.SourcePath));
+                    File.Copy(model.SourcePath, destFilePath, true);
                     Console.WriteLine("File copied successfully.");
-                    
+                    loggerService.WriteLog(new LoggerModel { FileSource = model.SourcePath, FileTarget = destFilePath }, saveModel);
                 }
                 else if (Directory.Exists(model.SourcePath))
                 {
                     // Source is a directory
-                    CopyDirectory(model.SourcePath, model.TargetPath);
-                    Console.WriteLine("Directory copied successfully.");
+                    string[] files = Directory.GetFiles(model.SourcePath);
+
+                    if (files.Length > 0)
+                    {
+                        CopyDirectory(model.SourcePath,
+                                      model.TargetPath);
+                        Console.WriteLine("Directory copied successfully.");
+
+                        // Log an entry for each file in the directory
+                        foreach (string filePath in files)
+                        {
+                            string destFilePath = Path.Combine(model.TargetPath, Path.GetFileName(filePath));
+                            loggerService.WriteLog(new LoggerModel
+                            {
+                                FileSource = filePath,
+                                FileTarget = destFilePath,
+                                FileSize = new FileInfo(filePath).Length/1024.0 + " kb"
+                            }, saveModel);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Source directory is empty.");
+                    }
                 }
                 else
                 {
@@ -37,6 +58,8 @@ namespace App.Core.Services
                 Console.WriteLine($"Error: {e.Message}");
             }
         }
+
+
 
         private void CopyDirectory(string sourceDir, string targetDir)
         {
