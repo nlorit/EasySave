@@ -66,7 +66,6 @@ namespace App.Cmd.ViewModels
 
             service.Create(model);
             ListSave.Add(model);
-
         }
 
         public void Save()
