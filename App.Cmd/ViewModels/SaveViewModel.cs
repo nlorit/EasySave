@@ -1,5 +1,6 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
+using System;
 using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -72,12 +73,15 @@ namespace App.Cmd.ViewModels
         {
             model = new SaveModel();
 
+            Console.WriteLine("");
             Console.WriteLine("Fichier d'entrée / Source file");
             model.InPath = Console.ReadLine();
 
+            Console.WriteLine("");
             Console.WriteLine("Fichier de sortie / Target file");
             model.OutPath = Console.ReadLine();
 
+            Console.WriteLine("");
             Console.WriteLine("Type de Sauvegarde / Save type : ");
             Console.WriteLine("1 - Complète / Complet");
             Console.WriteLine("2 - Séquentielle / sequential");
@@ -93,8 +97,10 @@ namespace App.Cmd.ViewModels
                 default:
                     break;
             }
+            Console.WriteLine("");
             Console.WriteLine("Nom de la sauvegarde / Save name");
             model.SaveName = Console.ReadLine();
+            Console.WriteLine("");
             Console.WriteLine("Date de la sauvegarde / Date name");
             model.Date = DateTime.Parse(Console .ReadLine());
             //TODO Gérer l'exception du service
@@ -171,9 +177,14 @@ namespace App.Cmd.ViewModels
         {
             foreach (var item in ListSave)
             {
-                Console.WriteLine("- " + service.ShowInfo(item));
+                //Console.WriteLine(service.ShowInfo(item));*
+                service.ShowInfo(item);
+
+
             }
         }
+
+
     }
 
 

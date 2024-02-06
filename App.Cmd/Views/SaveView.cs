@@ -20,17 +20,33 @@ namespace App.Cmd.Views
 
         public bool Initialize()
         {
-            Console.WriteLine("################################################");
-            Console.WriteLine("################### EasySave ###################");
-            Console.WriteLine("################################################\n");
-            Console.WriteLine("- - - - - - - - - - - Menu - - - - - - - - - - -");
-            Console.WriteLine("Veuillez faire un choix / Please make a choise :\n");
-            Console.WriteLine("1 - Planifier une savegarde / Plan a save.......");
-            Console.WriteLine("2 - Exécuter une sauvegarde / Run a save........");
-            Console.WriteLine("3 - Afficher Logs / Show Logs...................");
-            Console.WriteLine("4 - Afficher le fichier d'état / Show state file");
-            Console.WriteLine("5 - Afficher la plannification / Show schedule..");
-            Console.WriteLine("6 - Quitter / Quit..............................\n");
+            Console.WriteLine("");
+            Console.WriteLine("+-----------------------------------------------------------+");
+            Console.WriteLine("|                                                           |");
+            Console.Write("|                          ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("EasySave");
+            Console.ResetColor();
+            Console.WriteLine("                         |");
+            Console.ResetColor(); 
+            Console.WriteLine("|                                                           |");
+            Console.WriteLine("| Menu :                                                    |");
+            Console.WriteLine("|                                                           |");
+            Console.ResetColor();
+            Console.WriteLine("| 1 - Planifier une savegarde / Plan a save.......          |");
+            Console.WriteLine("| 2 - Exécuter une sauvegarde / Run a save........          |");
+            Console.WriteLine("| 3 - Afficher Logs / Show Logs...................          |");
+            Console.WriteLine("| 4 - Afficher le fichier d'état / Show state file          |");
+            Console.WriteLine("| 5 - Afficher la plannification / Show schedule..          |");
+            Console.Write("| ");
+            Console.ForegroundColor = ConsoleColor.Red;   
+            Console.Write("6 - Quitter / Quit..............................");
+            Console.ResetColor();
+            Console.WriteLine("          | ");
+            Console.WriteLine("|                                                           |");
+            Console.WriteLine("+-----------------------------------------------------------+");
+            Console.WriteLine("");
+
 
             try {
                 int choice = Convert.ToInt32(Console.ReadLine());
