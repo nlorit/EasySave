@@ -19,14 +19,14 @@ namespace App.Core.Services
 
         {
             CopyService copyService = new CopyService();
-            copyService.Copy(new CopyModel { SourcePath = model.IN_PATH, TargetPath = model.OUT_PATH });
+            copyService.Copy(new CopyModel { SourcePath = model.InPath, TargetPath = model.OutPath });
 
-            Console.WriteLine("Save "+ model.SAVE_NAME +" running ");
+            Console.WriteLine("Save "+ model.SaveName +" running ");
         }
 
         public String ShowInfo(SaveModel model)
         {
-            return "IN : "+ model.IN_PATH + ", OUT : " + model.OUT_PATH + ", Type : " + model.TYPE + ", Name : " + model.SAVE_NAME;
+            return "IN : "+ model.InPath + ", OUT : " + model.OutPath + ", Type : " + model.Type + ", Name : " + model.SaveName + "DateTime : " + model.Date;
         }
     }
 }
