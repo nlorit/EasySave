@@ -102,7 +102,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = Console.ReadLine();
             Console.WriteLine("");
             Console.WriteLine("Date de la sauvegarde / Date name");
-            model.Date = DateTime.Parse(Console .ReadLine());
+            model.Date = DateTime.Parse(Console.ReadLine());
             //TODO Gérer l'exception du service
             if (string.IsNullOrEmpty(model.InPath) ||
                                string.IsNullOrEmpty(model.OutPath) ||
