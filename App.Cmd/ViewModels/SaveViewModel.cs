@@ -21,7 +21,7 @@ namespace App.Cmd.ViewModels
             
         }
 
-        public void add()
+        public void add() //Jeux de test
         {
             model = new SaveModel();
 
