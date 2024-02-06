@@ -47,7 +47,6 @@ namespace App.Cmd.Views
             Console.WriteLine("+-----------------------------------------------------------+");
             Console.WriteLine("");
 
-
             try {
                 int choice = Convert.ToInt32(Console.ReadLine());
 
@@ -87,14 +86,6 @@ namespace App.Cmd.Views
                 Console.WriteLine("Choix invalide / Invalid choice");
                 return true;
             }
-
-            
-
-
-            
-
         }
     }
 }
-
-

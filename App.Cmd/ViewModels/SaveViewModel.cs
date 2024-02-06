@@ -25,6 +25,7 @@ namespace App.Cmd.ViewModels
         {
             model = new SaveModel();
 
+
             model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
             model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
             model.Type = true;
@@ -66,52 +67,58 @@ namespace App.Cmd.ViewModels
 
             service.Create(model);
             ListSave.Add(model);
-
         }
 
         public void Save()
         {
-            model = new SaveModel();
+           if (ListSave.Count < 5)
+           {
+                model = new SaveModel();
 
-            Console.WriteLine("");
-            Console.WriteLine("Fichier d'entrée / Source file");
-            model.InPath = Console.ReadLine();
+                    Console.WriteLine("");
+                    Console.WriteLine("Fichier d'entrée / Source file");
+                    model.InPath = Console.ReadLine();
 
-            Console.WriteLine("");
-            Console.WriteLine("Fichier de sortie / Target file");
-            model.OutPath = Console.ReadLine();
+                    Console.WriteLine("");
+                    Console.WriteLine("Fichier de sortie / Target file");
+                    model.OutPath = Console.ReadLine();
 
-            Console.WriteLine("");
-            Console.WriteLine("Type de Sauvegarde / Save type : ");
-            Console.WriteLine("1 - Complète / Complet");
-            Console.WriteLine("2 - Séquentielle / sequential");
-            int choice = int.Parse(Console.ReadLine());
-            switch (choice)
-            {
-                case 1:
-                    model.Type = false;
-                    break;
-                case 2:
-                    model.Type = true;
-                    break;
-                default:
-                    break;
-            }
-            Console.WriteLine("");
-            Console.WriteLine("Nom de la sauvegarde / Save name");
-            model.SaveName = Console.ReadLine();
-            Console.WriteLine("");
-            Console.WriteLine("Date de la sauvegarde / Date name");
-            model.Date = DateTime.Parse(Console.ReadLine());
-            //TODO Gérer l'exception du service
-            if (string.IsNullOrEmpty(model.InPath) ||
-                               string.IsNullOrEmpty(model.OutPath) ||
-                                              string.IsNullOrEmpty(model.SaveName))
-                throw new System.InvalidOperationException();
+                    Console.WriteLine("");
+                    Console.WriteLine("Type de Sauvegarde / Save type : ");
+                    Console.WriteLine("1 - Complète / Complet");
+                    Console.WriteLine("2 - Séquentielle / sequential");
+                    int choice = int.Parse(Console.ReadLine());
+                    switch (choice)
+                    {
+                        case 1:
+                            model.Type = false;
+                            break;
+                        case 2:
+                            model.Type = true;
+                            break;
+                        default:
+                            break;
+                    }
+                    Console.WriteLine("");
+                    Console.WriteLine("Nom de la sauvegarde / Save name");
+                    model.SaveName = Console.ReadLine();
+                    Console.WriteLine("");
+                    Console.WriteLine("Date de la sauvegarde / Date name");
+                    model.Date = DateTime.Parse(Console.ReadLine());
+                    //TODO Gérer l'exception du service
+                    if (string.IsNullOrEmpty(model.InPath) ||
+                                       string.IsNullOrEmpty(model.OutPath) ||
+                                                      string.IsNullOrEmpty(model.SaveName))
+                        throw new System.InvalidOperationException();
 
 
-            service.Create(model);
-            ListSave.Add(model);
+                    service.Create(model);
+                    ListSave.Add(model);
+           }
+           else
+           {
+                Console.WriteLine("Vous avez atteint le nombre maximum de sauvegardes / You have reached the maximum number of saves");
+           }
         }
 
         public void Run()
@@ -159,12 +166,8 @@ namespace App.Cmd.ViewModels
             {
                 service.Run(ListSave[i]);
             }
-
-            
         }
 
-
-        //TODO Show logs
         public void ShowLogs()
         {
 
@@ -181,13 +184,7 @@ namespace App.Cmd.ViewModels
             {
                 //Console.WriteLine(service.ShowInfo(item));*
                 service.ShowInfo(item);
-
-
             }
         }
-
-
     }
-
-
 }
