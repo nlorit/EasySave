@@ -183,20 +183,26 @@ namespace App.Cmd.ViewModels
 
             string input = Console.ReadLine();
 
-            bool isCommaSeparatedOrHyphen = stringService.IsCommaSeparatedOrHyphen(input);
-
-            switch (isCommaSeparatedOrHyphen)
+            try
             {
-                case true:
-                    Console.WriteLine("Comma");
-                    ProcessCommaSeparatedInput(input);
-                    break;
+                bool isCommaSeparatedOrHyphen = stringService.IsCommaSeparatedOrHyphen(input);
+                switch (isCommaSeparatedOrHyphen)
+                {
+                    case true:
+                        ProcessCommaSeparatedInput(input);
+                        break;
 
-                case false:
-                    Console.WriteLine("Hyphen");
-                    ProcessHyphenSeparatedInput(input);
-                    break;
+                    case false:
+                        ProcessHyphenSeparatedInput(input);
+                        break;
+                }
+
             }
+            catch (System.IndexOutOfRangeException e)
+            {
+                service.Run(ListSave[int.Parse(input) - 1]);
+            }
+            
         }
 
         private void ProcessCommaSeparatedInput(string input)
