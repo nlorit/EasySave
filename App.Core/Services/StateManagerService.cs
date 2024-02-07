@@ -1,9 +1,6 @@
 ﻿using App.Core.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -11,42 +8,71 @@ namespace App.Core.Services
 {
     public class StateManagerService
     {
-        private readonly String stateFilePath = "state.json";
+        private readonly string stateFilePath = "state.json";
 
-        public async void CreateStateFile(List<SaveModel> saves)
+        
+        public async Task CreateStateFileAsync(List<SaveModel> saves)
         {
-            StateManagerModel model = new StateManagerModel();
-            
-            File.Delete(stateFilePath);
-            foreach (SaveModel save in saves)
-            {
-                model.SaveName = save.SaveName;
-                model.State = "END";
-                string stateEntry = JsonSerializer.Serialize(model) + ",";
-                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
-                {
-                    await stateWriter.WriteLineAsync(stateEntry);
-                }
-            }
-
-        }
-
-        public async void UpdateState(StateManagerModel stateModel,  SaveModel model)
-        {
+                        
             try
             {
-                stateModel.SaveName = model.SaveName;
-                string stateEntry = JsonSerializer.Serialize(stateModel) + ",";
                 File.Delete(stateFilePath);
-                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+                foreach (SaveModel save in saves)
                 {
-                    await stateWriter.WriteLineAsync(stateEntry);
+                    StateManagerModel model = new StateManagerModel
+                    {
+                        SaveName = save.SaveName,
+                        State = "END",
+                    };
+                    string stateEntry = JsonSerializer.Serialize(model) + ",";
+                    using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+                    {
+                        await stateWriter.WriteLineAsync(stateEntry);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error writing to state file: {ex.Message}");
             }
+        }
+        
+        public async Task UpdateStateAsync(StateManagerModel stateModel, SaveModel model, List<SaveModel> saves)
+
+        {
+            String stateEntry = "";
+            foreach (SaveModel save in saves)
+            {
+                
+                if (save == model)
+                {
+                    try
+                    {
+                        stateModel.SaveName = model.SaveName;
+                        stateEntry = JsonSerializer.Serialize(stateModel) + ",";
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                else
+                {
+                    StateManagerModel Statemodel = new StateManagerModel
+                    {
+                        SaveName = save.SaveName,
+                        State = "END",
+                    };
+                    
+                    stateEntry = JsonSerializer.Serialize(stateModel) + ",";
+                }
+                
+            }
+            File.Delete(stateFilePath);
+            using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+            {
+                await stateWriter.WriteLineAsync(stateEntry);
+            }
+
         }
     }
 }

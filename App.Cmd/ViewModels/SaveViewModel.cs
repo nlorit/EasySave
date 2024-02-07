@@ -22,7 +22,7 @@ namespace App.Cmd.ViewModels
             saveService = new SaveService();
             openerService = new OpenerService();
             stateManagerService = new StateManagerService();
-            stateManagerService.CreateStateFile(ListSave);
+            //stateManagerService.CreateStateFileAsync(ListSave);
             
         }
 
@@ -31,9 +31,9 @@ namespace App.Cmd.ViewModels
 
             model = new SaveModel();
 
-            model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
-            model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
-            model.Type = true;
+            model.InPath = "C:/Users/Nathan/Downloads/";
+            model.OutPath = "C:/Users/Nathan/Desktop/download_copy";
+            model.Type = false;
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
@@ -70,8 +70,6 @@ namespace App.Cmd.ViewModels
 
 
             ListSave.Add(model);
-            stateManagerService.CreateStateFile(ListSave);
-
         }
 
         public bool Save()
@@ -214,7 +212,7 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException e)
             {
-                saveService.Run(ListSave[int.Parse(input) - 1]);
+                saveService.Run(ListSave[int.Parse(input) - 1], ListSave);
             }
             
         }
@@ -225,8 +223,8 @@ namespace App.Cmd.ViewModels
             int start = int.Parse(commaSeparatedParts[0]);
             int end = int.Parse(commaSeparatedParts[1]);
 
-            saveService.Run(ListSave[start - 1]);
-            saveService.Run(ListSave[end - 1]);
+            saveService.Run(ListSave[start - 1], ListSave);
+            saveService.Run(ListSave[end - 1], ListSave);
         }
 
         private void ProcessHyphenSeparatedInput(string input)
@@ -234,7 +232,7 @@ namespace App.Cmd.ViewModels
             string[] hyphenSeparatedParts = input.Split('-');
             for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
             {
-                saveService.Run(ListSave[i]);
+                saveService.Run(ListSave[i], ListSave);
             }
         }
 
@@ -262,7 +260,7 @@ namespace App.Cmd.ViewModels
 
         public async Task UpdateAsync()
         {
-            stateManagerService.CreateStateFile(this.ListSave);
+            stateManagerService.CreateStateFileAsync(this.ListSave);
         }
     }
 }

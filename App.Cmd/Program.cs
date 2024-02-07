@@ -52,18 +52,31 @@ namespace App.Cmd
 
             var view = new SaveView();
 
+            // Start initialization and update tasks concurrently
             Task<bool> initializationTask = Task.Run(() => view.Initialize());
+            Task updateTask = view.UpdateAsync();
 
-            // Wait for initialization to complete
-            bool initialized = await initializationTask;
-
-            // Continue updating if initialized successfully
-            while (initialized)
+            // Continue updating regardless of initialization status
+            while (true)
             {
-                await view.Initialize(); // Initialize the view asynchronously
-                await view.UpdateAsync(); // Update the view asynchronously
+                // Await update task
+                await updateTask;
+
+                // Check if initialization task has completed
+                if (initializationTask.IsCompleted)
+                {
+                    // If initialization is complete, start the next initialization task
+                    initializationTask = Task.Run(() => view.Initialize());
+                }
+
+                // Start the next update task asynchronously
+                updateTask = view.UpdateAsync();
+
+                // Delay before next update
                 await Task.Delay(500); // Delay for 500 milliseconds
             }
+
+
 
 
         }

@@ -16,6 +16,7 @@ namespace App.Core.Models
         public int TotalFilesSize { get; set; } = 0;
         public int NbFilesLeftToDo { get; set; } = 0;
         public float Progression { get; set; } = 0;
+        public List<SaveModel> SaveModels { get; set; }
 
     }
 }
