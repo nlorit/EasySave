@@ -8,3 +8,5 @@
 /App.Core/obj/Debug/net8.0
 /App.Core/obj
 /App.Core/bin/Debug/net8.0
+/App.Cmd/bin/Release/net8.0
+/App.Core/bin/Release/net8.0
