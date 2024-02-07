@@ -208,8 +208,6 @@ namespace App.Cmd.ViewModels
         private void ProcessCommaSeparatedInput(string input)
         {
             string[] commaSeparatedParts = input.Split(',');
-            Console.WriteLine(commaSeparatedParts[0] + " à " + commaSeparatedParts[1]);
-
             int start = int.Parse(commaSeparatedParts[0]);
             int end = int.Parse(commaSeparatedParts[1]);
 
@@ -220,8 +218,6 @@ namespace App.Cmd.ViewModels
         private void ProcessHyphenSeparatedInput(string input)
         {
             string[] hyphenSeparatedParts = input.Split('-');
-            Console.WriteLine(hyphenSeparatedParts[0] + " à " + hyphenSeparatedParts[1]);
-
             for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
             {
                 service.Run(ListSave[i]);
@@ -242,7 +238,6 @@ namespace App.Cmd.ViewModels
         {
             foreach (var item in ListSave)
             {
-                //Console.WriteLine(service.ShowInfo(item));*
                 service.ShowInfo(item);
             }
         }
