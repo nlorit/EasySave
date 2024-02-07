@@ -9,7 +9,11 @@ namespace App.Cmd
             Console.WriteLine("Starting EasySave ...");
             var view = new SaveView();
 
-            while (view.Initialize()) ;
+            while (view.Initialize())
+            {
+                //System.Threading.Thread.Sleep(1500);
+            }
+            
             
         }
     }

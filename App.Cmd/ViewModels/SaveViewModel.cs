@@ -166,6 +166,7 @@ namespace App.Cmd.ViewModels
             Console.WriteLine("");
             Console.WriteLine("+----------------------------------------------------------+");
             Console.WriteLine("| Que voulez-vous exécuter / What do you want to execute ? |");
+            Console.WriteLine("|----------------------------------------------------------|");
             Console.WriteLine("|                                                          |");
             Console.Write("| ");
             Console.ForegroundColor= ConsoleColor.Cyan;
@@ -240,6 +241,9 @@ namespace App.Cmd.ViewModels
             {
                 service.ShowInfo(item);
             }
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("\n Press ENTER to exit");
+            Console.ResetColor();
         }
     }
 }

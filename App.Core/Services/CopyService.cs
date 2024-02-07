@@ -10,6 +10,7 @@ namespace App.Core.Services
 
         public void RunCopy(CopyModel model, SaveModel saveModel)
         {
+            Console.WriteLine(saveModel.SaveName + " is running...");
             try
             {
                 if (File.Exists(model.SourcePath))
