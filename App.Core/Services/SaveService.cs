@@ -10,10 +10,11 @@ namespace App.Core.Services
 {
     public class SaveService
     {
-        public void Create(SaveModel model) 
-        { 
-            Console.WriteLine("Save created");
-        }
+        
+        //public void Create(SaveModel model) 
+        //{ 
+        //    Console.WriteLine("Save created");
+        //}
 
         public void Run(SaveModel saveModel) 
 

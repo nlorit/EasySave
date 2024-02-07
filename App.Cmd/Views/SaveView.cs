@@ -15,10 +15,10 @@ namespace App.Cmd.Views
         public SaveView()
         {
             ViewModel = new SaveViewModel();
-            ViewModel.add();
+            ViewModel.test();
         }
 
-        public bool Initialize()
+        public async Task<bool> Initialize()
         {
             Console.Clear();
             Console.WriteLine("");
@@ -56,8 +56,7 @@ namespace App.Cmd.Views
                     case 1:
                         Console.Clear();
                         Console.WriteLine("Planifier une sauvegarde / Plan a save");
-                        ViewModel.Save();
-                        return true;
+                        return ViewModel.Save();
                     case 2:
                         Console.Clear();
                         Console.WriteLine("Executer une sauvegarde / Run a save");
@@ -104,6 +103,11 @@ namespace App.Cmd.Views
                 System.Threading.Thread.Sleep(1500);
                 return true;
             }
+        }
+
+        public async Task UpdateAsync()
+        {
+            ViewModel.UpdateAsync();
         }
     }
 }

@@ -7,10 +7,19 @@ namespace App.Core.Services
     public class CopyService
     {
         private readonly LoggerService loggerService = new LoggerService();
+        private readonly StateManagerService stateManagerService = new StateManagerService();
+        private StateManagerModel stateModel = new StateManagerModel();
+
+        public async Task UpdateStateFile(StateManagerModel stateModel, SaveModel saveModel)
+        {
+            await Task.Run(() => stateManagerService.UpdateState(stateModel, saveModel));
+        }
 
         public void RunCopy(CopyModel model, SaveModel saveModel)
-        {
+        {            
             Console.WriteLine(saveModel.SaveName + " is running...");
+            stateModel.SaveName = saveModel.SaveName;
+            stateModel.State = "ACTIVE";
             try
             {
                 if (File.Exists(model.SourcePath))
@@ -86,6 +95,9 @@ namespace App.Core.Services
             {
                 Console.WriteLine($"Error: {e.Message}");
             }
+            stateModel.State = "END";
+            UpdateStateFile(stateModel, saveModel).Wait(); // Wait for the async operation to complete
+
         }
 
         private void CopyDirectory(string sourceDir, string targetDir, SaveModel saveModel)
