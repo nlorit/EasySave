@@ -8,8 +8,10 @@ namespace App.Cmd.ViewModels
 {
     public class SaveViewModel
     {
-        private readonly SaveService service;
+        private readonly SaveService saveService;
         private readonly StringService stringService;
+        private readonly OpenerService openerService;
+        private readonly StateManagerService stateManagerService;
         public SaveModel model { get; set; }
         public List<SaveModel> ListSave { get; set; } = [];
     
@@ -17,14 +19,17 @@ namespace App.Cmd.ViewModels
         {
             
             stringService = new StringService();
-            service = new SaveService();
+            saveService = new SaveService();
+            openerService = new OpenerService();
+            stateManagerService = new StateManagerService();
+            stateManagerService.CreateStateFile(ListSave);
             
         }
 
-        public void add() //Jeux de test
+        public void test() //Jeux de test
         {
-            model = new SaveModel();
 
+            model = new SaveModel();
 
             model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
             model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
@@ -32,7 +37,6 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -43,7 +47,6 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save2";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -54,7 +57,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save3";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
+
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -65,13 +68,16 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save4";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
+
             ListSave.Add(model);
+            stateManagerService.CreateStateFile(ListSave);
+
         }
 
-        public void Save()
+        public bool Save()
         {
-           if (ListSave.Count < 5)
+
+            if (ListSave.Count < 5)
              {
               model = new SaveModel();
 
@@ -155,8 +161,8 @@ namespace App.Cmd.ViewModels
                   throw new System.InvalidOperationException();
 
 
-              service.Create(model);
               ListSave.Add(model);
+                
            }
            else
            {
@@ -164,8 +170,9 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("Erreur : Vous avez atteint le nombre maximum de sauvegardes / Error : You have reached the maximum number of saves");
                 Console.ResetColor();
            }
-
+            return true;
         }
+        
 
         public void Run()
         {
@@ -207,7 +214,7 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException e)
             {
-                service.Run(ListSave[int.Parse(input) - 1]);
+                saveService.Run(ListSave[int.Parse(input) - 1]);
             }
             
         }
@@ -218,8 +225,8 @@ namespace App.Cmd.ViewModels
             int start = int.Parse(commaSeparatedParts[0]);
             int end = int.Parse(commaSeparatedParts[1]);
 
-            service.Run(ListSave[start - 1]);
-            service.Run(ListSave[end - 1]);
+            saveService.Run(ListSave[start - 1]);
+            saveService.Run(ListSave[end - 1]);
         }
 
         private void ProcessHyphenSeparatedInput(string input)
@@ -227,31 +234,35 @@ namespace App.Cmd.ViewModels
             string[] hyphenSeparatedParts = input.Split('-');
             for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
             {
-                service.Run(ListSave[i]);
+                saveService.Run(ListSave[i]);
             }
         }
 
         public void ShowLogs()
         {
-            System.Diagnostics.Process.Start("notepad.exe", "logs.json");
-
+            openerService.OpenLogFile();
 
         }
 
         public void ShowStateFile()
         {
-            System.Diagnostics.Process.Start("notepad.exe", "state.json");
+            openerService.OpenStateFile();
         }
 
         public void ShowSchedule()
         {
             foreach (var item in ListSave)
             {
-                service.ShowInfo(item);
+                saveService.ShowInfo(item);
             }
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("\n Press ENTER to exit");
             Console.ResetColor();
+        }
+
+        public async Task UpdateAsync()
+        {
+            stateManagerService.CreateStateFile(this.ListSave);
         }
     }
 }

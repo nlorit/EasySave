@@ -4,7 +4,7 @@ namespace App.Cmd
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 
             Console.WriteLine("\n\n\n\n\n");
@@ -52,10 +52,19 @@ namespace App.Cmd
 
             var view = new SaveView();
 
-            while (view.Initialize())
+            Task<bool> initializationTask = Task.Run(() => view.Initialize());
+
+            // Wait for initialization to complete
+            bool initialized = await initializationTask;
+
+            // Continue updating if initialized successfully
+            while (initialized)
             {
-                
+                await view.Initialize(); // Initialize the view asynchronously
+                await view.UpdateAsync(); // Update the view asynchronously
+                await Task.Delay(500); // Delay for 500 milliseconds
             }
+
 
         }
     }
