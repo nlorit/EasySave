@@ -140,8 +140,14 @@ namespace App.Cmd.ViewModels
               Console.Write("  5- ");
               Console.ResetColor();
               Console.WriteLine("Date de la sauvegarde / Date name ?    |");
-              Console.WriteLine("+---------------------------------------------+");
-              model.Date = DateTime.Parse(Console.ReadLine());
+              Console.WriteLine("|---------------------------------------------|");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write("Format:");
+                Console.ResetColor();
+                Console.WriteLine("  MM / dd / yyyy HH: mm              |");
+                Console.WriteLine("+---------------------------------------------+");
+                model.Date = DateTime.Parse(Console.ReadLine());
               //TODO Gérer l'exception du service
               if (string.IsNullOrEmpty(model.InPath) ||
                                  string.IsNullOrEmpty(model.OutPath) ||

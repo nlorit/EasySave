@@ -48,7 +48,7 @@ namespace App.Cmd
             Console.ForegroundColor= ConsoleColor.DarkGreen;
             Console.WriteLine("\n\n\nLoaded successfully!");
             Console.ResetColor();
-            System.Threading.Thread.Sleep(10000);
+            System.Threading.Thread.Sleep(1000);
 
             var view = new SaveView();
 
