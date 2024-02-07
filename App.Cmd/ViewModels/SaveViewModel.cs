@@ -8,8 +8,9 @@ namespace App.Cmd.ViewModels
 {
     public class SaveViewModel
     {
-        private readonly SaveService service;
+        private readonly SaveService saveService;
         private readonly StringService stringService;
+        private readonly OpenerService openerService;
         public SaveModel model { get; set; }
         public List<SaveModel> ListSave { get; set; } = [];
     
@@ -17,7 +18,8 @@ namespace App.Cmd.ViewModels
         {
             
             stringService = new StringService();
-            service = new SaveService();
+            saveService = new SaveService();
+            openerService = new OpenerService();
             
         }
 
@@ -32,7 +34,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
+            saveService.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -43,7 +45,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save2";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
+            saveService.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -54,7 +56,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save3";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
+            saveService.Create(model);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -65,7 +67,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save4";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-            service.Create(model);
+            saveService.Create(model);
             ListSave.Add(model);
         }
 
@@ -149,7 +151,7 @@ namespace App.Cmd.ViewModels
                   throw new System.InvalidOperationException();
 
 
-              service.Create(model);
+              saveService.Create(model);
               ListSave.Add(model);
            }
            else
@@ -201,7 +203,7 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException e)
             {
-                service.Run(ListSave[int.Parse(input) - 1]);
+                saveService.Run(ListSave[int.Parse(input) - 1]);
             }
             
         }
@@ -212,8 +214,8 @@ namespace App.Cmd.ViewModels
             int start = int.Parse(commaSeparatedParts[0]);
             int end = int.Parse(commaSeparatedParts[1]);
 
-            service.Run(ListSave[start - 1]);
-            service.Run(ListSave[end - 1]);
+            saveService.Run(ListSave[start - 1]);
+            saveService.Run(ListSave[end - 1]);
         }
 
         private void ProcessHyphenSeparatedInput(string input)
@@ -221,27 +223,26 @@ namespace App.Cmd.ViewModels
             string[] hyphenSeparatedParts = input.Split('-');
             for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
             {
-                service.Run(ListSave[i]);
+                saveService.Run(ListSave[i]);
             }
         }
 
         public void ShowLogs()
         {
-            System.Diagnostics.Process.Start("notepad.exe", "logs.json");
-
+            openerService.OpenLogFile();
 
         }
 
         public void ShowStateFile()
         {
-            System.Diagnostics.Process.Start("notepad.exe", "state.json");
+            openerService.OpenStateFile();
         }
 
         public void ShowSchedule()
         {
             foreach (var item in ListSave)
             {
-                service.ShowInfo(item);
+                saveService.ShowInfo(item);
             }
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("\n Press ENTER to exit");
