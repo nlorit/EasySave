@@ -227,7 +227,6 @@ namespace App.Cmd.ViewModels
 
         public void ShowLogs()
         {
-            //open "logs.json" file for the user with notepad
             System.Diagnostics.Process.Start("notepad.exe", "logs.json");
 
 
@@ -235,7 +234,7 @@ namespace App.Cmd.ViewModels
 
         public void ShowStateFile()
         {
-
+            System.Diagnostics.Process.Start("notepad.exe", "state.json");
         }
 
         public void ShowSchedule()
