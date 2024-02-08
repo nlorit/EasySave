@@ -20,7 +20,7 @@ namespace App.Core.Services
 
         {
             CopyService copyService = new CopyService();
-            copyService.RunCopyAsync(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves);
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves);
 
         }
 

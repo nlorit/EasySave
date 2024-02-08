@@ -258,9 +258,6 @@ namespace App.Cmd.ViewModels
             Console.ResetColor();
         }
 
-        public async Task UpdateAsync()
-        {
-            stateManagerService.CreateStateFileAsync(this.ListSave);
-        }
+       
     }
 }
