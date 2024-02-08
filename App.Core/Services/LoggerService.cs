@@ -14,7 +14,7 @@ namespace App.Core.Services
             WriteIndented = true
         };
 
-        public async Task WriteLog(LoggerModel model, SaveModel saveModel)
+        public void WriteLog(LoggerModel model, SaveModel saveModel)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace App.Core.Services
                 // Append the log entry to the log file or create if not exist
                 using (StreamWriter LogWriter = File.AppendText(logFilePath))
                 {
-                    await LogWriter.WriteLineAsync(logEntry);
+                    LogWriter.WriteLineAsync(logEntry);
                 }
             }
             catch (Exception ex)
