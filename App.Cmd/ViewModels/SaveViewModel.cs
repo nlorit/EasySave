@@ -53,8 +53,8 @@ namespace App.Cmd.ViewModels
 
             model = new SaveModel();
 
-            model.InPath = "C:/Users/Nathan/Desktop/safran3/1. Lettre d'engagement.docx";
-            model.OutPath = "C:/Users/Nathan/Desktop/safran3/1. Lettre d'engagement 2.docx";
+            model.InPath = "C:/Users/Nathan/Desktop/safran2";
+            model.OutPath = "C:/Users/Nathan/Desktop/safran3";
             model.Type = false;
             model.SaveName = "Save3";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
