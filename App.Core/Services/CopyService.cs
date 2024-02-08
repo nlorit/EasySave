@@ -74,6 +74,7 @@ namespace App.Core.Services
                 percent += 1;
                 string fileName = Path.GetFileName(filePath);
                 string destFilePath = Path.Combine(targetDirPath, fileName);
+                System.IO.Directory.CreateDirectory(targetDirPath);
 
                 LoggerModel logModel = new LoggerModel
                 {
@@ -91,7 +92,7 @@ namespace App.Core.Services
                 saveModel.StateManager.Progression = ((percent * 100) / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
                 saveModel.StateManager.TargetFilePath = destFilePath;
                 saveModel.StateManager.SourceFilePath = filePath;
-                Task.Delay(1000).Wait();
+                Task.Delay(50).Wait();
                 try
                 {
                     stateManagerService.UpdateState(list, saveModel, saves);
