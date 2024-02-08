@@ -18,7 +18,7 @@ namespace App.Cmd.Views
             ViewModel.test();
         }
 
-        public async Task<bool> Initialize()
+        public bool Initialize()
         {
             Console.Clear();
             Console.WriteLine("");
@@ -83,7 +83,9 @@ namespace App.Cmd.Views
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.WriteLine("Exiting EasySave ...");  
                         System.Threading.Thread.Sleep(1000);
+                        
                         Console.ResetColor();
+                        System.Environment.Exit(0);
                         return false;
                     default:
                         Console.BackgroundColor = ConsoleColor.DarkRed;
@@ -91,7 +93,7 @@ namespace App.Cmd.Views
                         Console.WriteLine("Choix invalide / Invalid choice");
                         Console.ResetColor();
                         System.Threading.Thread.Sleep(1500);
-                        return true;
+                        return false;
                 }
             }    
             catch (System.FormatException)
@@ -105,9 +107,6 @@ namespace App.Cmd.Views
             }
         }
 
-        public async Task UpdateAsync()
-        {
-            ViewModel.UpdateAsync();
-        }
+
     }
 }

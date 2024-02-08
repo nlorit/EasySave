@@ -51,19 +51,11 @@ namespace App.Cmd
             System.Threading.Thread.Sleep(1000);
 
             var view = new SaveView();
+            
+            while (view.Initialize());
 
-            Task<bool> initializationTask = Task.Run(() => view.Initialize());
 
-            // Wait for initialization to complete
-            bool initialized = await initializationTask;
 
-            // Continue updating if initialized successfully
-            while (initialized)
-            {
-                await view.Initialize(); // Initialize the view asynchronously
-                await view.UpdateAsync(); // Update the view asynchronously
-                await Task.Delay(500); // Delay for 500 milliseconds
-            }
 
 
         }

@@ -1,9 +1,6 @@
 ﻿using App.Core.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -11,41 +8,37 @@ namespace App.Core.Services
 {
     public class StateManagerService
     {
-        private readonly String stateFilePath = "state.json";
+        private readonly string stateFilePath = "state.json";
 
-        public async void CreateStateFile(List<SaveModel> saves)
+        private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
-            StateManagerModel model = new StateManagerModel();
-            
-            File.Delete(stateFilePath);
-            foreach (SaveModel save in saves)
-            {
-                model.SaveName = save.SaveName;
-                model.State = "END";
-                string stateEntry = JsonSerializer.Serialize(model) + ",";
-                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
-                {
-                    await stateWriter.WriteLineAsync(stateEntry);
-                }
-            }
+            WriteIndented = true
+        };
 
-        }
-
-        public async void UpdateState(StateManagerModel stateModel,  SaveModel model)
+        public void UpdateState( List<StateManagerModel> states, SaveModel saveModel, List<SaveModel> saves)
         {
+            FileStream fileStream = File.Open(stateFilePath, FileMode.Open);
+            fileStream.SetLength(0);
+            fileStream.Close();
+           
             try
             {
-                stateModel.SaveName = model.SaveName;
-                string stateEntry = JsonSerializer.Serialize(stateModel) + ",";
-                File.Delete(stateFilePath);
-                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+                int i = 0;
+                foreach (StateManagerModel model in states)
                 {
-                    await stateWriter.WriteLineAsync(stateEntry);
+                    model.SaveName = saves[i].SaveName;
+                    string stateEntry = JsonSerializer.Serialize(model, options)+",";
+                    using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+                    {
+                        stateWriter.WriteLineAsync(stateEntry);
+                    }
+                    i += 1;
                 }
+                
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error writing to state file: {ex.Message}");
+                Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
         }
     }

@@ -9,18 +9,22 @@ namespace App.Core.Services
     public class LoggerService
     {
         private readonly string logFilePath = "logs.json";
+        private readonly JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
 
-        public async Task WriteLog(LoggerModel model, SaveModel saveModel)
+        public void WriteLog(LoggerModel model, SaveModel saveModel)
         {
             try
             {
                 model.Name = saveModel.SaveName;
                 // Serialize the log model to JSON
-                string logEntry = JsonSerializer.Serialize(model)+",";
+                string logEntry = JsonSerializer.Serialize(model, options) + ",";
                 // Append the log entry to the log file or create if not exist
                 using (StreamWriter LogWriter = File.AppendText(logFilePath))
                 {
-                    await LogWriter.WriteLineAsync(logEntry);
+                    LogWriter.WriteLineAsync(logEntry);
                 }
             }
             catch (Exception ex)

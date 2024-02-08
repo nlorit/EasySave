@@ -11,9 +11,9 @@ namespace App.Core.Models
         public String SaveName { get; set; } = "";
         public String SourceFilePath { get; set; } = "";
         public String TargetFilePath { get; set; } = "";
-        public String State { get; set; } = ""; 
+        public String State { get; set; } = "END"; 
         public int TotalFilesToCopy { get; set; } = 0;
-        public int TotalFilesSize { get; set; } = 0;
+        public long TotalFilesSize { get; set; } = 0;
         public int NbFilesLeftToDo { get; set; } = 0;
         public float Progression { get; set; } = 0;
 

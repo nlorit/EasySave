@@ -14,6 +14,7 @@ namespace App.Cmd.ViewModels
         private readonly StateManagerService stateManagerService;
         public SaveModel model { get; set; }
         public List<SaveModel> ListSave { get; set; } = [];
+        public List<StateManagerModel> StateManagerList { get; set; } = [];
     
         public SaveViewModel()
         {
@@ -21,9 +22,7 @@ namespace App.Cmd.ViewModels
             stringService = new StringService();
             saveService = new SaveService();
             openerService = new OpenerService();
-            stateManagerService = new StateManagerService();
-            stateManagerService.CreateStateFile(ListSave);
-            
+            stateManagerService = new StateManagerService();            
         }
 
         public void test() //Jeux de test
@@ -31,13 +30,15 @@ namespace App.Cmd.ViewModels
 
             model = new SaveModel();
 
-            model.InPath = "R:/FILMS/1917 (2019)/QTZ 1917 (2019) Bluray-2160p.mkv";
-            model.OutPath = "C:/Users/Nathan/Desktop/safran3/QTZ 1917 (2019) Bluray-2160p.mkv";
-            model.Type = true;
+            model.InPath = "C:/Users/Nathan/Desktop/AnnivNathan";
+            model.OutPath = "C:/Users/Nathan/Desktop/AnnivNathan2";
+            model.Type = false;
             model.SaveName = "Save1";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
+            StateManagerList.Add(model.StateManager);
             ListSave.Add(model);
+            
 
             model = new SaveModel();
 
@@ -47,6 +48,7 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save2";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
+            StateManagerList.Add(model.StateManager);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -58,6 +60,7 @@ namespace App.Cmd.ViewModels
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
 
+            StateManagerList.Add(model.StateManager);
             ListSave.Add(model);
 
             model = new SaveModel();
@@ -68,10 +71,8 @@ namespace App.Cmd.ViewModels
             model.SaveName = "Save4";
             model.Date = DateTime.Parse("02/05/2024 10:00:00");
 
-
+            StateManagerList.Add(model.StateManager);
             ListSave.Add(model);
-            stateManagerService.CreateStateFile(ListSave);
-
         }
 
         public bool Save()
@@ -160,8 +161,8 @@ namespace App.Cmd.ViewModels
                                                 string.IsNullOrEmpty(model.SaveName))
                   throw new System.InvalidOperationException();
 
-
-              ListSave.Add(model);
+                StateManagerList.Add(model.StateManager);
+                ListSave.Add(model);
                 
            }
            else
@@ -214,7 +215,7 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException e)
             {
-                saveService.Run(ListSave[int.Parse(input) - 1]);
+                saveService.Run(ListSave[int.Parse(input) - 1], ListSave, StateManagerList);
             }
             
         }
@@ -225,8 +226,8 @@ namespace App.Cmd.ViewModels
             int start = int.Parse(commaSeparatedParts[0]);
             int end = int.Parse(commaSeparatedParts[1]);
 
-            saveService.Run(ListSave[start - 1]);
-            saveService.Run(ListSave[end - 1]);
+            saveService.Run(ListSave[start - 1], ListSave, StateManagerList);
+            saveService.Run(ListSave[end - 1], ListSave, StateManagerList);
         }
 
         private void ProcessHyphenSeparatedInput(string input)
@@ -234,7 +235,7 @@ namespace App.Cmd.ViewModels
             string[] hyphenSeparatedParts = input.Split('-');
             for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
             {
-                saveService.Run(ListSave[i]);
+                saveService.Run(ListSave[i], ListSave, StateManagerList);
             }
         }
 
@@ -260,9 +261,6 @@ namespace App.Cmd.ViewModels
             Console.ResetColor();
         }
 
-        public async Task UpdateAsync()
-        {
-            stateManagerService.CreateStateFile(this.ListSave);
-        }
+       
     }
 }

@@ -16,11 +16,11 @@ namespace App.Core.Services
         //    Console.WriteLine("Save created");
         //}
 
-        public void Run(SaveModel saveModel) 
+        public void Run(SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list) 
 
         {
             CopyService copyService = new CopyService();
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel);
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves, list);
 
         }
 
