@@ -20,7 +20,7 @@ namespace App.Core.Services
             {
                 model.Name = saveModel.SaveName;
                 // Serialize the log model to JSON
-                string logEntry = JsonSerializer.Serialize(model, options);
+                string logEntry = JsonSerializer.Serialize(model, options) + ",";
                 // Append the log entry to the log file or create if not exist
                 using (StreamWriter LogWriter = File.AppendText(logFilePath))
                 {

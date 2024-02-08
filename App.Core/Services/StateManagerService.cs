@@ -10,69 +10,36 @@ namespace App.Core.Services
     {
         private readonly string stateFilePath = "state.json";
 
-        
-        public async Task CreateStateFileAsync(List<SaveModel> saves)
+        private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
-                        
+            WriteIndented = true
+        };
+
+        public void UpdateState( List<StateManagerModel> states, SaveModel saveModel, List<SaveModel> saves)
+        {
+            FileStream fileStream = File.Open(stateFilePath, FileMode.Open);
+            fileStream.SetLength(0);
+            fileStream.Close();
+           
             try
             {
-                File.Delete(stateFilePath);
-                foreach (SaveModel save in saves)
+                int i = 0;
+                foreach (StateManagerModel model in states)
                 {
-                    StateManagerModel model = new StateManagerModel
-                    {
-                        SaveName = save.SaveName,
-                        State = "END",
-                    };
-                    string stateEntry = JsonSerializer.Serialize(model) + ",";
+                    model.SaveName = saves[i].SaveName;
+                    string stateEntry = JsonSerializer.Serialize(model, options)+",";
                     using (StreamWriter stateWriter = File.AppendText(stateFilePath))
                     {
-                        await stateWriter.WriteLineAsync(stateEntry);
+                        stateWriter.WriteLineAsync(stateEntry);
                     }
+                    i += 1;
                 }
+                
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
-        }
-        
-        public async Task UpdateStateAsync(StateManagerModel stateModel, SaveModel model, List<SaveModel> saves)
-
-        {
-            String stateEntry = "";
-            foreach (SaveModel save in saves)
-            {
-                
-                if (save == model)
-                {
-                    try
-                    {
-                        stateModel.SaveName = model.SaveName;
-                        stateEntry = JsonSerializer.Serialize(stateModel) + ",";
-                        
-                    }
-                    catch (Exception ex)
-                    {
-                    }
-                }
-                else
-                {
-                    StateManagerModel Statemodel = new StateManagerModel
-                    {
-                        SaveName = save.SaveName,
-                        State = "END",
-                    };
-                    
-                    stateEntry = JsonSerializer.Serialize(stateModel) + ",";
-                }
-                
-            }
-            File.Delete(stateFilePath);
-            using (StreamWriter stateWriter = File.AppendText(stateFilePath))
-            {
-                await stateWriter.WriteLineAsync(stateEntry);
-            }
-
         }
     }
 }
