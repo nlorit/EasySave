@@ -9,7 +9,7 @@ namespace App.Core.Services
     public class LoggerService
     {
         private readonly string logFilePath = "logs.json";
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
+        private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
         };
@@ -22,10 +22,8 @@ namespace App.Core.Services
                 // Serialize the log model to JSON
                 string logEntry = JsonSerializer.Serialize(model, options) + ",";
                 // Append the log entry to the log file or create if not exist
-                using (StreamWriter LogWriter = File.AppendText(logFilePath))
-                {
-                    LogWriter.WriteLineAsync(logEntry);
-                }
+                using StreamWriter LogWriter = File.AppendText(logFilePath);
+                LogWriter.WriteLineAsync(logEntry);
             }
             catch (Exception ex)
             {

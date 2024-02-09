@@ -14,24 +14,13 @@ namespace App.Core.Services
     {
 
 
-        private readonly LoggerService loggerService = new LoggerService();
-        private readonly StateManagerService stateManagerService = new StateManagerService();
+        private readonly LoggerService loggerService = new();
+        private readonly StateManagerService stateManagerService = new();
+   
 
-        //TODO A supprimer ici
-        public ResourceManager Resources;
-        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
-
-        public CopyService() 
+        public void RunCopy(CopyModel model, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list, ResourceManager Resources)
         {
-            //TODO A supprimer ici
-            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
-            Resources = new ResourceManager("App.Cmd." + nomFichierRessources, typeof(CopyService).Assembly);
-
-        }    
-
-        public void RunCopy(CopyModel model, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list)
-        {
-            string print;
+            string? print;
             print = Resources.GetString("IsRunning");
             Console.WriteLine(saveModel.SaveName + print);
 
@@ -47,7 +36,7 @@ namespace App.Core.Services
                 else if (Directory.Exists(model.SourcePath))
                 {
                     // Directory copying operation
-                    CopyDirectory(model.SourcePath, model.TargetPath, saveModel, saves, list);
+                    CopyDirectory(model.SourcePath, model.TargetPath, saveModel, saves, list, Resources);
                     print = Resources.GetString("DirectoryCopied");
                     Console.WriteLine(print);
 
@@ -62,8 +51,26 @@ namespace App.Core.Services
            
 
         }
-        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list)
+        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list, ResourceManager Resources)
         {
+            if (string.IsNullOrEmpty(sourceDirPath))
+            {
+                throw new ArgumentException($"'{nameof(sourceDirPath)}' cannot be null or empty.", nameof(sourceDirPath));
+            }
+
+            if (string.IsNullOrEmpty(targetDirPath))
+            {
+                throw new ArgumentException($"'{nameof(targetDirPath)}' cannot be null or empty.", nameof(targetDirPath));
+            }
+
+            ArgumentNullException.ThrowIfNull(saveModel);
+
+            ArgumentNullException.ThrowIfNull(saves);
+
+            ArgumentNullException.ThrowIfNull(list);
+
+            ArgumentNullException.ThrowIfNull(Resources);
+
             int totalFiles = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length;
             long totalSize = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Sum(f => new FileInfo(f).Length);
 
@@ -96,7 +103,7 @@ namespace App.Core.Services
                 System.IO.Directory.CreateDirectory(targetDirPath);
 
 
-                LoggerModel logModel = new LoggerModel
+                LoggerModel logModel = new()
                 {
                     Name = saveModel.SaveName,
                     FileSource = filePath,

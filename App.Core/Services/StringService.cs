@@ -11,7 +11,7 @@ namespace App.Core.Services
     public class StringService
     {
 
-        public bool IsCommaSeparatedOrHyphen(String input)
+        public static bool IsCommaSeparatedOrHyphen(String input)
         {
             //True = Comma separated / False = Hyphen separated
             string pattern = @"^\d+,\d+$";

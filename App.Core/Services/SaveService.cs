@@ -13,33 +13,17 @@ namespace App.Core.Services
     public class SaveService
     {
 
-        //public void Create(SaveModel model) 
-        //{ 
-        //    Console.WriteLine("Save created");
-        //}
-
-
-        //TODO A supprimer ici
-        public ResourceManager Resources;
-        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
-
-        public SaveService()
-        {
-            //TODO A supprimer ici
-            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
-            Resources = new ResourceManager("Resources." + nomFichierRessources, typeof(SaveService).Assembly);
-        }
-        public void Run(SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list)
+        public static void Run(SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list, ResourceManager Resources)
     
         {
-            CopyService copyService = new CopyService();
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves, list);
+            CopyService copyService = new();
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves, list, Resources);
 
         }
 
-        public void ShowInfo(SaveModel model)
+        public static void ShowInfo(SaveModel model, ResourceManager Resources)
         {
-            string print;
+            string? print;
             Console.WriteLine("");
             Console.WriteLine("+-------------------------------------------------+");
 

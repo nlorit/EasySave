@@ -9,7 +9,7 @@ namespace App.Core.Services
 {
     public class OpenerService
     {
-        private OpenerModel model = new OpenerModel();
+        private readonly OpenerModel model = new();
 
         public void OpenLogFile()
         {

@@ -4,8 +4,9 @@ namespace App.Cmd
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
+            ArgumentNullException.ThrowIfNull(args);
 
             Console.WriteLine("\n\n\n\n\n");
             Console.ForegroundColor = ConsoleColor.Cyan;

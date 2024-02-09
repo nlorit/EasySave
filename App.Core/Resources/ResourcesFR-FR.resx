@@ -169,7 +169,7 @@
     <value>| 5 - Afficher la plannification..................          |</value>
   </data>
   <data name="Menu6" xml:space="preserve">
-    <value>6 - Quitter / Quit..............................</value>
+    <value>6 - Quitter.....................................</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Nom :  </value>

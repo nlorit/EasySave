@@ -1,14 +1,6 @@
 ﻿using App.Cmd.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using System.Resources;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 
 
 namespace App.Cmd.Views
@@ -24,14 +16,14 @@ namespace App.Cmd.Views
         public SaveView()
         {
             ViewModel = new SaveViewModel();
-            ViewModel.test();
+            ViewModel.Test();
             string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
             Resources = new ResourceManager("App.Cmd."+nomFichierRessources, typeof(SaveView).Assembly);
         }
 
         public bool Initialize()
         {
-            string print;
+            string? print;
             Console.Clear();
             Console.WriteLine("");
             Console.WriteLine("+-----------------------------------------------------------+");
@@ -76,12 +68,12 @@ namespace App.Cmd.Views
                         Console.Clear();
                         print = Resources.GetString("PlanSave");
                         Console.WriteLine(print);
-                        return ViewModel.Save();
+                        return ViewModel.Save(Resources);
                     case 2:
                         Console.Clear();
                         print = Resources.GetString("RunSave");
                         Console.WriteLine(print);
-                        ViewModel.Run();
+                        ViewModel.Run(Resources);
                         return true;
                     case 3:
                         Console.Clear();
@@ -99,16 +91,15 @@ namespace App.Cmd.Views
                         Console.Clear();
                         print = Resources.GetString("ShowSchedule");
                         Console.WriteLine(print);
-                        ViewModel.ShowSchedule();
+                        ViewModel.ShowSchedule(Resources);
                         while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                         return true;
                     case 6:
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.DarkRed;
-                        print = Resources.GetString("Menu4");
+                        print = Resources.GetString("Exit");
                         Console.WriteLine(print);  
                         System.Threading.Thread.Sleep(1000);
-                        
                         Console.ResetColor();
                         System.Environment.Exit(0);
                         return false;

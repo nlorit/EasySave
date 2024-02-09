@@ -10,13 +10,18 @@ namespace App.Core.Services
     {
         private readonly string stateFilePath = "state.json";
 
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
+        private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
         };
 
-        public void UpdateState( List<StateManagerModel> states, SaveModel saveModel, List<SaveModel> saves)
+        public void UpdateState(List<StateManagerModel> states, SaveModel saveModel, List<SaveModel> saves)
         {
+            ArgumentNullException.ThrowIfNull(states);
+
+            ArgumentNullException.ThrowIfNull(saveModel);
+
+            ArgumentNullException.ThrowIfNull(saves);
 
             FileStream fileStream = File.Open(stateFilePath, FileMode.Open);
             fileStream.SetLength(0);
