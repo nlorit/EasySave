@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -14,8 +15,10 @@ namespace App.Cmd.Views
     public class SaveView
     { 
         public SaveViewModel ViewModel;
+
         public ResourceManager Resources;
         public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+
 
         public SaveView()
         {
@@ -55,8 +58,10 @@ namespace App.Cmd.Views
             Console.WriteLine("+-----------------------------------------------------------+");
             Console.WriteLine("");
 
+
             string nathan = Resources.GetString("String1");
             Console.WriteLine(nathan);
+
 
             try {
                 int choice = Convert.ToInt32(Console.ReadLine());

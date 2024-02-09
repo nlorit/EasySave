@@ -17,10 +17,12 @@ namespace App.Core.Services
 
         public void UpdateState( List<StateManagerModel> states, SaveModel saveModel, List<SaveModel> saves)
         {
+
             FileStream fileStream = File.Open(stateFilePath, FileMode.Open);
             fileStream.SetLength(0);
             fileStream.Close();
            
+
             try
             {
                 int i = 0;

@@ -11,6 +11,7 @@ namespace App.Core.Services
     public class CopyService
     {
 
+
         private readonly LoggerService loggerService = new LoggerService();
         private readonly StateManagerService stateManagerService = new StateManagerService();
 
@@ -76,6 +77,7 @@ namespace App.Core.Services
                 string destFilePath = Path.Combine(targetDirPath, fileName);
                 System.IO.Directory.CreateDirectory(targetDirPath);
 
+
                 LoggerModel logModel = new LoggerModel
                 {
                     Name = saveModel.SaveName,
@@ -95,12 +97,14 @@ namespace App.Core.Services
                 Task.Delay(50).Wait();
                 try
                 {
+
                     stateManagerService.UpdateState(list, saveModel, saves);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error: {e.Message}");
                 }
+
 
 
             }

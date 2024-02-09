@@ -60,8 +60,7 @@ namespace App.Core.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to bloblo.
+       
         /// </summary>
         internal static string String1 {
             get {
