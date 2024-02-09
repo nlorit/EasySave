@@ -139,16 +139,16 @@
     <value>Invalid choice</value>
   </data>
   <data name="IsRunning" xml:space="preserve">
-    <value>is running...</value>
+    <value> is running...</value>
   </data>
   <data name="List" xml:space="preserve">
     <value>A List:</value>
   </data>
   <data name="ListAnswer1" xml:space="preserve">
-    <value>1-3 =&gt; 1 to 3                        |</value>
+    <value>1-3 =&gt; 1 to 3                                     |</value>
   </data>
   <data name="ListAnswer2" xml:space="preserve">
-    <value>1,3 =&gt; 1 and 3        |</value>
+    <value>1,3 =&gt; 1 and 3                              |</value>
   </data>
   <data name="MaxSaveError" xml:space="preserve">
     <value>Error : You have reached the maximum number of saves</value>
@@ -166,7 +166,7 @@
     <value>| 4 - Show state file.............................          |</value>
   </data>
   <data name="Menu5" xml:space="preserve">
-    <value>| 5 - Show schedule..............................          |</value>
+    <value>| 5 - Show schedule...............................          |</value>
   </data>
   <data name="Menu6" xml:space="preserve">
     <value>6 - Quit........................................</value>
@@ -202,16 +202,16 @@
     <value>Run a save</value>
   </data>
   <data name="SaveDate" xml:space="preserve">
-    <value>Date name ?                |</value>
+    <value>Save date ?                 |</value>
   </data>
   <data name="SaveName" xml:space="preserve">
-    <value>Save name ?                |</value>
+    <value>Save name ?                   |</value>
   </data>
   <data name="SaveType" xml:space="preserve">
-    <value>Save type ?                |</value>
+    <value>Save type ?                    |</value>
   </data>
-  <data name="SavetypeAnswer1" xml:space="preserve">
-    <value>1 - Complet</value>
+  <data name="SaveTypeAnswer1" xml:space="preserve">
+    <value>1 - Complete</value>
   </data>
   <data name="SaveTypeAnswer2" xml:space="preserve">
     <value>2 - Sequential</value>
@@ -232,7 +232,7 @@
     <value>Source does not exist or is neither a file nor a directory.</value>
   </data>
   <data name="TargetFile" xml:space="preserve">
-    <value>Target file ?               |</value>
+    <value>Target file ?                  |</value>
   </data>
   <data name="TypeAnswer1" xml:space="preserve">
     <value>Complete</value>

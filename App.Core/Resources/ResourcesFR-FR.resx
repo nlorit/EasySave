@@ -139,7 +139,7 @@
     <value>Choix invalide</value>
   </data>
   <data name="IsRunning" xml:space="preserve">
-    <value>est en cours d'exécution...</value>
+    <value> est en cours d'exécution...</value>
   </data>
   <data name="List" xml:space="preserve">
     <value>Une Liste :</value>
