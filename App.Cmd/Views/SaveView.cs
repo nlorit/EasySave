@@ -5,17 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using System.Resources;
+using System.Globalization;
+
 
 namespace App.Cmd.Views
 {
     public class SaveView
-    {
+    { 
         public SaveViewModel ViewModel;
+        public ResourceManager Resources;
+        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
 
         public SaveView()
         {
             ViewModel = new SaveViewModel();
             ViewModel.test();
+            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            Resources = new ResourceManager("App.Cmd."+nomFichierRessources, typeof(SaveView).Assembly);
         }
 
         public bool Initialize()
@@ -47,6 +54,9 @@ namespace App.Cmd.Views
             Console.WriteLine("|                                                           |");
             Console.WriteLine("+-----------------------------------------------------------+");
             Console.WriteLine("");
+
+            string nathan = Resources.GetString("String1");
+            Console.WriteLine(nathan);
 
             try {
                 int choice = Convert.ToInt32(Console.ReadLine());
