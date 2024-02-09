@@ -5,7 +5,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <StartupObject>App.Cmd.Program</StartupObject>
+    <AssemblyName>EasySave V1.0</AssemblyName>
+    <ApplicationIcon>databackup_theapplication_dedatos_3366.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="databackup_theapplication_dedatos_3366.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\App.Core\App.Core.csproj" />
