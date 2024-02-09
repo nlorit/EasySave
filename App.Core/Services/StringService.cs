@@ -4,12 +4,11 @@ namespace App.Core.Services
 {
     public class StringService
     {
-
-        public static bool IsCommaSeparatedOrHyphen(String input)
+        //Method to check if the input is a comma separated or hyphen separated
+        public static bool IsCommaSeparatedOrHyphen(string input)
         {
-            //True = Comma separated / False = Hyphen separated
-            string pattern = @"^\d+,\d+$";
-            return Regex.IsMatch(input, pattern);
+            string Pattern = @"^\d+,\d+$";
+            return Regex.IsMatch(input, Pattern); //True = Comma separated / False = Hyphen separated
         }
 
     }

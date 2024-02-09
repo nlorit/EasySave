@@ -126,6 +126,9 @@
   <data name="EnterExit" xml:space="preserve">
     <value>Appuyez sur ENTRER pour quitter </value>
   </data>
+  <data name="ErrorEmptySave" xml:space="preserve">
+    <value>Paramètres invalides détectés</value>
+  </data>
   <data name="Exit" xml:space="preserve">
     <value>Fermeture de EasySave ...</value>
   </data>
@@ -214,7 +217,7 @@
     <value>1 - Complète</value>
   </data>
   <data name="SaveTypeAnswer2" xml:space="preserve">
-    <value>2 - Séquentielle </value>
+    <value>2 - Différentielle</value>
   </data>
   <data name="ShowLogs" xml:space="preserve">
     <value>Afficher Logs</value>

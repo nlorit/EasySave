@@ -6,8 +6,10 @@ namespace App.Cmd
     {
         static void Main(string[] args)
         {
+            // Check if the arguments are null
             ArgumentNullException.ThrowIfNull(args);
 
+            // Display the welcome message
             Console.WriteLine("\n\n\n\n\n");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(" \r\n                                 ______                          _____                        " +
@@ -29,19 +31,16 @@ namespace App.Cmd
             Console.Write("\n\n\n                                   Loading:");
             Console.CursorVisible = false; 
 
-            int progressBarWidth = 35; 
-            int progressBarCenter = (Console.WindowWidth - progressBarWidth) / 2; 
-
-            Console.SetCursorPosition(progressBarCenter, Console.CursorTop); 
-
-            Console.Write("["); 
-
+            // Progress bar
+            int ProgressBarWidth = 35; 
+            int ProgressBarCenter = (Console.WindowWidth - ProgressBarWidth) / 2; 
+            Console.SetCursorPosition(ProgressBarCenter, Console.CursorTop); 
+            Console.Write("[");
             for (int i = 0; i <= 45; i++)
             {
-                Console.Write("#"); 
-                System.Threading.Thread.Sleep(10); 
+                Console.Write("#");
+                System.Threading.Thread.Sleep(10);
             }
-
             Console.WriteLine("]"); 
             Console.CursorVisible = true;
 
@@ -51,14 +50,10 @@ namespace App.Cmd
             Console.ResetColor();
             System.Threading.Thread.Sleep(1000);
 
-            var view = new SaveView();
-            
-            while (view.Initialize());
 
-
-
-
-
+            SaveView View = new();
+            // Initialize the view
+            while (View.Initialize());
         }
     }
 }

@@ -88,6 +88,15 @@ namespace App.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Paramètres invalides détectés.
+        /// </summary>
+        internal static string ErrorEmptySave {
+            get {
+                return ResourceManager.GetString("ErrorEmptySave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fermeture de EasySave ....
         /// </summary>
         internal static string Exit {
@@ -124,7 +133,7 @@ namespace App.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to est en cours d&apos;exécution....
+        ///   Looks up a localized string similar to  est en cours d&apos;exécution....
         /// </summary>
         internal static string IsRunning {
             get {
@@ -349,7 +358,7 @@ namespace App.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2 - Séquentielle .
+        ///   Looks up a localized string similar to 2 - Différentielle.
         /// </summary>
         internal static string SaveTypeAnswer2 {
             get {

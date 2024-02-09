@@ -12,12 +12,11 @@ namespace App.Cmd.ViewModels
         private readonly OpenerService openerService;
         private readonly StateManagerService stateManagerService;
         public SaveModel? Model { get; set; }
-        public List<SaveModel> ListSave { get; set; } = [];
+        public List<SaveModel> ListSaveModel { get; set; } = [];
         public List<StateManagerModel> StateManagerList { get; set; } = [];
 
         public SaveViewModel()
         {
-
             stringService = new();
             saveService = new();
             openerService = new();
@@ -25,9 +24,8 @@ namespace App.Cmd.ViewModels
 
         }
 
-        public void Test() //Jeux de test
+        public void TestSaves() //Jeux de test
         {
-
             Model = new SaveModel
             {
                 InPath = "C:/Users/Nathan/Desktop/AnnivNathan",
@@ -38,7 +36,7 @@ namespace App.Cmd.ViewModels
             };
 
             StateManagerList.Add(Model.StateManager);
-            ListSave.Add(Model);
+            ListSaveModel.Add(Model);
 
 
             Model = new SaveModel
@@ -51,7 +49,7 @@ namespace App.Cmd.ViewModels
             };
 
             StateManagerList.Add(Model.StateManager);
-            ListSave.Add(Model);
+            ListSaveModel.Add(Model);
 
             Model = new SaveModel
             {
@@ -64,7 +62,7 @@ namespace App.Cmd.ViewModels
 
 
             StateManagerList.Add(Model.StateManager);
-            ListSave.Add(Model);
+            ListSaveModel.Add(Model);
 
             Model = new SaveModel
             {
@@ -76,27 +74,29 @@ namespace App.Cmd.ViewModels
             };
 
             StateManagerList.Add(Model.StateManager);
-            ListSave.Add(Model);
+            ListSaveModel.Add(Model);
         }
 
-        public bool Save(ResourceManager Resources)
+        public bool CreateSave(ResourceManager resources)
         {
-            string? print;
-            if (ListSave.Count < 5)
+            //Method to create a save
+            string? Output;
+            if (ListSaveModel.Count < 5)
             {
-                Model = new SaveModel();
-
+                //Create a new save
+                Model = new();
                 Console.WriteLine("");
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                print = Resources.GetString("Number1");
-                Console.Write(print);
+                Output = resources.GetString("Number1");
+                Console.Write(Output);
                 Console.ResetColor();
-                print = Resources.GetString("SourceDirectory");
-                Console.WriteLine(print);
+                Output = resources.GetString("SourceDirectory");
+                Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
+                //Get the source directory
                 Model.InPath = Console.ReadLine()!;
 
 
@@ -104,34 +104,36 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                print = Resources.GetString("Number2");
-                Console.Write(print);
+                Output = resources.GetString("Number2");
+                Console.Write(Output);
                 Console.ResetColor();
-                print = Resources.GetString("TargetFile");
-                Console.WriteLine(print);
+                Output = resources.GetString("TargetFile");
+                Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
+                //Get the target directory
                 Model.OutPath = Console.ReadLine()!;
 
                 Console.WriteLine("");
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                print = Resources.GetString("Number3");
-                Console.Write(print);
+                Output = resources.GetString("Number3");
+                Console.Write(Output);
                 Console.ResetColor();
-                print = Resources.GetString("SaveType");
-                Console.WriteLine(print);
+                Output = resources.GetString("SaveType");
+                Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
-                print = Resources.GetString("SaveTypeAnswer1");
-                Console.WriteLine(print);
-                print = Resources.GetString("SaveTypeAnswer2");
-                Console.WriteLine(print);
+                Output = resources.GetString("SaveTypeAnswer1");
+                Console.WriteLine(Output);
+                Output = resources.GetString("SaveTypeAnswer2");
+                Console.WriteLine(Output);
                 Console.WriteLine("");
-                //TODO : A changer le bool 
-                int choice = int.Parse(Console.ReadLine()!);
-                switch (choice)
+
+                //Get the type of the save
+                int UserEntry = int.Parse(Console.ReadLine()!);
+                switch (UserEntry)
                 {
                     case 1:
                         Model.Type = false;
@@ -147,146 +149,167 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                print = Resources.GetString("Number4");
-                Console.Write(print);
+                Output = resources.GetString("Number4");
+                Console.Write(Output);
                 Console.ResetColor();
-                print = Resources.GetString("SaveName");
-                Console.WriteLine(print);
+                Output = resources.GetString("SaveName");
+                Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
+                //Get the name of the save
                 Model.SaveName = Console.ReadLine()!;
 
                 Console.WriteLine("");
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                print = Resources.GetString("Number5");
-                Console.Write(print);
+                Output = resources.GetString("Number5");
+                Console.Write(Output);
                 Console.ResetColor();
-                print = Resources.GetString("SaveDate");
-                Console.WriteLine(print);
+                Output = resources.GetString("SaveDate");
+                Console.WriteLine(Output);
                 Console.WriteLine("|---------------------------------------------|");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("Format:");
                 Console.ResetColor();
-                Console.WriteLine("  MM / dd / yyyy HH: mm              |");
+                Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
                 Console.WriteLine("+---------------------------------------------+");
-                    
+                //Get the date of the save
                 Model.Date = DateTime.Parse(Console.ReadLine()!);
 
+                //Check if the save is valid
                 if (string.IsNullOrEmpty(Model.InPath) ||
                                    string.IsNullOrEmpty(Model.OutPath) ||
                                                   string.IsNullOrEmpty(Model.SaveName))
-                    throw new System.InvalidOperationException();
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Output = resources.GetString("ErrorEmptySave");
+                    Console.WriteLine(Output);
+                    Console.ResetColor();
+                    System.Threading.Thread.Sleep(2000);
+                    return true;
+                }
 
+                //Create the state of the save
                 StateManagerList.Add(Model.StateManager);
-                ListSave.Add(Model);
+                //Add the save to the list
+                ListSaveModel.Add(Model);
 
             }
             else
             {
+                //If the list of saves is full
                 Console.ForegroundColor = ConsoleColor.Red;
-                print = Resources.GetString("MaxSaveError");
-                Console.WriteLine(print);
+                Output = resources.GetString("MaxSaveError");
+                Console.WriteLine(Output);
                 Console.ResetColor();
+                System.Threading.Thread.Sleep(2000);
+
             }
+            //Return to the main menu
             return true;
         }
 
 
-        public void Run(ResourceManager Resources)
+        public void RunSave(ResourceManager resources)
         {
-            string? print;
+            string? Output;
             Console.WriteLine("");
             Console.WriteLine("+----------------------------------------------------------+");
-            print = Resources.GetString("Run");
-            Console.WriteLine(print);
+            Output = resources.GetString("Run");
+            Console.WriteLine(Output);
             Console.WriteLine("|----------------------------------------------------------|");
             Console.WriteLine("|                                                          |");
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            print = Resources.GetString("List");
-            Console.Write(print);
+            Output = resources.GetString("List");
+            Console.Write(Output);
             Console.ResetColor();
-            print = Resources.GetString("ListAnswer1");
-            Console.WriteLine(print);
+            Output = resources.GetString("ListAnswer1");
+            Console.WriteLine(Output);
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            print = Resources.GetString("Element");
-            Console.Write(print);
+            Output = resources.GetString("Element");
+            Console.Write(Output);
             Console.ResetColor();
-            print = Resources.GetString("ListAnswer2");
-            Console.WriteLine(print);
+            Output = resources.GetString("ListAnswer2");
+            Console.WriteLine(Output);
             Console.WriteLine("|                                                          |");
             Console.WriteLine("+----------------------------------------------------------+");
 
 
-            string? input = Console.ReadLine();
-
+            string? UserEntry = Console.ReadLine();
             try
             {
-                bool isCommaSeparatedOrHyphen = StringService.IsCommaSeparatedOrHyphen(input!);
+                bool isCommaSeparatedOrHyphen = StringService.IsCommaSeparatedOrHyphen(UserEntry!);
                 switch (isCommaSeparatedOrHyphen)
                 {
                     case true:
-                        ProcessCommaSeparatedInput(input!, Resources);
+                        ProcessCommaSeparatedInput(UserEntry!, resources);
                         break;
 
                     case false:
-                        ProcessHyphenSeparatedInput(input!, Resources);
+                        ProcessHyphenSeparatedInput(UserEntry!, resources);
                         break;
                 }
 
             }
             catch (System.IndexOutOfRangeException)
             {
-                SaveService.Run(ListSave[int.Parse(input!) - 1], ListSave, StateManagerList, Resources);
+                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList, resources);
             }
 
         }
 
-        private void ProcessCommaSeparatedInput(string input, ResourceManager Resources)
+        private void ProcessCommaSeparatedInput(string input, ResourceManager resources)
         {
-            string[] commaSeparatedParts = input.Split(',');
-            int start = int.Parse(commaSeparatedParts[0]);
-            int end = int.Parse(commaSeparatedParts[1]);
+            //Method to process the input if it is comma separated
+            string[] CommaSeparatedParts = input.Split(',');
+            int Start = int.Parse(CommaSeparatedParts[0]);
+            int End = int.Parse(CommaSeparatedParts[1]);
 
-            SaveService.Run(ListSave[start - 1], ListSave, StateManagerList, Resources);
-            SaveService.Run(ListSave[end - 1], ListSave, StateManagerList, Resources);
+            //Execute the copy service to First and Last save
+            SaveService.ExecuteCopy(ListSaveModel[Start - 1], ListSaveModel, StateManagerList, resources);
+            SaveService.ExecuteCopy(ListSaveModel[End - 1], ListSaveModel, StateManagerList, resources);
         }
 
-        private void ProcessHyphenSeparatedInput(string input, ResourceManager Resources)
+        private void ProcessHyphenSeparatedInput(string Input, ResourceManager Resources)
         {
-            string[] hyphenSeparatedParts = input.Split('-');
-            for (int i = int.Parse(hyphenSeparatedParts[0]) - 1; i <= int.Parse(hyphenSeparatedParts[1]) - 1; i++)
+            //Method to process the input if it is hyphen separated
+            string[] HyphenSeparatedParts = Input.Split('-');
+            //Execute the copy service to the range of saves
+            for (int i = int.Parse(HyphenSeparatedParts[0]) - 1; i <= int.Parse(HyphenSeparatedParts[1]) - 1; i++)
             {
-                SaveService.Run(ListSave[i], ListSave, StateManagerList, Resources);
+                SaveService.ExecuteCopy(ListSaveModel[i], ListSaveModel, StateManagerList, Resources);
             }
         }
 
         public void ShowLogs()
         {
+            //Method to show the logs
             openerService.OpenLogFile();
 
         }
 
         public void ShowStateFile()
         {
+            //Method to show the state file
             openerService.OpenStateFile();
         }
 
-        public void ShowSchedule(ResourceManager Resources)
+        public void ShowSavesSchedule(ResourceManager Resources)
         {
-            string? print;
-            foreach (var item in ListSave)
+            string? Output;
+            //Method to show the saves schedule
+            foreach (SaveModel item in ListSaveModel)
             {
                 SaveService.ShowInfo(item, Resources);
             }
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("");
-            print = Resources.GetString("EnterExit");
-            Console.WriteLine(print);
+            Output = Resources.GetString("EnterExit");
+            Console.WriteLine(Output);
             Console.ResetColor();
         }
 

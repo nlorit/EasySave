@@ -6,58 +6,62 @@ namespace App.Core.Services
 {
     public class SaveService
     {
+        
+        public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
+        {   //Method to execute the copy service
 
-        public static void Run(SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list, ResourceManager Resources)
-    
-        {
             CopyService copyService = new();
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves, list, Resources);
+            //Execute the copy service
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager, resources);
 
         }
 
-        public static void ShowInfo(SaveModel model, ResourceManager Resources)
+        public static void ShowInfo(SaveModel saveModel, ResourceManager resources)
         {
-            string? print;
+            //Method to show the information of the save
+            string? Output;
             Console.WriteLine("");
             Console.WriteLine("+-------------------------------------------------+");
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            print = Resources.GetString("Name");
-            Console.Write(print);
+            Output = resources.GetString("Name");
+            Console.Write(Output);
             
 
             Console.ResetColor();
-            Console.WriteLine(model.SaveName);
+            Console.WriteLine(saveModel.SaveName);
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            print = Resources.GetString("In");
-            Console.Write(print);
+            Output = resources.GetString("In");
+            Console.Write(Output);
             Console.ResetColor();
-            Console.WriteLine(model.InPath);
+            Console.WriteLine(saveModel.InPath);
 
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            print = Resources.GetString("Out");
-            Console.Write(print);
+            Output = resources.GetString("Out");
+            Console.Write(Output);
             Console.ResetColor();
-            Console.WriteLine(model.OutPath);
+            Console.WriteLine(saveModel.OutPath);
             
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("Type : ");
             Console.ResetColor();
-            if(model.Type == false)
+
+            //Check the type of the save (Complete or Sequentiel)
+            if(saveModel.Type == false)
             {
-                print = Resources.GetString("TypeAnswer1");
-                Console.WriteLine(print);
+                Output = resources.GetString("TypeAnswer1");
+                Console.WriteLine(Output);
             }
             else
             {
-                print = Resources.GetString("TypeAnswer2");
-                Console.WriteLine(print);
+                Output = resources.GetString("TypeAnswer2");
+                Console.WriteLine(Output);
             }
 
 
@@ -65,7 +69,7 @@ namespace App.Core.Services
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("Date : ");
             Console.ResetColor();
-            Console.WriteLine(model.Date);
+            Console.WriteLine(saveModel.Date);
   
             Console.WriteLine("+-------------------------------------------------+");
             

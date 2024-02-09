@@ -4,16 +4,18 @@ namespace App.Core.Services
 {
     public class OpenerService
     {
-        private readonly OpenerModel model = new();
+        private readonly OpenerModel openerModel = new();
 
         public void OpenLogFile()
         {
-            System.Diagnostics.Process.Start("notepad.exe", this.model.LogPath);
+            // Open the log file in notepad
+            System.Diagnostics.Process.Start("notepad.exe", this.openerModel.LogPath);
         }
 
         public void OpenStateFile()
         {
-            System.Diagnostics.Process.Start("notepad.exe", this.model.StatePath);
+            // Open the state file in notepad
+            System.Diagnostics.Process.Start("notepad.exe", this.openerModel.StatePath);
         }
     }
 }

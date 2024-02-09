@@ -88,6 +88,15 @@ namespace App.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid parameters entered.
+        /// </summary>
+        internal static string ErrorEmptySave {
+            get {
+                return ResourceManager.GetString("ErrorEmptySave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exiting EasySave....
         /// </summary>
         internal static string Exit {
@@ -313,7 +322,7 @@ namespace App.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save date ?                 |.
+        ///   Looks up a localized string similar to Save date ?                  |.
         /// </summary>
         internal static string SaveDate {
             get {
@@ -349,7 +358,7 @@ namespace App.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2 - Sequential.
+        ///   Looks up a localized string similar to 2 - Differential.
         /// </summary>
         internal static string SaveTypeAnswer2 {
             get {

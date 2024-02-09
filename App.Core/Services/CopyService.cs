@@ -5,118 +5,114 @@ namespace App.Core.Services
 {
     public class CopyService
     {
-
-
         private readonly LoggerService loggerService = new();
         private readonly StateManagerService stateManagerService = new();
    
 
-        public void RunCopy(CopyModel model, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list, ResourceManager Resources)
+        public void RunCopy(CopyModel copyModel, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
         {
-            string? print;
-            print = Resources.GetString("IsRunning");
-            Console.WriteLine(saveModel.SaveName + print);
+            string? Output;
+            Output = resources.GetString("IsRunning");
+            Console.WriteLine(saveModel.SaveName + Output);
 
+            // Check if the source path exists
+            if (File.Exists(copyModel.SourcePath))
+            {
+                // File copying operation
+                File.Copy(copyModel.SourcePath, copyModel.TargetPath, true);
+                Output = resources.GetString("FileCopied");
+                Console.WriteLine(Output);
 
-            if (File.Exists(model.SourcePath))
-                {
-                    // File copying operation
-                    File.Copy(model.SourcePath, model.TargetPath, true);
-                    print = Resources.GetString("FileCopied");
-                    Console.WriteLine(print);
+            }
+            // Check if the source path is a directory
+            else if (Directory.Exists(copyModel.SourcePath))
+            {
+                // Directory copying operation
+                CopyDirectory(copyModel.SourcePath, copyModel.TargetPath, saveModel, listSavesModel, listStateManager, resources);
+                Output = resources.GetString("DirectoryCopied");
+                Console.WriteLine(Output);
 
-                }
-                else if (Directory.Exists(model.SourcePath))
-                {
-                    // Directory copying operation
-                    CopyDirectory(model.SourcePath, model.TargetPath, saveModel, saves, list, Resources);
-                    print = Resources.GetString("DirectoryCopied");
-                    Console.WriteLine(print);
-
-                }
-                else
-                {
-                print = Resources.GetString("SourceError");
-                Console.WriteLine(print);
-                    // Log an entry for non-existing source
-                }
+            }
+            // If the source path does not exist
+            else
+            {
+                Output = resources.GetString("SourceError");
+                Console.WriteLine(Output);
+            }
             
            
 
         }
-        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list, ResourceManager Resources)
+        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
         {
-            if (string.IsNullOrEmpty(sourceDirPath))
-            {
-                throw new ArgumentException($"'{nameof(sourceDirPath)}' cannot be null or empty.", nameof(sourceDirPath));
-            }
-
-            if (string.IsNullOrEmpty(targetDirPath))
-            {
-                throw new ArgumentException($"'{nameof(targetDirPath)}' cannot be null or empty.", nameof(targetDirPath));
-            }
-
+            // Check for nulls
+            ArgumentNullException.ThrowIfNull(sourceDirPath);
+            ArgumentNullException.ThrowIfNull(targetDirPath);
             ArgumentNullException.ThrowIfNull(saveModel);
+            ArgumentNullException.ThrowIfNull(listSavesModel);
+            ArgumentNullException.ThrowIfNull(listStateManager);
+            ArgumentNullException.ThrowIfNull(resources);
 
-            ArgumentNullException.ThrowIfNull(saves);
+            // Get the total number of files and the total size of the files
+            int TotalFilesCount = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length;
+            long TotalFilesSize = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Sum(f => new FileInfo(f).Length);
 
-            ArgumentNullException.ThrowIfNull(list);
-
-            ArgumentNullException.ThrowIfNull(Resources);
-
-            int totalFiles = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length;
-            long totalSize = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Sum(f => new FileInfo(f).Length);
-
+            // Update the state manager
             saveModel.StateManager.SaveName = saveModel.SaveName;
-            saveModel.StateManager.TotalFilesSize = totalSize;
-            saveModel.StateManager.TotalFilesToCopy = totalFiles;
-            saveModel.StateManager.NbFilesLeftToDo = totalFiles;
+            saveModel.StateManager.TotalFilesSize = TotalFilesSize;
+            saveModel.StateManager.TotalFilesToCopy = TotalFilesCount;
+            saveModel.StateManager.NbFilesLeftToDo = TotalFilesCount;
             saveModel.StateManager.State = "ACTIVE";
-            int percent = 0;
-            saveModel.StateManager.Progression = (percent / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
-           
+            int Percentage = 0;
+
+            //Calculate the progression
+            saveModel.StateManager.Progression = (Percentage / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
             try
             {
-                stateManagerService.UpdateState(list, saveModel, saves);
+                stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error: {e.Message}");
             }
              
-            
-
 
             // Copy files recursively
             foreach (string filePath in Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories))
             {
-                percent += 1;
-                string fileName = Path.GetFileName(filePath);
-                string destFilePath = Path.Combine(targetDirPath, fileName);
+                Percentage += 1;
+                // Get the file name
+                string FileName = Path.GetFileName(filePath);
+                // Get the destination file path
+                string DestinationFilePath = Path.Combine(targetDirPath, FileName);
+                // Create the directory if it does not exist
                 System.IO.Directory.CreateDirectory(targetDirPath);
 
-
+                // Create a log model
                 LoggerModel logModel = new()
                 {
                     Name = saveModel.SaveName,
                     FileSource = filePath,
-                    FileTarget = destFilePath,
+                    FileTarget = DestinationFilePath,
                     FileSize = new FileInfo(filePath).Length.ToString()
                 };
+                // File copying operation
+                File.Copy(filePath, DestinationFilePath, true);
 
-                File.Copy(filePath, destFilePath, true);
-
+                // Write the log
                 logModel.FileTransferTime = (DateTime.Now - logModel.Time).ToString();
                 loggerService.WriteLog(logModel, saveModel);
                 saveModel.StateManager.NbFilesLeftToDo = saveModel.StateManager.NbFilesLeftToDo - 1;
-                saveModel.StateManager.Progression = ((percent * 100) / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
-                saveModel.StateManager.TargetFilePath = destFilePath;
+                saveModel.StateManager.Progression = ((Percentage * 100) / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
+                saveModel.StateManager.TargetFilePath = DestinationFilePath;
                 saveModel.StateManager.SourceFilePath = filePath;
+
+                //Delay for avoid the stateManagerService to update the state too fast
                 Task.Delay(50).Wait();
+
                 try
                 {
-
-                    stateManagerService.UpdateState(list, saveModel, saves);
+                    stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
                 }
                 catch (Exception e)
                 {
@@ -126,8 +122,9 @@ namespace App.Core.Services
 
 
             }
+            // Update the state manager
             saveModel.StateManager.State = "END";
-            stateManagerService.UpdateState(list, saveModel, saves);
+            stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
 
 
         }

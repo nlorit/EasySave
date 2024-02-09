@@ -9,21 +9,25 @@ namespace App.Cmd.Views
     { 
         public SaveViewModel ViewModel;
 
-        public ResourceManager Resources;
-        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+        private readonly ResourceManager Resources;
+        private readonly CultureInfo culture = CultureInfo.CurrentCulture;
 
 
         public SaveView()
         {
             ViewModel = new SaveViewModel();
-            ViewModel.Test();
-            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
-            Resources = new ResourceManager("App.Cmd."+nomFichierRessources, typeof(SaveView).Assembly);
+            //Create test saves for the first run
+            ViewModel.TestSaves();
+            //Set the culture
+            string ResourceFileName = culture.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            //Load the resources
+            Resources = new ResourceManager("App.Cmd."+ResourceFileName, typeof(SaveView).Assembly);
         }
 
         public bool Initialize()
         {
-            string? print;
+            //Display the main menu
+            string? Output;
             Console.Clear();
             Console.WriteLine("");
             Console.WriteLine("+-----------------------------------------------------------+");
@@ -38,78 +42,80 @@ namespace App.Cmd.Views
             Console.WriteLine("| Menu :                                                    |");
             Console.WriteLine("|                                                           |");
             Console.ResetColor();
-            print = Resources.GetString("Menu1");
-            Console.WriteLine(print);
-            print = Resources.GetString("Menu2");
-            Console.WriteLine(print);
-            print = Resources.GetString("Menu3");
-            Console.WriteLine(print);
-            print = Resources.GetString("Menu4");
-            Console.WriteLine(print);
-            print = Resources.GetString("Menu5");
-            Console.WriteLine(print);
+            Output = Resources.GetString("Menu1");
+            Console.WriteLine(Output);
+            Output = Resources.GetString("Menu2");
+            Console.WriteLine(Output);
+            Output = Resources.GetString("Menu3");
+            Console.WriteLine(Output);
+            Output = Resources.GetString("Menu4");
+            Console.WriteLine(Output);
+            Output = Resources.GetString("Menu5");
+            Console.WriteLine(Output);
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.DarkRed;   
-            print = Resources.GetString("Menu6");
-            Console.Write(print);
+            Output = Resources.GetString("Menu6");
+            Console.Write(Output);
             Console.ResetColor();
             Console.WriteLine("          | ");
             Console.WriteLine("|                                                           |");
             Console.WriteLine("+-----------------------------------------------------------+");
             Console.WriteLine("");
 
-
+            //User choice
             try {
-                int choice = Convert.ToInt32(Console.ReadLine());
+                int UserEntry = Convert.ToInt32(Console.ReadLine());
 
-                switch (choice)
+                switch (UserEntry)
                 {
                     case 1:
                         Console.Clear();
-                        print = Resources.GetString("PlanSave");
-                        Console.WriteLine(print);
-                        return ViewModel.Save(Resources);
+                        Output = Resources.GetString("PlanSave");
+                        Console.WriteLine(Output);
+                        return ViewModel.CreateSave(Resources);
                     case 2:
                         Console.Clear();
-                        print = Resources.GetString("RunSave");
-                        Console.WriteLine(print);
-                        ViewModel.Run(Resources);
+                        Output = Resources.GetString("RunSave");
+                        Console.WriteLine(Output);
+                        ViewModel.RunSave(Resources);
                         return true;
                     case 3:
                         Console.Clear();
-                        print = Resources.GetString("ShowLogs");
-                        Console.WriteLine(print);
+                        Output = Resources.GetString("ShowLogs");
+                        Console.WriteLine(Output);
                         ViewModel.ShowLogs();
                         return true;
                     case 4:
                         Console.Clear();
-                        print = Resources.GetString("ShowStateFile");
-                        Console.WriteLine(print);
+                        Output = Resources.GetString("ShowStateFile");
+                        Console.WriteLine(Output);
                         ViewModel.ShowStateFile();
                         return true;
                     case 5:
                         Console.Clear();
-                        print = Resources.GetString("ShowSchedule");
-                        Console.WriteLine(print);
-                        ViewModel.ShowSchedule(Resources);
+                        Output = Resources.GetString("ShowSchedule");
+                        Console.WriteLine(Output);
+                        ViewModel.ShowSavesSchedule(Resources);
                         while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                         return true;
                     case 6:
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.DarkRed;
-                        print = Resources.GetString("Exit");
-                        Console.WriteLine(print);  
+                        Output = Resources.GetString("Exit");
+                        Console.WriteLine(Output);  
                         System.Threading.Thread.Sleep(1000);
                         Console.ResetColor();
+                        //Exit the program
                         System.Environment.Exit(0);
                         return false;
                     default:
                         Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.ForegroundColor = ConsoleColor.Black;
-                        print = Resources.GetString("InvalidChoice");
-                        Console.WriteLine(print);
+                        Output = Resources.GetString("InvalidChoice");
+                        Console.WriteLine(Output);
                         Console.ResetColor();
                         System.Threading.Thread.Sleep(1500);
+                        //Return to the main menu
                         return false;
                 }
             }    
@@ -117,8 +123,8 @@ namespace App.Cmd.Views
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.ForegroundColor = ConsoleColor.Black;
-                print = Resources.GetString("InvalidChoice");
-                Console.WriteLine(print);
+                Output = Resources.GetString("InvalidChoice");
+                Console.WriteLine(Output);
                 Console.ResetColor();
                 System.Threading.Thread.Sleep(1500);
                 return true;
