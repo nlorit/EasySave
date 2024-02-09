@@ -9,6 +9,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\App.Core\App.Core.csproj" />
+
+	  <EmbeddedResource Include="..\App.Core\Resources\ResourcesEN-UK.resx">
+		  <Link>ResourcesEN-UK.resx</Link>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="..\App.Core\Resources\ResourcesFR-FR.resx">
+		  <Link>ResourcesFR-FR.resx</Link>
+	  </EmbeddedResource>
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,9 @@ namespace App.Core.Services
 {
     public class CopyService
     {
+
+
+
         private readonly LoggerService loggerService = new LoggerService();
 
         public void RunCopy(CopyModel model, SaveModel saveModel)
@@ -106,19 +109,22 @@ namespace App.Core.Services
                 loggerModel.FileTarget = destFilePath;
                 loggerModel.FileSize = new FileInfo(filePath).Length / 1024.0 + " kb";
 
-                try 
+                logModel.FileTransferTime = (DateTime.Now - logModel.Time).ToString();
+                loggerService.WriteLog(logModel, saveModel);
+                saveModel.StateManager.NbFilesLeftToDo = saveModel.StateManager.NbFilesLeftToDo - 1;
+                saveModel.StateManager.Progression = ((percent * 100) / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
+                saveModel.StateManager.TargetFilePath = destFilePath;
+                saveModel.StateManager.SourceFilePath = filePath;
+                Task.Delay(50).Wait();
+                try
                 {
-                    File.Copy(filePath, destFilePath, true);
-                    loggerModel.FileTransferTime = (DateTime.Now - loggerModel.Time).ToString();
-                    loggerService.WriteLog(loggerModel, saveModel); ;
+                    stateManagerService.UpdateState(list, saveModel, saves);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error: {e.Message}");
+                }
 
-                }
-                catch (Exception)
-                {
-                    loggerModel.FileTransferTime = "-1";
-                    loggerService.WriteLog(loggerModel, saveModel); ;
-                }
-                
 
             }
 
