@@ -1,11 +1,7 @@
-﻿using App.Cmd.Views;
-using App.Core.Models;
+﻿using App.Core.Models;
 using App.Core.Services;
-using System;
-using System.Globalization;
 using System.Resources;
-using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace App.Cmd.ViewModels
 {

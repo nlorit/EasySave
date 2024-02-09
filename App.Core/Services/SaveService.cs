@@ -1,12 +1,6 @@
 ﻿using App.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Resources;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace App.Core.Services
 {

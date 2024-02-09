@@ -1,12 +1,5 @@
 ﻿using App.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Formats.Tar;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
 using System.Resources;
-using System.Threading.Tasks;
 
 namespace App.Core.Services
 {
