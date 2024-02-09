@@ -117,9 +117,127 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="String1" xml:space="preserve">
-
-    <value>blabla</value>
-
+  <data name="DirectoryCopied" xml:space="preserve">
+    <value>Le dossier a bien été copié.</value>
+  </data>
+  <data name="Element" xml:space="preserve">
+    <value>Certains éléments :</value>
+  </data>
+  <data name="EnterExit" xml:space="preserve">
+    <value>Appuyez sur ENTRER pour quitter </value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Fermeture de EasySave ...</value>
+  </data>
+  <data name="FileCopied" xml:space="preserve">
+    <value>Le fichier a bien été copié.</value>
+  </data>
+  <data name="In" xml:space="preserve">
+    <value>Source : </value>
+  </data>
+  <data name="InvalidChoice" xml:space="preserve">
+    <value>Choix invalide</value>
+  </data>
+  <data name="IsRunning" xml:space="preserve">
+    <value>est en cours d'exécution...</value>
+  </data>
+  <data name="List" xml:space="preserve">
+    <value>Une Liste :</value>
+  </data>
+  <data name="ListAnswer1" xml:space="preserve">
+    <value>1-3 =&gt; 1 à 3                                  |</value>
+  </data>
+  <data name="ListAnswer2" xml:space="preserve">
+    <value>1,3 =&gt; 1 et 3                         |</value>
+  </data>
+  <data name="MaxSaveError" xml:space="preserve">
+    <value>Erreur : Vous avez atteint le nombre maximum de sauvegardes</value>
+  </data>
+  <data name="Menu1" xml:space="preserve">
+    <value>| 1 - Planifier une sauvegarde....................          |</value>
+  </data>
+  <data name="Menu2" xml:space="preserve">
+    <value>| 2 - Exécuter une sauvegarde.....................          |</value>
+  </data>
+  <data name="Menu3" xml:space="preserve">
+    <value>| 3 - Afficher Logs...............................          |</value>
+  </data>
+  <data name="Menu4" xml:space="preserve">
+    <value>| 4 - Afficher le fichier d'état..................          |</value>
+  </data>
+  <data name="Menu5" xml:space="preserve">
+    <value>| 5 - Afficher la plannification..................          |</value>
+  </data>
+  <data name="Menu6" xml:space="preserve">
+    <value>6 - Quitter / Quit..............................</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nom :  </value>
+  </data>
+  <data name="Number1" xml:space="preserve">
+    <value>         1- </value>
+  </data>
+  <data name="Number2" xml:space="preserve">
+    <value>         2- </value>
+  </data>
+  <data name="Number3" xml:space="preserve">
+    <value>         3- </value>
+  </data>
+  <data name="Number4" xml:space="preserve">
+    <value>        4- </value>
+  </data>
+  <data name="Number5" xml:space="preserve">
+    <value>      5- </value>
+  </data>
+  <data name="Out" xml:space="preserve">
+    <value>Cible : </value>
+  </data>
+  <data name="PlanSave" xml:space="preserve">
+    <value>Planifier une sauvegarde</value>
+  </data>
+  <data name="Run" xml:space="preserve">
+    <value>|                Que voulez-vous exécuter ?                |</value>
+  </data>
+  <data name="RunSave" xml:space="preserve">
+    <value>Executer une sauvegarde</value>
+  </data>
+  <data name="SaveDate" xml:space="preserve">
+    <value>Date de la sauvegarde ?            |</value>
+  </data>
+  <data name="SaveName" xml:space="preserve">
+    <value>Nom de la sauvegarde ?           |</value>
+  </data>
+  <data name="SaveType" xml:space="preserve">
+    <value>Type de Sauvegarde ?            |</value>
+  </data>
+  <data name="SaveTypeAnswer1" xml:space="preserve">
+    <value>1 - Complète</value>
+  </data>
+  <data name="SaveTypeAnswer2" xml:space="preserve">
+    <value>2 - Séquentielle </value>
+  </data>
+  <data name="ShowLogs" xml:space="preserve">
+    <value>Afficher Logs</value>
+  </data>
+  <data name="ShowSchedule" xml:space="preserve">
+    <value>Afficher la plannification</value>
+  </data>
+  <data name="ShowStateFile" xml:space="preserve">
+    <value>Afficher le fichier d'état</value>
+  </data>
+  <data name="SourceDirectory" xml:space="preserve">
+    <value>Répertoire d'entrée ?           |</value>
+  </data>
+  <data name="SourceError" xml:space="preserve">
+    <value>La source n'existe pas ou n'est ni un fichier ni un répertoire.</value>
+  </data>
+  <data name="TargetFile" xml:space="preserve">
+    <value>Fichier de sortie ?             |</value>
+  </data>
+  <data name="TypeAnswer1" xml:space="preserve">
+    <value>Complète</value>
+  </data>
+  <data name="TypeAnswer2" xml:space="preserve">
+    <value>Différentiel</value>
   </data>
 </root>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Resources;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 
 namespace App.Cmd.Views
@@ -30,6 +31,7 @@ namespace App.Cmd.Views
 
         public bool Initialize()
         {
+            string print;
             Console.Clear();
             Console.WriteLine("");
             Console.WriteLine("+-----------------------------------------------------------+");
@@ -39,28 +41,30 @@ namespace App.Cmd.Views
             Console.Write("EasySave");
             Console.ResetColor();
             Console.WriteLine("                         |");
-            Console.ResetColor(); 
+            Console.ResetColor();
             Console.WriteLine("|                                                           |");
             Console.WriteLine("| Menu :                                                    |");
             Console.WriteLine("|                                                           |");
             Console.ResetColor();
-            Console.WriteLine("| 1 - Planifier une savegarde / Plan a save.......          |");
-            Console.WriteLine("| 2 - Exécuter une sauvegarde / Run a save........          |");
-            Console.WriteLine("| 3 - Afficher Logs / Show Logs...................          |");
-            Console.WriteLine("| 4 - Afficher le fichier d'état / Show state file          |");
-            Console.WriteLine("| 5 - Afficher la plannification / Show schedule..          |");
+            print = Resources.GetString("Menu1");
+            Console.WriteLine(print);
+            print = Resources.GetString("Menu2");
+            Console.WriteLine(print);
+            print = Resources.GetString("Menu3");
+            Console.WriteLine(print);
+            print = Resources.GetString("Menu4");
+            Console.WriteLine(print);
+            print = Resources.GetString("Menu5");
+            Console.WriteLine(print);
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.DarkRed;   
-            Console.Write("6 - Quitter / Quit..............................");
+            print = Resources.GetString("Menu6");
+            Console.Write(print);
             Console.ResetColor();
             Console.WriteLine("          | ");
             Console.WriteLine("|                                                           |");
             Console.WriteLine("+-----------------------------------------------------------+");
             Console.WriteLine("");
-
-
-            string nathan = Resources.GetString("String1");
-            Console.WriteLine(nathan);
 
 
             try {
@@ -70,33 +74,39 @@ namespace App.Cmd.Views
                 {
                     case 1:
                         Console.Clear();
-                        Console.WriteLine("Planifier une sauvegarde / Plan a save");
+                        print = Resources.GetString("PlanSave");
+                        Console.WriteLine(print);
                         return ViewModel.Save();
                     case 2:
                         Console.Clear();
-                        Console.WriteLine("Executer une sauvegarde / Run a save");
+                        print = Resources.GetString("RunSave");
+                        Console.WriteLine(print);
                         ViewModel.Run();
                         return true;
                     case 3:
                         Console.Clear();
-                        Console.WriteLine("Afficher Logs / Show Logs");
+                        print = Resources.GetString("ShowLogs");
+                        Console.WriteLine(print);
                         ViewModel.ShowLogs();
                         return true;
                     case 4:
                         Console.Clear();
-                        Console.WriteLine("Afficher le fichier d'état / Show state file");
+                        print = Resources.GetString("ShowStateFile");
+                        Console.WriteLine(print);
                         ViewModel.ShowStateFile();
                         return true;
                     case 5:
                         Console.Clear();
-                        Console.WriteLine("Afficher la plannification / Show schedule");
+                        print = Resources.GetString("ShowSchedule");
+                        Console.WriteLine(print);
                         ViewModel.ShowSchedule();
                         while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                         return true;
                     case 6:
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("Exiting EasySave ...");  
+                        print = Resources.GetString("Menu4");
+                        Console.WriteLine(print);  
                         System.Threading.Thread.Sleep(1000);
                         
                         Console.ResetColor();
@@ -105,7 +115,8 @@ namespace App.Cmd.Views
                     default:
                         Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.WriteLine("Choix invalide / Invalid choice");
+                        print = Resources.GetString("InvalidChoice");
+                        Console.WriteLine(print);
                         Console.ResetColor();
                         System.Threading.Thread.Sleep(1500);
                         return false;
@@ -115,7 +126,8 @@ namespace App.Cmd.Views
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.ForegroundColor = ConsoleColor.Black;
-                Console.WriteLine("Choix invalide / Invalid choice");
+                print = Resources.GetString("InvalidChoice");
+                Console.WriteLine(print);
                 Console.ResetColor();
                 System.Threading.Thread.Sleep(1500);
                 return true;

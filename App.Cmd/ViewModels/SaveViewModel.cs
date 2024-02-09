@@ -1,6 +1,9 @@
-﻿using App.Core.Models;
+﻿using App.Cmd.Views;
+using App.Core.Models;
 using App.Core.Services;
 using System;
+using System.Globalization;
+using System.Resources;
 using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -15,14 +18,25 @@ namespace App.Cmd.ViewModels
         public SaveModel model { get; set; }
         public List<SaveModel> ListSave { get; set; } = [];
         public List<StateManagerModel> StateManagerList { get; set; } = [];
-    
+
+        //TODO A supprimer ici
+        public ResourceManager Resources;
+        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+
         public SaveViewModel()
         {
             
             stringService = new StringService();
             saveService = new SaveService();
             openerService = new OpenerService();
-            stateManagerService = new StateManagerService();            
+            stateManagerService = new StateManagerService();
+
+
+            //TODO A supprimer ici
+            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            Resources = new ResourceManager("App.Cmd." + nomFichierRessources, typeof(SaveViewModel).Assembly);
+
+
         }
 
         public void test() //Jeux de test
@@ -77,7 +91,7 @@ namespace App.Cmd.ViewModels
 
         public bool Save()
         {
-
+            string print;
             if (ListSave.Count < 5)
              {
               model = new SaveModel();
@@ -86,10 +100,12 @@ namespace App.Cmd.ViewModels
               Console.WriteLine("+---------------------------------------------+");
               Console.Write("| ");
               Console.ForegroundColor = ConsoleColor.Cyan;
-              Console.Write("1- ");
-              Console.ResetColor();
-              Console.WriteLine("Répertoire d'entrée / Source Directory ? |");
-              Console.WriteLine("+---------------------------------------------+");
+                print = Resources.GetString("Number1");
+                Console.Write(print);
+                Console.ResetColor();
+                print = Resources.GetString("SourceDirectory");
+                Console.WriteLine(print);
+                Console.WriteLine("+---------------------------------------------+");
               Console.WriteLine("");
               model.InPath = Console.ReadLine();
 
@@ -97,10 +113,12 @@ namespace App.Cmd.ViewModels
               Console.WriteLine("+---------------------------------------------+");
               Console.Write("| ");
               Console.ForegroundColor = ConsoleColor.Cyan;
-              Console.Write("   2- ");
-              Console.ResetColor();
-              Console.WriteLine("Fichier de sortie / Target file ?     |");
-              Console.WriteLine("+---------------------------------------------+");
+                print = Resources.GetString("Number2");
+                Console.Write(print);
+                Console.ResetColor();
+                print = Resources.GetString("TargetFile");
+                Console.WriteLine(print);
+                Console.WriteLine("+---------------------------------------------+");
               Console.WriteLine("");
               model.OutPath = Console.ReadLine();
 
@@ -108,14 +126,18 @@ namespace App.Cmd.ViewModels
               Console.WriteLine("+---------------------------------------------+");
               Console.Write("| ");
               Console.ForegroundColor = ConsoleColor.Cyan;
-              Console.Write("    3- ");
-              Console.ResetColor();
-              Console.WriteLine("Type de Sauvegarde / Save type ?     |");
-              Console.WriteLine("+---------------------------------------------+");
+                print = Resources.GetString("Number3");
+                Console.Write(print);
+                Console.ResetColor();
+                print = Resources.GetString("SaveType");
+                Console.WriteLine(print);
+                Console.WriteLine("+---------------------------------------------+");
               Console.WriteLine("");
-              Console.WriteLine("1 - Complète / Complet");
-              Console.WriteLine("2 - Séquentielle / sequential");
-              Console.WriteLine("");
+                print = Resources.GetString("SaveTypeAnswer1");
+                Console.WriteLine(print);
+                print = Resources.GetString("SaveTypeAnswer2");
+                Console.WriteLine(print);
+                Console.WriteLine("");
               int choice = int.Parse(Console.ReadLine());
               switch (choice)
               {
@@ -133,10 +155,12 @@ namespace App.Cmd.ViewModels
               Console.WriteLine("+---------------------------------------------+");
               Console.Write("| ");
               Console.ForegroundColor = ConsoleColor.Cyan;
-              Console.Write("   4- ");
-              Console.ResetColor();
-              Console.WriteLine("Nom de la sauvegarde / Save name ?    |");
-              Console.WriteLine("+---------------------------------------------+");
+                print = Resources.GetString("Number4");
+                Console.Write(print);
+                Console.ResetColor();
+                print = Resources.GetString("SaveName");
+                Console.WriteLine(print);
+                Console.WriteLine("+---------------------------------------------+");
               Console.WriteLine("");
               model.SaveName = Console.ReadLine();
 
@@ -144,10 +168,12 @@ namespace App.Cmd.ViewModels
               Console.WriteLine("+---------------------------------------------+");
               Console.Write("| ");
               Console.ForegroundColor = ConsoleColor.Cyan;
-              Console.Write("  5- ");
-              Console.ResetColor();
-              Console.WriteLine("Date de la sauvegarde / Date name ?    |");
-              Console.WriteLine("|---------------------------------------------|");
+                print = Resources.GetString("Number5");
+                Console.Write(print);
+                Console.ResetColor();
+                print = Resources.GetString("SaveDate");
+                Console.WriteLine(print);
+                Console.WriteLine("|---------------------------------------------|");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("Format:");
@@ -168,7 +194,8 @@ namespace App.Cmd.ViewModels
            else
            {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Erreur : Vous avez atteint le nombre maximum de sauvegardes / Error : You have reached the maximum number of saves");
+                print = Resources.GetString("MaxSaveError");
+                Console.WriteLine(print);
                 Console.ResetColor();
            }
             return true;
@@ -177,21 +204,27 @@ namespace App.Cmd.ViewModels
 
         public void Run()
         {
+            string print;
             Console.WriteLine("");
             Console.WriteLine("+----------------------------------------------------------+");
-            Console.WriteLine("| Que voulez-vous exécuter / What do you want to execute ? |");
+            print = Resources.GetString("Run");
+            Console.WriteLine(print);
             Console.WriteLine("|----------------------------------------------------------|");
             Console.WriteLine("|                                                          |");
             Console.Write("| ");
             Console.ForegroundColor= ConsoleColor.Cyan;
-            Console.Write("Une liste / A list:");
+            print = Resources.GetString("List");
+            Console.Write(print);
             Console.ResetColor();
-            Console.WriteLine(" 1-3 => 1 à/to 3                      |");
+            print = Resources.GetString("ListAnswer1");
+            Console.WriteLine(print);
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Certains éléments / Some element:");
+            print = Resources.GetString("Element");
+            Console.Write(print);
             Console.ResetColor();
-            Console.WriteLine("  1,3 => 1 et/and 3     |");
+            print = Resources.GetString("ListAnswer2");
+            Console.WriteLine(print);
             Console.WriteLine("|                                                          |");
             Console.WriteLine("+----------------------------------------------------------+");
 
@@ -252,12 +285,15 @@ namespace App.Cmd.ViewModels
 
         public void ShowSchedule()
         {
+            string print;
             foreach (var item in ListSave)
             {
                 saveService.ShowInfo(item);
             }
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine("\n Press ENTER to exit");
+            Console.WriteLine("");
+            print = Resources.GetString("EnterExit");
+            Console.WriteLine(print);
             Console.ResetColor();
         }
 

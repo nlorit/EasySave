@@ -1,7 +1,9 @@
 ﻿using App.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,14 +12,25 @@ namespace App.Core.Services
 {
     public class SaveService
     {
-        
+
         //public void Create(SaveModel model) 
         //{ 
         //    Console.WriteLine("Save created");
         //}
 
-        public void Run(SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list) 
 
+        //TODO A supprimer ici
+        public ResourceManager Resources;
+        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+
+        public SaveService()
+        {
+            //TODO A supprimer ici
+            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            Resources = new ResourceManager("Resources." + nomFichierRessources, typeof(SaveService).Assembly);
+        }
+        public void Run(SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list)
+    
         {
             CopyService copyService = new CopyService();
             copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, saves, list);
@@ -26,25 +39,31 @@ namespace App.Core.Services
 
         public void ShowInfo(SaveModel model)
         {
+            string print;
             Console.WriteLine("");
             Console.WriteLine("+-------------------------------------------------+");
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Name : ");
+            print = Resources.GetString("Name");
+            Console.Write(print);
+            
+
             Console.ResetColor();
             Console.WriteLine(model.SaveName);
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("IN : ");
+            print = Resources.GetString("In");
+            Console.Write(print);
             Console.ResetColor();
             Console.WriteLine(model.InPath);
 
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("OUT : ");
+            print = Resources.GetString("Out");
+            Console.Write(print);
             Console.ResetColor();
             Console.WriteLine(model.OutPath);
             
@@ -54,11 +73,13 @@ namespace App.Core.Services
             Console.ResetColor();
             if(model.Type == false)
             {
-                Console.WriteLine("Complete");
+                print = Resources.GetString("TypeAnswer1");
+                Console.WriteLine(print);
             }
             else
             {
-                Console.WriteLine("Differential");
+                print = Resources.GetString("TypeAnswer2");
+                Console.WriteLine(print);
             }
 
 

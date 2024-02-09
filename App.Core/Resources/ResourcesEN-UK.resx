@@ -117,9 +117,127 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="String1" xml:space="preserve">
-
-    <value>bloblo</value>
-
+  <data name="DirectoryCopied" xml:space="preserve">
+    <value>Directory copied successfully.</value>
+  </data>
+  <data name="Element" xml:space="preserve">
+    <value>Some Element:</value>
+  </data>
+  <data name="EnterExit" xml:space="preserve">
+    <value>Press ENTER to exit</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exiting EasySave...</value>
+  </data>
+  <data name="FileCopied" xml:space="preserve">
+    <value>File copied successfully.</value>
+  </data>
+  <data name="In" xml:space="preserve">
+    <value>In: </value>
+  </data>
+  <data name="InvalidChoice" xml:space="preserve">
+    <value>Invalid choice</value>
+  </data>
+  <data name="IsRunning" xml:space="preserve">
+    <value>is running...</value>
+  </data>
+  <data name="List" xml:space="preserve">
+    <value>A List:</value>
+  </data>
+  <data name="ListAnswer1" xml:space="preserve">
+    <value>1-3 =&gt; 1 to 3                        |</value>
+  </data>
+  <data name="ListAnswer2" xml:space="preserve">
+    <value>1,3 =&gt; 1 and 3        |</value>
+  </data>
+  <data name="MaxSaveError" xml:space="preserve">
+    <value>Error : You have reached the maximum number of saves</value>
+  </data>
+  <data name="Menu1" xml:space="preserve">
+    <value>| 1 - Plan a save.................................          |</value>
+  </data>
+  <data name="Menu2" xml:space="preserve">
+    <value>| 2 - Run a save..................................          |</value>
+  </data>
+  <data name="Menu3" xml:space="preserve">
+    <value>| 3 - Show Logs...................................          |</value>
+  </data>
+  <data name="Menu4" xml:space="preserve">
+    <value>| 4 - Show state file.............................          |</value>
+  </data>
+  <data name="Menu5" xml:space="preserve">
+    <value>| 5 - Show schedule..............................          |</value>
+  </data>
+  <data name="Menu6" xml:space="preserve">
+    <value>6 - Quit........................................</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="Number1" xml:space="preserve">
+    <value>           1- </value>
+  </data>
+  <data name="Number2" xml:space="preserve">
+    <value>          2- </value>
+  </data>
+  <data name="Number3" xml:space="preserve">
+    <value>          3- </value>
+  </data>
+  <data name="Number4" xml:space="preserve">
+    <value>           4- </value>
+  </data>
+  <data name="Number5" xml:space="preserve">
+    <value>            5- </value>
+  </data>
+  <data name="Out" xml:space="preserve">
+    <value>Out: </value>
+  </data>
+  <data name="PlanSave" xml:space="preserve">
+    <value>Plan a save</value>
+  </data>
+  <data name="Run" xml:space="preserve">
+    <value>|               What do you want to execute?               |</value>
+  </data>
+  <data name="RunSave" xml:space="preserve">
+    <value>Run a save</value>
+  </data>
+  <data name="SaveDate" xml:space="preserve">
+    <value>Date name ?                |</value>
+  </data>
+  <data name="SaveName" xml:space="preserve">
+    <value>Save name ?                |</value>
+  </data>
+  <data name="SaveType" xml:space="preserve">
+    <value>Save type ?                |</value>
+  </data>
+  <data name="SavetypeAnswer1" xml:space="preserve">
+    <value>1 - Complet</value>
+  </data>
+  <data name="SaveTypeAnswer2" xml:space="preserve">
+    <value>2 - Sequential</value>
+  </data>
+  <data name="ShowLogs" xml:space="preserve">
+    <value>Show Logs</value>
+  </data>
+  <data name="ShowSchedule" xml:space="preserve">
+    <value>Show schedule</value>
+  </data>
+  <data name="ShowStateFile" xml:space="preserve">
+    <value>Show state file</value>
+  </data>
+  <data name="SourceDirectory" xml:space="preserve">
+    <value>Source Directory ?            |</value>
+  </data>
+  <data name="SourceError" xml:space="preserve">
+    <value>Source does not exist or is neither a file nor a directory.</value>
+  </data>
+  <data name="TargetFile" xml:space="preserve">
+    <value>Target file ?               |</value>
+  </data>
+  <data name="TypeAnswer1" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="TypeAnswer2" xml:space="preserve">
+    <value>Différential</value>
   </data>
 </root>

@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Formats.Tar;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Resources;
 using System.Threading.Tasks;
 
 namespace App.Core.Services
@@ -15,29 +17,45 @@ namespace App.Core.Services
         private readonly LoggerService loggerService = new LoggerService();
         private readonly StateManagerService stateManagerService = new StateManagerService();
 
+        //TODO A supprimer ici
+        public ResourceManager Resources;
+        public CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+
+        public CopyService() 
+        {
+            //TODO A supprimer ici
+            string nomFichierRessources = cultureInfo.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            Resources = new ResourceManager("App.Cmd." + nomFichierRessources, typeof(CopyService).Assembly);
+
+        }    
+
         public void RunCopy(CopyModel model, SaveModel saveModel, List<SaveModel> saves, List<StateManagerModel> list)
         {
-            Console.WriteLine(saveModel.SaveName + " is running...");
+            string print;
+            print = Resources.GetString("IsRunning");
+            Console.WriteLine(saveModel.SaveName + print);
 
-           
 
-                if (File.Exists(model.SourcePath))
+            if (File.Exists(model.SourcePath))
                 {
                     // File copying operation
                     File.Copy(model.SourcePath, model.TargetPath, true);
-                    Console.WriteLine("File copied successfully.");
+                    print = Resources.GetString("FileCopied");
+                    Console.WriteLine(print);
 
                 }
                 else if (Directory.Exists(model.SourcePath))
                 {
                     // Directory copying operation
                     CopyDirectory(model.SourcePath, model.TargetPath, saveModel, saves, list);
-                    Console.WriteLine("Directory copied successfully.");
+                    print = Resources.GetString("DirectoryCopied");
+                    Console.WriteLine(print);
 
                 }
                 else
                 {
-                    Console.WriteLine("Source does not exist or is neither a file nor a directory.");
+                print = Resources.GetString("SourceError");
+                Console.WriteLine(print);
                     // Log an entry for non-existing source
                 }
             
