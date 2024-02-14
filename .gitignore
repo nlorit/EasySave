@@ -10,3 +10,7 @@
 /App.Core/bin/Debug/net8.0
 /App.Cmd/bin/Release/net8.0
 /App.Core/bin/Release/net8.0
+/App.WPF/obj
+/WpfApp/bin/Release/net8.0-windows
+/WpfApp/obj
+/App.WPF
