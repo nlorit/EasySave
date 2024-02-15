@@ -2,7 +2,6 @@
 using System.Resources;
 using System.Globalization;
 
-
 namespace App.Cmd.Views
 {
     public class SaveView
@@ -12,12 +11,11 @@ namespace App.Cmd.Views
         private readonly ResourceManager Resources;
         private readonly CultureInfo culture = CultureInfo.CurrentCulture;
 
-
         public SaveView()
         {
             ViewModel = new SaveViewModel();
             //Create test saves for the first run
-            ViewModel.TestSaves();
+            //ViewModel.TestSaves();
             //Set the culture
             string ResourceFileName = culture.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
             //Load the resources
@@ -118,7 +116,8 @@ namespace App.Cmd.Views
                         //Return to the main menu
                         return false;
                 }
-            }    
+            }
+
             catch (System.FormatException)
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
@@ -130,7 +129,5 @@ namespace App.Cmd.Views
                 return true;
             }
         }
-
-
     }
 }

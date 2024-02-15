@@ -1,5 +1,4 @@
-﻿
-namespace App.Core.Models
+﻿namespace App.Core.Models
 {
     public class LoggerModel
     {

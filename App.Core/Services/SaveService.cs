@@ -1,19 +1,18 @@
 ﻿using App.Core.Models;
 using System.Resources;
 
-
 namespace App.Core.Services
 {
     public class SaveService
     {
-        
+        private readonly string logFilePath = "saves.json";
+
         public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
         {   //Method to execute the copy service
 
             CopyService copyService = new();
             //Execute the copy service
             copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager, resources);
-
         }
 
         public static void ShowInfo(SaveModel saveModel, ResourceManager resources)
@@ -28,7 +27,6 @@ namespace App.Core.Services
             Output = resources.GetString("Name");
             Console.Write(Output);
             
-
             Console.ResetColor();
             Console.WriteLine(saveModel.SaveName);
 
@@ -38,7 +36,6 @@ namespace App.Core.Services
             Console.Write(Output);
             Console.ResetColor();
             Console.WriteLine(saveModel.InPath);
-
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -64,7 +61,6 @@ namespace App.Core.Services
                 Console.WriteLine(Output);
             }
 
-
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("Date : ");
@@ -72,8 +68,6 @@ namespace App.Core.Services
             Console.WriteLine(saveModel.Date);
   
             Console.WriteLine("+-------------------------------------------------+");
-            
-
         }
     }
 }
