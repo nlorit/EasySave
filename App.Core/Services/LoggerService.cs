@@ -12,6 +12,11 @@ namespace App.Core.Services
             WriteIndented = true
         };
 
+        /// <summary>
+        /// Method to write a log entry
+        /// </summary>
+        /// <param name="loggerModel"></param>
+        /// <param name="saveModel"></param>
         public void WriteLog(LoggerModel loggerModel, SaveModel saveModel)
         {
             // Check for nulls
@@ -32,7 +37,9 @@ namespace App.Core.Services
                 Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Method to open the log file
+        /// </summary>
         public void OpenLogFile()
         {
             // Open the log file in notepad

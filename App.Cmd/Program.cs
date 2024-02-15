@@ -7,7 +7,6 @@ namespace App.Cmd
     {
         static void Main(string[] args)
         {
-            DisplayService displayService = new();
             // Check if the arguments are null
             ArgumentNullException.ThrowIfNull(args);
 

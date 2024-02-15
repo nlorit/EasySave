@@ -12,6 +12,12 @@ namespace App.Core.Services
             WriteIndented = true
         };
 
+        /// <summary>
+        /// Method to write the state to the state file
+        /// </summary>
+        /// <param name="listStateModel"></param>
+        /// <param name="saveModel"></param>
+        /// <param name="listSavesModel"></param>
         public void UpdateState(List<StateManagerModel> listStateModel, SaveModel saveModel, List<SaveModel> listSavesModel)
         {
             //Check for nulls
@@ -50,7 +56,9 @@ namespace App.Core.Services
                 Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Method to open the state file
+        /// </summary>
         public void OpenStateFile()
         {
             // Open the state file in notepad

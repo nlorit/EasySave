@@ -9,6 +9,13 @@ namespace App.Core.Services
         private readonly StateManagerService stateManagerService = new();
    
 
+        /// <summary>
+        /// Method to execute the copy service
+        /// </summary>
+        /// <param name="copyModel"></param>
+        /// <param name="saveModel"></param>
+        /// <param name="listSavesModel"></param>
+        /// <param name="listStateManager"></param>
         public void RunCopy(CopyModel copyModel, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
         {
             string? Output;
@@ -43,6 +50,15 @@ namespace App.Core.Services
            
 
         }
+
+        /// <summary>
+        /// Method to copy a directory
+        /// </summary>
+        /// <param name="sourceDirPath"></param>
+        /// <param name="targetDirPath"></param>
+        /// <param name="saveModel"></param>
+        /// <param name="listSavesModel"></param>
+        /// <param name="listStateManager"></param>
         private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
         {
             // Check for nulls
