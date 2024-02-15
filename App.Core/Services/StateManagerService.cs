@@ -22,7 +22,8 @@ namespace App.Core.Services
             //Clean the file
             FileStream fileStream = File.Open(stateFilePath, FileMode.Open);
             fileStream.SetLength(0);
-            fileStream.Close();
+            fileStream.Dispose();
+            
            
             //Write the new state
             try
