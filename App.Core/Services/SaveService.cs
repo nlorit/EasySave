@@ -6,17 +6,17 @@ namespace App.Core.Services
 {
     public class SaveService
     {
-        
-        public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
+
+        public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
         {   //Method to execute the copy service
 
             CopyService copyService = new();
             //Execute the copy service
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager, resources);
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager);
 
         }
 
-        public static void ShowInfo(SaveModel saveModel, ResourceManager resources)
+        public static void ShowInfo(SaveModel saveModel)
         {
             //Method to show the information of the save
             string? Output;
@@ -25,7 +25,7 @@ namespace App.Core.Services
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Output = resources.GetString("Name");
+            Output = DisplayService.GetResource("Name");
             Console.Write(Output);
             
 
@@ -34,7 +34,7 @@ namespace App.Core.Services
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Output = resources.GetString("In");
+            Output = DisplayService.GetResource("In");
             Console.Write(Output);
             Console.ResetColor();
             Console.WriteLine(saveModel.InPath);
@@ -42,7 +42,7 @@ namespace App.Core.Services
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Output = resources.GetString("Out");
+            Output = DisplayService.GetResource("Out");
             Console.Write(Output);
             Console.ResetColor();
             Console.WriteLine(saveModel.OutPath);
@@ -55,12 +55,12 @@ namespace App.Core.Services
             //Check the type of the save (Complete or Sequentiel)
             if(saveModel.Type == false)
             {
-                Output = resources.GetString("TypeAnswer1");
+                Output = DisplayService.GetResource("TypeAnswer1");
                 Console.WriteLine(Output);
             }
             else
             {
-                Output = resources.GetString("TypeAnswer2");
+                Output = DisplayService.GetResource("TypeAnswer2");
                 Console.WriteLine(Output);
             }
 

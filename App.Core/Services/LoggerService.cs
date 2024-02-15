@@ -32,5 +32,11 @@ namespace App.Core.Services
                 Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
         }
+
+        public void OpenLogFile()
+        {
+            // Open the log file in notepad
+            System.Diagnostics.Process.Start("notepad.exe", logFilePath);
+        }
     }
 }

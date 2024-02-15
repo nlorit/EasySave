@@ -9,8 +9,8 @@ namespace App.Cmd.ViewModels
     {
         private readonly SaveService saveService;
         private readonly StringService stringService;
-        private readonly OpenerService openerService;
         private readonly StateManagerService stateManagerService;
+        private readonly LoggerService loggerService;
         public SaveModel? Model { get; set; }
         public List<SaveModel> ListSaveModel { get; set; } = [];
         public List<StateManagerModel> StateManagerList { get; set; } = [];
@@ -19,8 +19,8 @@ namespace App.Cmd.ViewModels
         {
             stringService = new();
             saveService = new();
-            openerService = new();
             stateManagerService = new();
+            loggerService = new();
 
         }
 
@@ -77,7 +77,70 @@ namespace App.Cmd.ViewModels
             ListSaveModel.Add(Model);
         }
 
-        public bool CreateSave(ResourceManager resources)
+
+
+        public bool UserChoice(int UserEntry)
+        {
+            string? Output;
+ 
+
+            switch (UserEntry)
+            {
+                case 1:
+                    Console.Clear();
+                    Output = DisplayService.GetResource("PlanSave");
+                    Console.WriteLine(Output);
+                    return CreateSave();
+                case 2:
+                    Console.Clear();
+                    Output = DisplayService.GetResource("RunSave");
+                    Console.WriteLine(Output);
+                    RunSave();
+                    return true;
+                case 3:
+                    Console.Clear();
+                    Output = DisplayService.GetResource("ShowLogs");
+                    Console.WriteLine(Output);
+                    ShowLogs();
+                    return true;
+                case 4:
+                    Console.Clear();
+                    Output = DisplayService.GetResource("ShowStateFile");
+                    Console.WriteLine(Output);
+                    ShowStateFile();
+                    return true;
+                case 5:
+                    Console.Clear();
+                    Output = DisplayService.GetResource("ShowSchedule");
+                    Console.WriteLine(Output);
+                    ShowSavesSchedule();
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
+                    return true;
+                case 6:
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Output = DisplayService.GetResource("Exit");
+                    Console.WriteLine(Output);
+                    System.Threading.Thread.Sleep(1000);
+                    Console.ResetColor();
+                    //Exit the program
+                    System.Environment.Exit(0);
+                    return false;
+                default:
+                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Output = DisplayService.GetResource("InvalidChoice");
+                    Console.WriteLine(Output);
+                    Console.ResetColor();
+                    System.Threading.Thread.Sleep(1500);
+                    //Return to the main menu
+                    return false;
+            }
+        }
+
+
+
+        public bool CreateSave()
         {
             //Method to create a save
             string? Output;
@@ -89,10 +152,10 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Output = resources.GetString("Number1");
+                Output = DisplayService.GetResource("Number1");
                 Console.Write(Output);
                 Console.ResetColor();
-                Output = resources.GetString("SourceDirectory");
+                Output = DisplayService.GetResource("SourceDirectory");
                 Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
@@ -104,10 +167,10 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Output = resources.GetString("Number2");
+                Output = DisplayService.GetResource("Number2");
                 Console.Write(Output);
                 Console.ResetColor();
-                Output = resources.GetString("TargetFile");
+                Output = DisplayService.GetResource("TargetFile");
                 Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
@@ -118,16 +181,16 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Output = resources.GetString("Number3");
+                Output = DisplayService.GetResource("Number3");
                 Console.Write(Output);
                 Console.ResetColor();
-                Output = resources.GetString("SaveType");
+                Output = DisplayService.GetResource("SaveType");
                 Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
-                Output = resources.GetString("SaveTypeAnswer1");
+                Output = DisplayService.GetResource("SaveTypeAnswer1");
                 Console.WriteLine(Output);
-                Output = resources.GetString("SaveTypeAnswer2");
+                Output = DisplayService.GetResource("SaveTypeAnswer2");
                 Console.WriteLine(Output);
                 Console.WriteLine("");
 
@@ -149,10 +212,10 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Output = resources.GetString("Number4");
+                Output = DisplayService.GetResource("Number4");
                 Console.Write(Output);
                 Console.ResetColor();
-                Output = resources.GetString("SaveName");
+                Output = DisplayService.GetResource("SaveName");
                 Console.WriteLine(Output);
                 Console.WriteLine("+---------------------------------------------+");
                 Console.WriteLine("");
@@ -163,10 +226,10 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+");
                 Console.Write("| ");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Output = resources.GetString("Number5");
+                Output = DisplayService.GetResource("Number5");
                 Console.Write(Output);
                 Console.ResetColor();
-                Output = resources.GetString("SaveDate");
+                Output = DisplayService.GetResource("SaveDate");
                 Console.WriteLine(Output);
                 Console.WriteLine("|---------------------------------------------|");
                 Console.Write("| ");
@@ -184,7 +247,7 @@ namespace App.Cmd.ViewModels
                                                   string.IsNullOrEmpty(Model.SaveName))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Output = resources.GetString("ErrorEmptySave");
+                    Output = DisplayService.GetResource("ErrorEmptySave");
                     Console.WriteLine(Output);
                     Console.ResetColor();
                     System.Threading.Thread.Sleep(2000);
@@ -201,7 +264,7 @@ namespace App.Cmd.ViewModels
             {
                 //If the list of saves is full
                 Console.ForegroundColor = ConsoleColor.Red;
-                Output = resources.GetString("MaxSaveError");
+                Output = DisplayService.GetResource("MaxSaveError");
                 Console.WriteLine(Output);
                 Console.ResetColor();
                 System.Threading.Thread.Sleep(2000);
@@ -212,28 +275,28 @@ namespace App.Cmd.ViewModels
         }
 
 
-        public void RunSave(ResourceManager resources)
+        public void RunSave()
         {
             string? Output;
             Console.WriteLine("");
             Console.WriteLine("+----------------------------------------------------------+");
-            Output = resources.GetString("Run");
+            Output = DisplayService.GetResource("Run");
             Console.WriteLine(Output);
             Console.WriteLine("|----------------------------------------------------------|");
             Console.WriteLine("|                                                          |");
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Output = resources.GetString("List");
+            Output = DisplayService.GetResource("List");
             Console.Write(Output);
             Console.ResetColor();
-            Output = resources.GetString("ListAnswer1");
+            Output = DisplayService.GetResource("ListAnswer1");
             Console.WriteLine(Output);
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Output = resources.GetString("Element");
+            Output = DisplayService.GetResource("Element");
             Console.Write(Output);
             Console.ResetColor();
-            Output = resources.GetString("ListAnswer2");
+            Output = DisplayService.GetResource("ListAnswer2");
             Console.WriteLine(Output);
             Console.WriteLine("|                                                          |");
             Console.WriteLine("+----------------------------------------------------------+");
@@ -246,23 +309,23 @@ namespace App.Cmd.ViewModels
                 switch (isCommaSeparatedOrHyphen)
                 {
                     case true:
-                        ProcessCommaSeparatedInput(UserEntry!, resources);
+                        ProcessCommaSeparatedInput(UserEntry!);
                         break;
 
                     case false:
-                        ProcessHyphenSeparatedInput(UserEntry!, resources);
+                        ProcessHyphenSeparatedInput(UserEntry!);
                         break;
                 }
 
             }
             catch (System.IndexOutOfRangeException)
             {
-                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList, resources);
+                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList);
             }
 
         }
 
-        private void ProcessCommaSeparatedInput(string input, ResourceManager resources)
+        private void ProcessCommaSeparatedInput(string input)
         {
             //Method to process the input if it is comma separated
             string[] CommaSeparatedParts = input.Split(',');
@@ -270,45 +333,45 @@ namespace App.Cmd.ViewModels
             int End = int.Parse(CommaSeparatedParts[1]);
 
             //Execute the copy service to First and Last save
-            SaveService.ExecuteCopy(ListSaveModel[Start - 1], ListSaveModel, StateManagerList, resources);
-            SaveService.ExecuteCopy(ListSaveModel[End - 1], ListSaveModel, StateManagerList, resources);
+            SaveService.ExecuteCopy(ListSaveModel[Start - 1], ListSaveModel, StateManagerList);
+            SaveService.ExecuteCopy(ListSaveModel[End - 1], ListSaveModel, StateManagerList);
         }
 
-        private void ProcessHyphenSeparatedInput(string Input, ResourceManager Resources)
+        private void ProcessHyphenSeparatedInput(string Input)
         {
             //Method to process the input if it is hyphen separated
             string[] HyphenSeparatedParts = Input.Split('-');
             //Execute the copy service to the range of saves
             for (int i = int.Parse(HyphenSeparatedParts[0]) - 1; i <= int.Parse(HyphenSeparatedParts[1]) - 1; i++)
             {
-                SaveService.ExecuteCopy(ListSaveModel[i], ListSaveModel, StateManagerList, Resources);
+                SaveService.ExecuteCopy(ListSaveModel[i], ListSaveModel, StateManagerList);
             }
         }
 
         public void ShowLogs()
         {
             //Method to show the logs
-            openerService.OpenLogFile();
+            loggerService.OpenLogFile();
 
         }
 
         public void ShowStateFile()
         {
             //Method to show the state file
-            openerService.OpenStateFile();
+            stateManagerService.OpenStateFile();
         }
 
-        public void ShowSavesSchedule(ResourceManager Resources)
+        public void ShowSavesSchedule()
         {
             string? Output;
             //Method to show the saves schedule
             foreach (SaveModel item in ListSaveModel)
             {
-                SaveService.ShowInfo(item, Resources);
+                SaveService.ShowInfo(item);
             }
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("");
-            Output = Resources.GetString("EnterExit");
+            Output = DisplayService.GetResource("EnterExit");
             Console.WriteLine(Output);
             Console.ResetColor();
         }

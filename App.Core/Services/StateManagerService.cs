@@ -50,5 +50,11 @@ namespace App.Core.Services
                 Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
         }
+
+        public void OpenStateFile()
+        {
+            // Open the state file in notepad
+            System.Diagnostics.Process.Start("notepad.exe", stateFilePath);
+        }
     }
 }

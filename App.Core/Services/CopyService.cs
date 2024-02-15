@@ -9,10 +9,10 @@ namespace App.Core.Services
         private readonly StateManagerService stateManagerService = new();
    
 
-        public void RunCopy(CopyModel copyModel, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
+        public void RunCopy(CopyModel copyModel, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
         {
             string? Output;
-            Output = resources.GetString("IsRunning");
+            Output = DisplayService.GetResource("IsRunning");
             Console.WriteLine(saveModel.SaveName + Output);
 
             // Check if the source path exists
@@ -20,7 +20,7 @@ namespace App.Core.Services
             {
                 // File copying operation
                 File.Copy(copyModel.SourcePath, copyModel.TargetPath, true);
-                Output = resources.GetString("FileCopied");
+                Output = DisplayService.GetResource("FileCopied");
                 Console.WriteLine(Output);
 
             }
@@ -28,22 +28,22 @@ namespace App.Core.Services
             else if (Directory.Exists(copyModel.SourcePath))
             {
                 // Directory copying operation
-                CopyDirectory(copyModel.SourcePath, copyModel.TargetPath, saveModel, listSavesModel, listStateManager, resources);
-                Output = resources.GetString("DirectoryCopied");
+                CopyDirectory(copyModel.SourcePath, copyModel.TargetPath, saveModel, listSavesModel, listStateManager);
+                Output = DisplayService.GetResource("DirectoryCopied");
                 Console.WriteLine(Output);
 
             }
             // If the source path does not exist
             else
             {
-                Output = resources.GetString("SourceError");
+                Output = DisplayService.GetResource("SourceError");
                 Console.WriteLine(Output);
             }
             
            
 
         }
-        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager, ResourceManager resources)
+        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
         {
             // Check for nulls
             ArgumentNullException.ThrowIfNull(sourceDirPath);
@@ -51,7 +51,6 @@ namespace App.Core.Services
             ArgumentNullException.ThrowIfNull(saveModel);
             ArgumentNullException.ThrowIfNull(listSavesModel);
             ArgumentNullException.ThrowIfNull(listStateManager);
-            ArgumentNullException.ThrowIfNull(resources);
 
             // Get the total number of files and the total size of the files
             int TotalFilesCount = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length;
