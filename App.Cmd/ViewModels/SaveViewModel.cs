@@ -28,8 +28,8 @@ namespace App.Cmd.ViewModels
         {
             Model = new SaveModel
             {
-                InPath = "C:/Users/Nathan/Desktop/AnnivNathan",
-                OutPath = "C:/Users/Nathan/Desktop/AnnivNathan2",
+                InPath = "C:/Users/Julien/Documents/Autres",
+                OutPath = "C:/Users/Julien/Documents/Autres2",
                 Type = false,
                 SaveName = "Save1",
                 Date = DateTime.Parse("02/05/2024 10:00:00")
