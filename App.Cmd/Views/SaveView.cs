@@ -10,7 +10,6 @@ namespace App.Cmd.Views
     { 
         public SaveViewModel ViewModel;
 
-       
         public SaveView()
         {
             ViewModel = new SaveViewModel();
@@ -22,26 +21,17 @@ namespace App.Cmd.Views
         {
             //Display the main menu
             DisplayService.DisplayMenu();
-            string? Output;
             //User choice
-
-            try 
-            { 
+            try
+            {
                 return ViewModel.UserChoice(Convert.ToInt32(Console.ReadLine()));
             }
-
             catch (System.FormatException)
             {
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Output = DisplayService.GetResource("InvalidChoice");
-                Console.WriteLine(Output);
-                Console.ResetColor();
+                DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
                 System.Threading.Thread.Sleep(1500);
                 return true;
             }
         }
-
-
     }
 }

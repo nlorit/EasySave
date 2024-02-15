@@ -44,10 +44,66 @@ namespace App.Core.Services
             Console.WriteLine(text);
             Console.ResetColor();
         }
-
+        /// <summary>
+        /// Method to display the text in the specified color
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="text"></param>
         public static void SetBackgrounfColor(string color, string text)
         {
             Console.BackgroundColor = color switch
+            {
+                "Red" => ConsoleColor.Red,
+                "Green" => ConsoleColor.Green,
+                "Yellow" => ConsoleColor.Yellow,
+                "Blue" => ConsoleColor.Blue,
+                "Cyan" => ConsoleColor.Cyan,
+                "Magenta" => ConsoleColor.Magenta,
+                "White" => ConsoleColor.White,
+                "DarkRed" => ConsoleColor.DarkRed,
+                "DarkGreen" => ConsoleColor.DarkGreen,
+                "DarkYellow" => ConsoleColor.DarkYellow,
+                "DarkBlue" => ConsoleColor.DarkBlue,
+                "DarkCyan" => ConsoleColor.DarkCyan,
+                "DarkMagenta" => ConsoleColor.DarkMagenta,
+                "Gray" => ConsoleColor.Gray,
+                "DarkGray" => ConsoleColor.DarkGray,
+                "Black" => ConsoleColor.Black,
+                _ => ConsoleColor.White,
+            };
+            Console.WriteLine(text);
+            Console.ResetColor();
+        }
+        /// <summary>
+        /// Method to display the text in the specified color
+        /// </summary>
+        /// <param name="fore"></param>
+        /// <param name="back"></param>
+        /// <param name="text"></param>
+        public static void SetBackForeColor(string fore, string back, string text)
+        {
+            Console.BackgroundColor = back switch
+            {
+                "Red" => ConsoleColor.Red,
+                "Green" => ConsoleColor.Green,
+                "Yellow" => ConsoleColor.Yellow,
+                "Blue" => ConsoleColor.Blue,
+                "Cyan" => ConsoleColor.Cyan,
+                "Magenta" => ConsoleColor.Magenta,
+                "White" => ConsoleColor.White,
+                "DarkRed" => ConsoleColor.DarkRed,
+                "DarkGreen" => ConsoleColor.DarkGreen,
+                "DarkYellow" => ConsoleColor.DarkYellow,
+                "DarkBlue" => ConsoleColor.DarkBlue,
+                "DarkCyan" => ConsoleColor.DarkCyan,
+                "DarkMagenta" => ConsoleColor.DarkMagenta,
+                "Gray" => ConsoleColor.Gray,
+                "DarkGray" => ConsoleColor.DarkGray,
+                "Black" => ConsoleColor.Black,
+                _ => ConsoleColor.White,
+            };
+
+            Console.ForegroundColor = fore switch
             {
                 "Red" => ConsoleColor.Red,
                 "Green" => ConsoleColor.Green,
@@ -132,7 +188,7 @@ namespace App.Core.Services
             string baseName = "App.Core.Resources." + resourceFileName;
 
             // Load the resources
-            ResourceManager resources = new ResourceManager(baseName, typeof(DisplayService).Assembly);
+            ResourceManager resources = new(baseName, typeof(DisplayService).Assembly);
             return resources.GetString(key);
         }
 
