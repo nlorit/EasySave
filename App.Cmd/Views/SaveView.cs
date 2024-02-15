@@ -17,6 +17,10 @@ namespace App.Cmd.Views
             ViewModel.TestSaves();
         }
 
+        /// <summary>
+        /// Method to initialize the view
+        /// </summary>
+        /// <returns></returns>
         public bool Initialize()
         {
             //Display the main menu

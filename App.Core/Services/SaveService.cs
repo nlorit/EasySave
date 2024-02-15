@@ -6,7 +6,12 @@ namespace App.Core.Services
 {
     public class SaveService
     {
-
+        /// <summary>
+        /// Method to execute the copy service
+        /// </summary>
+        /// <param name="saveModel"></param>
+        /// <param name="listSavesModel"></param>
+        /// <param name="listStateManager"></param>
         public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
         {   //Method to execute the copy service
 
@@ -16,6 +21,10 @@ namespace App.Core.Services
 
         }
 
+        /// <summary>
+        /// Method to show the information of the save
+        /// </summary>
+        /// <param name="saveModel"></param>
         public static void ShowInfo(SaveModel saveModel)
         {
             //Method to show the information of the save

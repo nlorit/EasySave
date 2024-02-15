@@ -1,19 +1,22 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
 using System.Resources;
+using System.Text.RegularExpressions;
 
 
 namespace App.Cmd.ViewModels
 {
-    public class SaveViewModel
+
+    public partial class SaveViewModel
     {
         private readonly SaveService saveService;
-        private readonly StringService stringService;
         private readonly StateManagerService stateManagerService;
         private readonly LoggerService loggerService;
         public SaveModel? Model { get; set; }
         public List<SaveModel> ListSaveModel { get; set; } = [];
         public List<StateManagerModel> StateManagerList { get; set; } = [];
+        [GeneratedRegex(@"^\d+,\d+$")]
+        private static partial Regex MyRegex();
 
         public enum TypeOfSave
         {
@@ -21,16 +24,19 @@ namespace App.Cmd.ViewModels
             Complete
         }
 
-
+        /// <summary>
+        /// Constructor of the SaveViewModel
+        /// </summary>
         public SaveViewModel()
         {
-            stringService = new();
             saveService = new();
             stateManagerService = new();
             loggerService = new();
 
         }
-
+        /// <summary>
+        /// Method to test the saves
+        /// </summary>
         public void TestSaves() //Jeux de test
         {
             Model = new SaveModel
@@ -84,6 +90,12 @@ namespace App.Cmd.ViewModels
             ListSaveModel.Add(Model);
         }
 
+
+        /// <summary>
+        /// Method to get the user choice
+        /// </summary>
+        /// <param name="UserEntry"></param>
+        /// <returns></returns>
         public bool UserChoice(int UserEntry)
         {
             switch (UserEntry)
@@ -126,7 +138,10 @@ namespace App.Cmd.ViewModels
                     return false;
             }
         }
-
+        /// <summary>
+        ///  Method to create a save
+        /// </summary>
+        /// <returns></returns>
         public bool CreateSave()
         {
             //Method to create a save
@@ -323,7 +338,9 @@ namespace App.Cmd.ViewModels
             return true;
         }
 
-
+        /// <summary>
+        /// Method to run a save
+        /// </summary>
         public void RunSave()
         {
             Console.WriteLine("\n+----------------------------------------------------------+");
@@ -348,7 +365,7 @@ namespace App.Cmd.ViewModels
             try
             {
                 //TODO : Revoir ça 
-                bool isCommaSeparatedOrHyphen = StringService.IsCommaSeparatedOrHyphen(UserEntry!);
+                bool isCommaSeparatedOrHyphen = MyRegex().IsMatch(UserEntry!);
                 switch (isCommaSeparatedOrHyphen)
                 {
                     case true:
@@ -367,7 +384,10 @@ namespace App.Cmd.ViewModels
             }
 
         }
-
+        /// <summary>
+        /// Method to process the input if it is comma separated
+        /// </summary>
+        /// <param name="input"></param>
         private void ProcessCommaSeparatedInput(string input)
         {
             //Method to process the input if it is comma separated
@@ -380,6 +400,10 @@ namespace App.Cmd.ViewModels
             SaveService.ExecuteCopy(ListSaveModel[End - 1], ListSaveModel, StateManagerList);
         }
 
+        /// <summary>
+        /// Method to process the input if it is hyphen separated
+        /// </summary>
+        /// <param name="Input"></param>
         private void ProcessHyphenSeparatedInput(string Input)
         {
             //Method to process the input if it is hyphen separated
@@ -391,6 +415,9 @@ namespace App.Cmd.ViewModels
             }
         }
 
+        /// <summary>
+        /// Method to show the logs
+        /// </summary>
         public void ShowLogs()
         {
             //Method to show the logs
@@ -398,12 +425,18 @@ namespace App.Cmd.ViewModels
 
         }
 
+        /// <summary>
+        /// Method to show the state file
+        /// </summary>
         public void ShowStateFile()
         {
             //Method to show the state file
             stateManagerService.OpenStateFile();
         }
 
+        /// <summary>
+        /// Method to show the saves schedule
+        /// </summary>
         public void ShowSavesSchedule()
         {
             //Method to show the saves schedule
@@ -414,6 +447,6 @@ namespace App.Cmd.ViewModels
             DisplayService.SetForegroundColor("Gray", "\n"+DisplayService.GetResource("EnterExit")!);
         }
 
-
+        
     }
 }
