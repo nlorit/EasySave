@@ -8,4 +8,36 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Font\Poppins\Poppins-Black.ttf" />
+    <None Remove="Pictures\iconExit.png" />
+    <None Remove="Pictures\iconHome.png" />
+    <None Remove="Pictures\iconHomeSelected.png" />
+    <None Remove="Pictures\iconLanguage.png" />
+    <None Remove="Pictures\iconLogs.png" />
+    <None Remove="Pictures\iconMenu.png" />
+    <None Remove="Pictures\iconMoon.png" />
+    <None Remove="Pictures\iconPlanSave.png" />
+    <None Remove="Pictures\iconRealTime.png" />
+    <None Remove="Pictures\iconRunSave.png" />
+    <None Remove="Pictures\iconShowSave.png" />
+    <None Remove="Pictures\logoEasySave.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Font\Poppins\Poppins-Black.ttf" />
+    <Resource Include="Pictures\iconExit.png" />
+    <Resource Include="Pictures\iconHome.png" />
+    <Resource Include="Pictures\iconHomeSelected.png" />
+    <Resource Include="Pictures\iconLanguage.png" />
+    <Resource Include="Pictures\iconLogs.png" />
+    <Resource Include="Pictures\iconMenu.png" />
+    <Resource Include="Pictures\iconMoon.png" />
+    <Resource Include="Pictures\iconPlanSave.png" />
+    <Resource Include="Pictures\iconRealTime.png" />
+    <Resource Include="Pictures\iconRunSave.png" />
+    <Resource Include="Pictures\iconShowSave.png" />
+    <Resource Include="Pictures\logoEasySave.png" />
+  </ItemGroup>
+
 </Project>
