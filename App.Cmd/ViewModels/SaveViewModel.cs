@@ -103,11 +103,14 @@ namespace App.Cmd.ViewModels
                 case 1:
                     Console.Clear();
                     Console.WriteLine(DisplayService.GetResource("PlanSave"));
-                    return CreateSave();
+                    CreateSave();
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
+                    return true;
                 case 2:
                     Console.Clear();
                     Console.WriteLine(DisplayService.GetResource("RunSave"));
                     RunSave();
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                     return true;
                 case 3:
                     Console.Clear();
@@ -142,7 +145,7 @@ namespace App.Cmd.ViewModels
         ///  Method to create a save
         /// </summary>
         /// <returns></returns>
-        public bool CreateSave()
+        public void CreateSave()
         {
             //Method to create a save
 
@@ -327,9 +330,8 @@ namespace App.Cmd.ViewModels
             ListSaveModel.Add(Model);
 
 
-
+            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
             //Return to the main menu
-            return true;
         }
 
         /// <summary>
@@ -376,6 +378,7 @@ namespace App.Cmd.ViewModels
             {
                 SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList);
             }
+            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
 
         }
         /// <summary>
