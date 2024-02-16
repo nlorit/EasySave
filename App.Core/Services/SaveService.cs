@@ -1,4 +1,6 @@
 ﻿using App.Core.Models;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Resources;
 
 namespace App.Core.Services
@@ -11,15 +13,33 @@ namespace App.Core.Services
         /// <param name="saveModel"></param>
         /// <param name="listSavesModel"></param>
         /// <param name="listStateManager"></param>
-        public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
+        public static void ExecuteCopy(SaveModel saveModel)
 
         {   //Method to execute the copy service
 
             CopyService copyService = new();
             //Execute the copy service
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager);
+            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel);
 
 
+        }
+
+        public ObservableCollection<SaveModel> LoadSave()
+        {
+            ObservableCollection<SaveModel> ListSaveModel = new ObservableCollection<SaveModel>();
+
+            if (File.Exists("saves.json"))
+            {
+                string json = File.ReadAllText("saves.json");
+                ListSaveModel = JsonConvert.DeserializeObject<ObservableCollection<SaveModel>>(json)!;
+            }
+            else
+            {
+                // Create the file if it doesn't exist
+                File.WriteAllText("saves.json", "[]");
+            }
+
+            return ListSaveModel;
         }
 
         /// <summary>
@@ -73,6 +93,11 @@ namespace App.Core.Services
             Console.WriteLine(saveModel.Date);
   
             Console.WriteLine("+-------------------------------------------------+");
+        }
+
+        public void Get()
+        {
+           
         }
     }
 }

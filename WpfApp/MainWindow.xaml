@@ -16,7 +16,7 @@
         
         <Border Grid.Column="0" Background="White">
             <local:Menu></local:Menu>
-            
+
         </Border>
 
         <Border Grid.Column="1" Background="#f2f5fa">

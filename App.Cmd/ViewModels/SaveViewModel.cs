@@ -116,31 +116,31 @@ namespace App.Cmd.ViewModels
             {
 
 
-
                 //Create a new save
                 Model = new();
-                Console.WriteLine("\n+---------------------------------------------+");
-                Console.Write("| ");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write(DisplayService.GetResource("Number1"));
-                Console.ResetColor();
-                Console.WriteLine(DisplayService.GetResource("SourceDirectory"));
-                Console.WriteLine("+---------------------------------------------+\n");
-                //Get the source directory
 
-                do
+
+                bool exist = false;
+                while (exist == false)
                 {
-                    try
+                    Console.WriteLine("\n+---------------------------------------------+");
+                    Console.Write("| ");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write(DisplayService.GetResource("Number1"));
+                    Console.ResetColor();
+                    Console.WriteLine(DisplayService.GetResource("SourceDirectory"));
+                    Console.WriteLine("+---------------------------------------------+\n");
+                    Model.InPath = Console.ReadLine()!;
+                    if (!Directory.Exists(Model.InPath))
                     {
-                        Model.InPath = Console.ReadLine()!;
+                        Console.WriteLine("Invalid Path");
+                        exist = false;
                     }
-                    catch (ArgumentNullException)
+                    else
                     {
-                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                        System.Threading.Thread.Sleep(1500);
-                        continue; // Go back to the start of the loop to prompt for input again
+                        exist = true;
                     }
-                } while (Model.InPath == null || Model.InPath.Trim() == "");
+                }
 
 
 
@@ -155,6 +155,7 @@ namespace App.Cmd.ViewModels
 
                 //Get the target directory
                 //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
+
 
                 do
                 {
@@ -224,16 +225,28 @@ namespace App.Cmd.ViewModels
                     }
                 } while (Model.SaveName == null || Model.SaveName.Trim() == "");
 
+                Model.Date = DateTime.Now;
 
-            Model.Date = DateTime.Now;
-            //Create the state of the save
-            
-            StateManagerList.Add(Model.StateManager);
-            //Add the save to the list
-            ListSaveModel.Add(Model);
+                //Create the state of the save
+                StateManagerList.Add(Model.StateManager);
+                //Add the save to the list
+                ListSaveModel.Add(Model);
 
-            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
+
+                string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
+                File.WriteAllText("saves.json", saves);
+            }
+            else
+            {
+                //If the list of saves is full
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(DisplayService.GetResource("MaxSaveError"));
+                Console.ResetColor();
+                System.Threading.Thread.Sleep(2000);
+            }
+
             //Return to the main menu
+            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
         }
 
 
@@ -280,9 +293,8 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException)
             {
-                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList);
+                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1]);
             }
-
 
             DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
 
@@ -300,8 +312,8 @@ namespace App.Cmd.ViewModels
             int End = int.Parse(CommaSeparatedParts[1]);
 
             //Execute the copy service to First and Last save
-            SaveService.ExecuteCopy(ListSaveModel[Start - 1], ListSaveModel, StateManagerList);
-            SaveService.ExecuteCopy(ListSaveModel[End - 1], ListSaveModel, StateManagerList);
+            SaveService.ExecuteCopy(ListSaveModel[Start - 1]);
+            SaveService.ExecuteCopy(ListSaveModel[End - 1]);
         }
 
         /// <summary>
@@ -315,7 +327,7 @@ namespace App.Cmd.ViewModels
             //Execute the copy service to the range of saves
             for (int i = int.Parse(HyphenSeparatedParts[0]) - 1; i <= int.Parse(HyphenSeparatedParts[1]) - 1; i++)
             {
-                SaveService.ExecuteCopy(ListSaveModel[i], ListSaveModel, StateManagerList);
+                SaveService.ExecuteCopy(ListSaveModel[i]);
             }
         }
 

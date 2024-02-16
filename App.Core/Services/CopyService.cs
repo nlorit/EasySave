@@ -15,7 +15,7 @@ namespace App.Core.Services
         /// <param name="saveModel"></param>
         /// <param name="listSavesModel"></param>
         /// <param name="listStateManager"></param>
-        public void RunCopy(CopyModel copyModel, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
+        public void RunCopy(CopyModel copyModel, SaveModel saveModel)
         {
             string? Output;
             Output = DisplayService.GetResource("IsRunning");
@@ -34,7 +34,7 @@ namespace App.Core.Services
             else if (Directory.Exists(copyModel.SourcePath))
             {
                 // Directory copying operation
-                CopyDirectory(copyModel.SourcePath, copyModel.TargetPath, saveModel, listSavesModel, listStateManager);
+                CopyDirectory(copyModel.SourcePath, copyModel.TargetPath, saveModel);
                 Output = DisplayService.GetResource("DirectoryCopied");
                 Console.WriteLine(Output);
 
@@ -55,15 +55,13 @@ namespace App.Core.Services
         /// <param name="saveModel"></param>
         /// <param name="listSavesModel"></param>
         /// <param name="listStateManager"></param>
-        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
+        private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel)
 
         {
             // Check for nulls
             ArgumentNullException.ThrowIfNull(sourceDirPath);
             ArgumentNullException.ThrowIfNull(targetDirPath);
             ArgumentNullException.ThrowIfNull(saveModel);
-            ArgumentNullException.ThrowIfNull(listSavesModel);
-            ArgumentNullException.ThrowIfNull(listStateManager);
 
             // Get the total number of files and the total size of the files
             int TotalFilesCount = Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length;
@@ -81,7 +79,7 @@ namespace App.Core.Services
             saveModel.StateManager.Progression = (Percentage / Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories).Length);
             try
             {
-                stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
+                //stateManagerService.UpdateState(listStateManager, saveModel);
             }
             catch (Exception e)
             {
@@ -122,7 +120,7 @@ namespace App.Core.Services
 
                 try
                 {
-                    stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
+                    //stateManagerService.UpdateState(listStateManager, saveModel);
                 }
                 catch (Exception e)
                 {
@@ -132,7 +130,7 @@ namespace App.Core.Services
 
             // Update the state manager
             saveModel.StateManager.State = "END";
-            stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
+            //stateManagerService.UpdateState(listStateManager, saveModel);
         }
     }
 }

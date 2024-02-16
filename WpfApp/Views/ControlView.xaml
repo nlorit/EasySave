@@ -3,16 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:WpfApp.Views"
+             xmlns:viewmodels="clr-namespace:WpfApp.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <viewmodels:ListViewModel/>
+    </UserControl.DataContext>
     <Grid>
         <DockPanel>
-            <Button Height="25" Width="100" Margin="0,0,0,0" >Create</Button>
-            <Button Height="25" Width="100">Execute</Button>
-            <Button Height="25" Width="100">Pause</Button>
-            <Button Height="25" Width="100" Margin="0,0,0,0">Stop</Button>
-            <Button Height="25" Width="100">Resume</Button>
+            <Button Height="25" Width="100" Margin="0,0,0,0" Command="{Binding CreateCommand}" Content="Create"/>
+            <Button Height="25" Width="100" Command="{Binding ExecuteCommand}" Content="Execute"/>
+            <Button Height="25" Width="100" Command="{Binding RefreshCommand}" Content="Refresh" />
+            <Button Height="25" Width="100" Content="Pause"/>
+            <Button Height="25" Width="100" Margin="0,0,0,0" Content="Stop"/>
+            <Button Height="25" Width="100" Content="Resume"/>
         </DockPanel>
     </Grid>
 </UserControl>
