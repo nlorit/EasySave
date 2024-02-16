@@ -18,12 +18,11 @@ namespace App.Core.Services
         /// <param name="listStateModel"></param>
         /// <param name="saveModel"></param>
         /// <param name="listSavesModel"></param>
-        public void UpdateState(List<StateManagerModel> listStateModel, SaveModel saveModel, List<SaveModel> listSavesModel)
+        public void UpdateState(List<StateManagerModel> listStateModel, SaveModel saveModel)
         {
             //Check for nulls
             ArgumentNullException.ThrowIfNull(listStateModel);
             ArgumentNullException.ThrowIfNull(saveModel);
-            ArgumentNullException.ThrowIfNull(listSavesModel);
 
             //Clean the file
             FileStream fileStream = File.Open(stateFilePath, FileMode.Open);
@@ -38,7 +37,7 @@ namespace App.Core.Services
                 foreach (StateManagerModel stateModel in listStateModel)
                 {
                     //Set the state model properties
-                    stateModel.SaveName = listSavesModel[i].SaveName;
+                    //stateModel.SaveName = listSavesModel[i].SaveName;
                     //Serialize the state model to JSON
                     string stateEntry = JsonSerializer.Serialize(stateModel, options)+",";
                     using (StreamWriter stateWriter = File.AppendText(stateFilePath))

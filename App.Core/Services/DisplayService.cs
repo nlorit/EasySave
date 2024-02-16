@@ -184,6 +184,7 @@ namespace App.Core.Services
         /// <returns></returns>
         public static string? GetResource(string key)
         {
+            //TODO : Gestion des ressources pour l'instanciation de la classe
             string resourceFileName = CultureInfo.CurrentCulture.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
             string baseName = "App.Core.Resources." + resourceFileName;
 

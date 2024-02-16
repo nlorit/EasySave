@@ -1,8 +1,7 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
-using System.Resources;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-
 
 namespace App.Cmd.ViewModels
 {
@@ -18,6 +17,25 @@ namespace App.Cmd.ViewModels
         [GeneratedRegex(@"^\d+,\d+$")]
         private static partial Regex MyRegex();
 
+        public List<SaveModel> ChargerSauvegardes()
+        {
+            if (File.Exists("saves.json"))
+            {
+                string json = File.ReadAllText("saves.json");
+                ListSaveModel = JsonConvert.DeserializeObject<List<SaveModel>>(json)!;
+                Console.WriteLine(ListSaveModel);
+                return ListSaveModel;  // Ajoutez cette ligne pour retourner la liste après la désérialisation.
+            }
+            else
+            {
+                // Créer le fichier s'il n'existe pas
+                File.WriteAllText("saves.json", "[]");
+                return [];
+            }
+        }
+
+
+
         public enum TypeOfSave
         {
             Sequential,
@@ -27,67 +45,13 @@ namespace App.Cmd.ViewModels
         /// <summary>
         /// Constructor of the SaveViewModel
         /// </summary>
+
         public SaveViewModel()
         {
             saveService = new();
             stateManagerService = new();
             loggerService = new();
 
-        }
-        /// <summary>
-        /// Method to test the saves
-        /// </summary>
-        public void TestSaves() //Jeux de test
-        {
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Nathan/Desktop/AnnivNathan",
-                OutPath = "C:/Users/Nathan/Desktop/AnnivNathan2",
-                Type = "Complete",
-                SaveName = "Save1",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
-
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
-
-
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Nathan/Desktop/safran2",
-                OutPath = "C:/Users/Nathan/Desktop/safran3",
-                Type = "Complete",
-                SaveName = "Save2",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
-
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
-
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Nathan/Desktop/safran2",
-                OutPath = "C:/Users/Nathan/Desktop/safran3",
-                Type = "Complete",
-                SaveName = "Save3",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
-
-
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
-
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Utilisateur/Documents/Projet/IN",
-                OutPath = "C:/Users/Utilisateur/Documents/Projet/OUT",
-                Type = "Complete",
-                SaveName = "Save4",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
-
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
         }
 
 
@@ -163,6 +127,7 @@ namespace App.Cmd.ViewModels
                 Console.WriteLine("+---------------------------------------------+\n");
                 //Get the source directory
 
+
                 bool exist = false;
                 while (exist == false)
                 {
@@ -198,6 +163,7 @@ namespace App.Cmd.ViewModels
 
                 //Get the target directory
                 //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
+
 
                 do
                 {
@@ -268,16 +234,29 @@ namespace App.Cmd.ViewModels
                 } while (Model.SaveName == null || Model.SaveName.Trim() == "");
 
                 Model.Date = DateTime.Now;
+
                 //Create the state of the save
                 StateManagerList.Add(Model.StateManager);
                 //Add the save to the list
                 ListSaveModel.Add(Model);
 
 
-                DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
-                //Return to the main menu
+                string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
+                File.WriteAllText("saves.json", saves);
             }
+            else
+            {
+                //If the list of saves is full
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(DisplayService.GetResource("MaxSaveError"));
+                Console.ResetColor();
+                System.Threading.Thread.Sleep(2000);
+            }
+
+            //Return to the main menu
+            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
         }
+
 
         /// <summary>
         /// Method to run a save
@@ -299,6 +278,7 @@ namespace App.Cmd.ViewModels
             Console.ResetColor();
             Console.WriteLine(DisplayService.GetResource("ListAnswer2"));
             Console.WriteLine("|                                                          |");
+
             Console.WriteLine("+----------------------------------------------------------+\n");
 
             //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
@@ -321,9 +301,11 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException)
             {
-                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList);
+                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1]);
             }
+
             DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
+
 
         }
         /// <summary>
@@ -338,8 +320,8 @@ namespace App.Cmd.ViewModels
             int End = int.Parse(CommaSeparatedParts[1]);
 
             //Execute the copy service to First and Last save
-            SaveService.ExecuteCopy(ListSaveModel[Start - 1], ListSaveModel, StateManagerList);
-            SaveService.ExecuteCopy(ListSaveModel[End - 1], ListSaveModel, StateManagerList);
+            SaveService.ExecuteCopy(ListSaveModel[Start - 1]);
+            SaveService.ExecuteCopy(ListSaveModel[End - 1]);
         }
 
         /// <summary>
@@ -353,7 +335,7 @@ namespace App.Cmd.ViewModels
             //Execute the copy service to the range of saves
             for (int i = int.Parse(HyphenSeparatedParts[0]) - 1; i <= int.Parse(HyphenSeparatedParts[1]) - 1; i++)
             {
-                SaveService.ExecuteCopy(ListSaveModel[i], ListSaveModel, StateManagerList);
+                SaveService.ExecuteCopy(ListSaveModel[i]);
             }
         }
 
@@ -363,8 +345,8 @@ namespace App.Cmd.ViewModels
         public void ShowLogs()
         {
             //Method to show the logs
-            loggerService.OpenLogFile();
 
+            loggerService.OpenLogFile();
         }
 
         /// <summary>
@@ -381,14 +363,38 @@ namespace App.Cmd.ViewModels
         /// </summary>
         public void ShowSavesSchedule()
         {
-            //Method to show the saves schedule
-            foreach (SaveModel item in ListSaveModel)
+            if (File.Exists("saves.json"))
             {
-                SaveService.ShowInfo(item);
+                FileInfo fileInfo = new("saves.json");
+
+            if (fileInfo.Length > 0)
+            {
+                string json = File.ReadAllText("saves.json");
+                ListSaveModel = JsonConvert.DeserializeObject<List<SaveModel>>(json) ?? [];
             }
-            DisplayService.SetForegroundColor("Gray", "\n"+DisplayService.GetResource("EnterExit")!);
+            else
+            {
+                // Fichier vide, initialiser la liste sans désérialiser
+                ListSaveModel = [];
+            }
+        }
+        else
+        {
+            // Créer le fichier s'il n'existe pas
+            File.WriteAllText("saves.json", "[]");
+        }
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine("");
+
+        foreach (SaveModel item in ListSaveModel)
+        {
+            SaveService.ShowInfo(item);
         }
 
-        
+            Console.WriteLine("\n"+DisplayService.GetResource("EnterExit"));
+        Console.ResetColor();
+
+
+        }
     }
 }
