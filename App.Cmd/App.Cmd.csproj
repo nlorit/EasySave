@@ -6,8 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>App.Cmd.Program</StartupObject>
-    <AssemblyName>EasySave V1.0</AssemblyName>
+    <AssemblyName>EasySave</AssemblyName>
     <ApplicationIcon>databackup_theapplication_dedatos_3366.ico</ApplicationIcon>
+    <AssemblyVersion>1.1</AssemblyVersion>
+    <FileVersion>1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
