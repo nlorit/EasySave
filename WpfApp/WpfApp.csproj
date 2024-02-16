@@ -33,6 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\App.Core\App.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Font\Poppins\Poppins-Black.ttf" />
     <Resource Include="Pictures\iconExit.png" />
     <Resource Include="Pictures\iconHome.png" />
