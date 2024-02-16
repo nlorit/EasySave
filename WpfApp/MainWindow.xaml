@@ -15,7 +15,7 @@
             
         <Border Grid.Column="0" Background="White">
             
-            <DockPanel>
+            <StackPanel>
 
                 <DockPanel Margin="10,20,10,10">
                     <Image Source="Pictures/logoEasySave.png" Height="25px" Width="auto"/>
@@ -87,7 +87,7 @@
 
 
 
-            </DockPanel>
+            </StackPanel>
             
         </Border>
 

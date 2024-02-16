@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Font\Poppins\Poppins-Black.ttf" />
     <Resource Include="Pictures\iconExit.png" />
     <Resource Include="Pictures\iconHome.png" />
