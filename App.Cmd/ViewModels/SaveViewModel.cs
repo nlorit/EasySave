@@ -2,6 +2,7 @@
 using App.Core.Services;
 using System.Resources;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 
 namespace App.Cmd.ViewModels
@@ -17,6 +18,24 @@ namespace App.Cmd.ViewModels
         public List<StateManagerModel> StateManagerList { get; set; } = [];
         [GeneratedRegex(@"^\d+,\d+$")]
         private static partial Regex MyRegex();
+
+        public List<SaveModel> ChargerSauvegardes()
+        {
+            if (File.Exists("saves.json"))
+            {
+                string json = File.ReadAllText("saves.json");
+                ListSaveModel = JsonConvert.DeserializeObject<List<SaveModel>>(json)!;
+                Console.WriteLine(ListSaveModel);
+                return ListSaveModel;  // Ajoutez cette ligne pour retourner la liste après la désérialisation.
+            }
+            else
+            {
+                // Créer le fichier s'il n'existe pas
+                File.WriteAllText("saves.json", "[]");
+                return [];
+            }
+        }
+
 
         public enum TypeOfSave
         {
@@ -37,58 +56,59 @@ namespace App.Cmd.ViewModels
         /// <summary>
         /// Method to test the saves
         /// </summary>
-        public void TestSaves() //Jeux de test
-        {
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Nathan/Desktop/AnnivNathan",
-                OutPath = "C:/Users/Nathan/Desktop/AnnivNathan2",
-                Type = "Complete",
-                SaveName = "Save1",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
+        /// 
+        //public void TestSaves() //Jeux de test
+        //{
+        //    Model = new SaveModel
+        //    {
+        //        InPath = "C:/Users/Nathan/Desktop/AnnivNathan",
+        //        OutPath = "C:/Users/Nathan/Desktop/AnnivNathan2",
+        //        Type = "Complete",
+        //        SaveName = "Save1",
+        //        Date = DateTime.Parse("02/05/2024 10:00:00")
+        //    };
 
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
-
-
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Nathan/Desktop/safran2",
-                OutPath = "C:/Users/Nathan/Desktop/safran3",
-                Type = "Complete",
-                SaveName = "Save2",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
-
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
-
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Nathan/Desktop/safran2",
-                OutPath = "C:/Users/Nathan/Desktop/safran3",
-                Type = "Complete",
-                SaveName = "Save3",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
+        //    StateManagerList.Add(Model.StateManager);
+        //    ListSaveModel.Add(Model);
 
 
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
+        //    Model = new SaveModel
+        //    {
+        //        InPath = "C:/Users/Nathan/Desktop/safran2",
+        //        OutPath = "C:/Users/Nathan/Desktop/safran3",
+        //        Type = "Complete",
+        //        SaveName = "Save2",
+        //        Date = DateTime.Parse("02/05/2024 10:00:00")
+        //    };
 
-            Model = new SaveModel
-            {
-                InPath = "C:/Users/Utilisateur/Documents/Projet/IN",
-                OutPath = "C:/Users/Utilisateur/Documents/Projet/OUT",
-                Type = "Complete",
-                SaveName = "Save4",
-                Date = DateTime.Parse("02/05/2024 10:00:00")
-            };
+        //    StateManagerList.Add(Model.StateManager);
+        //    ListSaveModel.Add(Model);
 
-            StateManagerList.Add(Model.StateManager);
-            ListSaveModel.Add(Model);
-        }
+        //    Model = new SaveModel
+        //    {
+        //        InPath = "C:/Users/Nathan/Desktop/safran2",
+        //        OutPath = "C:/Users/Nathan/Desktop/safran3",
+        //        Type = "Complete",
+        //        SaveName = "Save3",
+        //        Date = DateTime.Parse("02/05/2024 10:00:00")
+        //    };
+
+
+        //    StateManagerList.Add(Model.StateManager);
+        //    ListSaveModel.Add(Model);
+
+        //    Model = new SaveModel
+        //    {
+        //        InPath = "C:/Users/Utilisateur/Documents/Projet/IN",
+        //        OutPath = "C:/Users/Utilisateur/Documents/Projet/OUT",
+        //        Type = "Complete",
+        //        SaveName = "Save4",
+        //        Date = DateTime.Parse("02/05/2024 10:00:00")
+        //    };
+
+        //    StateManagerList.Add(Model.StateManager);
+        //    ListSaveModel.Add(Model);
+        //}
 
 
         /// <summary>
@@ -326,6 +346,9 @@ namespace App.Cmd.ViewModels
             //Add the save to the list
             ListSaveModel.Add(Model);
 
+            string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
+            File.WriteAllText("saves.json", saves);
+
 
 
             //Return to the main menu
@@ -433,14 +456,39 @@ namespace App.Cmd.ViewModels
         /// </summary>
         public void ShowSavesSchedule()
         {
-            //Method to show the saves schedule
-            foreach (SaveModel item in ListSaveModel)
+            if (File.Exists("saves.json"))
             {
-                SaveService.ShowInfo(item);
+                FileInfo fileInfo = new("saves.json");
+
+            if (fileInfo.Length > 0)
+            {
+                string json = File.ReadAllText("saves.json");
+                ListSaveModel = JsonConvert.DeserializeObject<List<SaveModel>>(json) ?? [];
             }
-            DisplayService.SetForegroundColor("Gray", "\n"+DisplayService.GetResource("EnterExit")!);
+            else
+            {
+                // Fichier vide, initialiser la liste sans désérialiser
+                ListSaveModel = [];
+                Console.WriteLine("NATHAN ERROR");
+            }
+        }
+        else
+        {
+            // Créer le fichier s'il n'existe pas
+            File.WriteAllText("saves.json", "[]");
+        }
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine("");
+
+        foreach (SaveModel item in ListSaveModel)
+        {
+            SaveService.ShowInfo(item);
         }
 
-        
+            Console.WriteLine(DisplayService.GetResource("\nEnterExit"));
+        Console.ResetColor();
+
+
+        }
     }
 }

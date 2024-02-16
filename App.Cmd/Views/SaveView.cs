@@ -14,7 +14,7 @@ namespace App.Cmd.Views
         {
             ViewModel = new SaveViewModel();
             //Create test saves for the first run
-            ViewModel.TestSaves();
+            //ViewModel.TestSaves();
         }
 
         /// <summary>

@@ -123,7 +123,6 @@ namespace App.Core.Services
                 saveModel.StateManager.SourceFilePath = filePath;
 
                 //Delay for avoid the stateManagerService to update the state too fast
-                Task.Delay(50).Wait();
 
                 try
                 {

@@ -1,12 +1,14 @@
 ﻿using System.IO;
 using System.Text.Json;
 using App.Core.Models;
+using System.Xml.Serialization;
 
 namespace App.Core.Services
 {
     public class LoggerService
     {
-        private readonly string logFilePath = "logs.json";
+        private readonly string jsonlogFilePath = "logs.json";
+        private readonly string XmllogFilePath = "logs.xml";
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
@@ -20,6 +22,7 @@ namespace App.Core.Services
         public void WriteLog(LoggerModel loggerModel, SaveModel saveModel)
         {
             // Check for nulls
+            //TODO : Gerer les exeptions
             ArgumentNullException.ThrowIfNull(loggerModel);
             ArgumentNullException.ThrowIfNull(saveModel);
 
@@ -28,22 +31,34 @@ namespace App.Core.Services
                 loggerModel.Name = saveModel.SaveName;
                 // Serialize the log model to JSON
                 string logEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
+                string jsonlogEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
                 // Append the log entry to the log file or create if not exist
-                using StreamWriter LogWriter = File.AppendText(logFilePath);
+                using StreamWriter LogWriter = File.AppendText(jsonlogFilePath);
                 LogWriter.WriteLineAsync(logEntry);
+                LogWriter.WriteLineAsync(jsonlogEntry);
+
+                // Serialize the log model to XML
+                using StringWriter xmlStringWriter = new();
+                XmlSerializer xmlSerializer = new(typeof(LoggerModel));
+                xmlSerializer.Serialize(xmlStringWriter, loggerModel);
+                string xmlLogEntry = xmlStringWriter.ToString();
+                // Append the XML log entry to the XML log file or create if not exist
+                using StreamWriter xmlLogWriter = File.AppendText(jsonlogFilePath);
+                xmlLogWriter.WriteLineAsync(xmlLogEntry);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error writing to log file: {ex.Message}");
+
             }
         }
-        /// <summary>
-        /// Method to open the log file
-        /// </summary>
-        public void OpenLogFile()
+            /// <summary>
+            /// Method to open the log file
+            /// </summary>
+            public void OpenLogFile()
         {
             // Open the log file in notepad
-            System.Diagnostics.Process.Start("notepad.exe", logFilePath);
+            System.Diagnostics.Process.Start("notepad.exe", jsonlogFilePath);
         }
     }
 }
