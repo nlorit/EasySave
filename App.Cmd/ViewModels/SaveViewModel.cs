@@ -17,6 +17,8 @@ namespace App.Cmd.ViewModels
         [GeneratedRegex(@"^\d+,\d+$")]
         private static partial Regex MyRegex();
 
+        
+
         public List<SaveModel> ChargerSauvegardes()
         {
             if (File.Exists("saves.json"))

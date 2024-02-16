@@ -1,4 +1,5 @@
-﻿using System;
+﻿using App.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -184,8 +185,12 @@ namespace App.Core.Services
         /// <returns></returns>
         public static string? GetResource(string key)
         {
+            ConfigService configService = new ConfigService();
+            //string langue = configService.ActiveLanguage;
+
+
             //TODO : Gestion des ressources pour l'instanciation de la classe
-            string resourceFileName = CultureInfo.CurrentCulture.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            string resourceFileName = configService.ActiveLanguage;
             string baseName = "App.Core.Resources." + resourceFileName;
 
             // Load the resources
