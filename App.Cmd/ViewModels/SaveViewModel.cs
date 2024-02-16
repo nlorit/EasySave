@@ -67,11 +67,14 @@ namespace App.Cmd.ViewModels
                 case 1:
                     Console.Clear();
                     Console.WriteLine(DisplayService.GetResource("PlanSave"));
-                    return CreateSave();
+                    CreateSave();
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
+                    return true;
                 case 2:
                     Console.Clear();
                     Console.WriteLine(DisplayService.GetResource("RunSave"));
                     RunSave();
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                     return true;
                 case 3:
                     Console.Clear();
@@ -106,7 +109,7 @@ namespace App.Cmd.ViewModels
         ///  Method to create a save
         /// </summary>
         /// <returns></returns>
-        public bool CreateSave()
+        public void CreateSave()
         {
             //Method to create a save
             if (ListSaveModel.Count < 5)
@@ -222,93 +225,15 @@ namespace App.Cmd.ViewModels
                 } while (Model.SaveName == null || Model.SaveName.Trim() == "");
 
 
-                Console.WriteLine("\n+---------------------------------------------+");
-                Console.Write("| ");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write(DisplayService.GetResource("Number5"));
-                Console.ResetColor();
-                Console.WriteLine(DisplayService.GetResource("SaveDate"));
-                Console.WriteLine("|---------------------------------------------|");
-                Console.Write("| ");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write("Format:");
-                Console.ResetColor();
-                Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
-                Console.WriteLine("+---------------------------------------------+");
-                //Get the date of the save
-                //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de date
-                do
-                {
+            Model.Date = DateTime.Now;
+            //Create the state of the save
+            
+            StateManagerList.Add(Model.StateManager);
+            //Add the save to the list
+            ListSaveModel.Add(Model);
 
-                    try
-                    {
-
-                        Model.Date = DateTime.Parse(Console.ReadLine()!);
-                        break; // Break out of the loop if parsing is successful
-                    }
-                    catch (FormatException)
-                    {
-                        // Handle invalid date format
-                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                        Thread.Sleep(1000);
-                        Console.Clear();
-                        Console.WriteLine("\n+---------------------------------------------+");
-                        Console.Write("| ");
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.Write(DisplayService.GetResource("Number5"));
-                        Console.ResetColor();
-                        Console.WriteLine(DisplayService.GetResource("SaveDate"));
-                        Console.WriteLine("|---------------------------------------------|");
-                        Console.Write("| ");
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.Write("Format:");
-                        Console.ResetColor();
-                        Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
-                        Console.WriteLine("+---------------------------------------------+");
-
-                    }
-                    catch (ArgumentNullException)
-                    {
-                        // Handle null input
-                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                        Thread.Sleep(1000);
-                        Console.Clear();
-                        Console.WriteLine("\n+---------------------------------------------+");
-                        Console.Write("| ");
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.Write(DisplayService.GetResource("Number5"));
-                        Console.ResetColor();
-                        Console.WriteLine(DisplayService.GetResource("SaveDate"));
-                        Console.WriteLine("|---------------------------------------------|");
-                        Console.Write("| ");
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.Write("Format:");
-                        Console.ResetColor();
-                        Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
-                        Console.WriteLine("+---------------------------------------------+");
-                    }
-                } while (true); // Loop indefinitely until a valid date is provided
-
-                //Create the state of the save
-                StateManagerList.Add(Model.StateManager);
-                //Add the save to the list
-                ListSaveModel.Add(Model);
-
-
-                string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
-                File.WriteAllText("saves.json", saves);
-            }
-            else
-            {
-                //If the list of saves is full
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(DisplayService.GetResource("MaxSaveError"));
-                Console.ResetColor();
-                System.Threading.Thread.Sleep(2000);
-            }
-
+            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
             //Return to the main menu
-            return true;
         }
 
 
@@ -357,6 +282,11 @@ namespace App.Cmd.ViewModels
             {
                 SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList);
             }
+
+
+            DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
+
+
         }
         /// <summary>
         /// Method to process the input if it is comma separated
