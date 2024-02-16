@@ -1,9 +1,7 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
 using Newtonsoft.Json;
-using System.Resources;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace App.Cmd.ViewModels
 {
@@ -47,24 +45,6 @@ namespace App.Cmd.ViewModels
         /// <summary>
         /// Constructor of the SaveViewModel
         /// </summary>
-
-        public List<SaveModel> ChargerSauvegardes()
-        {
-            if (File.Exists("saves.json"))
-            {
-                string json = File.ReadAllText("saves.json");
-                ListSaveModel = JsonConvert.DeserializeObject<List<SaveModel>>(json);
-                Console.WriteLine(ListSaveModel);
-                return ListSaveModel;  // Ajoutez cette ligne pour retourner la liste après la désérialisation.
-            }
-            else
-            {
-                // Créer le fichier s'il n'existe pas
-                File.WriteAllText("saves.json", "[]");
-                return new List<SaveModel>();
-            }
-        }
-
 
         public SaveViewModel()
         {
@@ -129,187 +109,190 @@ namespace App.Cmd.ViewModels
         public bool CreateSave()
         {
             //Method to create a save
-
-
-            //Create a new save
-            Model = new();
-            Console.WriteLine("\n+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Number1"));
-            Console.ResetColor();
-            Console.WriteLine(DisplayService.GetResource("SourceDirectory"));
-            Console.WriteLine("+---------------------------------------------+\n");
-            //Get the source directory
-                
-            do
-            {
-                try
-                {
-                    Model.InPath = Console.ReadLine()!;
-                }
-                catch (ArgumentNullException)
-                {
-                    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                    System.Threading.Thread.Sleep(1500);
-                    continue; // Go back to the start of the loop to prompt for input again
-                }
-            } while (Model.InPath == null || Model.InPath.Trim() == "");
-
-
-
-
-            Console.WriteLine("\n+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Number2"));
-            Console.ResetColor();
-            Console.WriteLine(DisplayService.GetResource("TargetFile"));
-            Console.WriteLine("+---------------------------------------------+\n");
-
-            //Get the target directory
-            //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
-
-            do
-            {
-                try
-                {
-                    Model.OutPath = Console.ReadLine()!;
-                }
-                catch (ArgumentNullException)
-                {
-                    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                    System.Threading.Thread.Sleep(1500);
-                    continue; // Go back to the start of the loop to prompt for input again
-                }
-            } while (Model.OutPath == null || Model.OutPath.Trim() == "");
-
-            Console.WriteLine("\n+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Number3"));
-            Console.ResetColor();
-
-
-            Console.WriteLine(DisplayService.GetResource("SaveType"));
-            Console.WriteLine("+---------------------------------------------+\n");
-            Console.WriteLine(DisplayService.GetResource("SaveTypeAnswer1"));
-            Console.WriteLine(DisplayService.GetResource("SaveTypeAnswer2"));
-            Console.WriteLine("\n");
-
-            //Get the type of the save
-            int UserEntry = int.Parse(Console.ReadLine()!);
-                
-            switch (UserEntry)
-            {
-                case 1:
-                    Model.Type = TypeOfSave.Complete.ToString();
-                    break;
-                case 2:
-                    Model.Type = TypeOfSave.Sequential.ToString();
-                    break;
-                default:
-                    break;
-            }
-                    
-            Console.WriteLine("");
-            Console.WriteLine("+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Number4"));
-            Console.ResetColor();
-            Console.WriteLine(DisplayService.GetResource("SaveName"));
-            Console.WriteLine("+---------------------------------------------+");
-            Console.WriteLine("");
-
-            //Get the name of the save
-            //TODO : AJouter exception dans le cas ou l'utilisateur ne rentre pas de nom
-            do
-            {
-                try
-                {
-                    Model.SaveName = Console.ReadLine()!;
-                }
-                catch (ArgumentNullException)
-                {
-                    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                    System.Threading.Thread.Sleep(1500);
-                    continue; // Go back to the start of the loop to prompt for input again
-                }
-            } while (Model.SaveName == null || Model.SaveName.Trim() == "");
-
-
-            Console.WriteLine("\n+---------------------------------------------+");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Number5"));
-            Console.ResetColor();
-            Console.WriteLine(DisplayService.GetResource("SaveDate"));
-            Console.WriteLine("|---------------------------------------------|");
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Format:");
-            Console.ResetColor();
-            Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
-            Console.WriteLine("+---------------------------------------------+");
-            //Get the date of the save
-            //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de date
-            do
+            if (ListSaveModel.Count < 5)
             {
 
-                try
-                {
-                        
-                    Model.Date = DateTime.Parse(Console.ReadLine()!);
-                    break; // Break out of the loop if parsing is successful
-                }
-                catch (FormatException)
-                {
-                    // Handle invalid date format
-                    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                    Thread.Sleep(1000);
-                    Console.Clear();
-                    Console.WriteLine("\n+---------------------------------------------+");
-                    Console.Write("| ");
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(DisplayService.GetResource("Number5"));
-                    Console.ResetColor();
-                    Console.WriteLine(DisplayService.GetResource("SaveDate"));
-                    Console.WriteLine("|---------------------------------------------|");
-                    Console.Write("| ");
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write("Format:");
-                    Console.ResetColor();
-                    Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
-                    Console.WriteLine("+---------------------------------------------+");
 
-                }
-                catch (ArgumentNullException)
-                {
-                    // Handle null input
-                    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                    Thread.Sleep(1000);
-                    Console.Clear();
-                    Console.WriteLine("\n+---------------------------------------------+");
-                    Console.Write("| ");
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(DisplayService.GetResource("Number5"));
-                    Console.ResetColor();
-                    Console.WriteLine(DisplayService.GetResource("SaveDate"));
-                    Console.WriteLine("|---------------------------------------------|");
-                    Console.Write("| ");
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write("Format:");
-                    Console.ResetColor();
-                    Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
-                    Console.WriteLine("+---------------------------------------------+");
-                }
-            } while (true); // Loop indefinitely until a valid date is provided
 
-            //Create the state of the save
-            StateManagerList.Add(Model.StateManager);
-            //Add the save to the list
-            ListSaveModel.Add(Model);
+                //Create a new save
+                Model = new();
+                Console.WriteLine("\n+---------------------------------------------+");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(DisplayService.GetResource("Number1"));
+                Console.ResetColor();
+                Console.WriteLine(DisplayService.GetResource("SourceDirectory"));
+                Console.WriteLine("+---------------------------------------------+\n");
+                //Get the source directory
+
+                do
+                {
+                    try
+                    {
+                        Model.InPath = Console.ReadLine()!;
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                        System.Threading.Thread.Sleep(1500);
+                        continue; // Go back to the start of the loop to prompt for input again
+                    }
+                } while (Model.InPath == null || Model.InPath.Trim() == "");
+
+
+
+
+                Console.WriteLine("\n+---------------------------------------------+");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(DisplayService.GetResource("Number2"));
+                Console.ResetColor();
+                Console.WriteLine(DisplayService.GetResource("TargetFile"));
+                Console.WriteLine("+---------------------------------------------+\n");
+
+                //Get the target directory
+                //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
+
+                do
+                {
+                    try
+                    {
+                        Model.OutPath = Console.ReadLine()!;
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                        System.Threading.Thread.Sleep(1500);
+                        continue; // Go back to the start of the loop to prompt for input again
+                    }
+                } while (Model.OutPath == null || Model.OutPath.Trim() == "");
+
+                Console.WriteLine("\n+---------------------------------------------+");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(DisplayService.GetResource("Number3"));
+                Console.ResetColor();
+
+
+                Console.WriteLine(DisplayService.GetResource("SaveType"));
+                Console.WriteLine("+---------------------------------------------+\n");
+                Console.WriteLine(DisplayService.GetResource("SaveTypeAnswer1"));
+                Console.WriteLine(DisplayService.GetResource("SaveTypeAnswer2"));
+                Console.WriteLine("\n");
+
+                //Get the type of the save
+                int UserEntry = int.Parse(Console.ReadLine()!);
+
+                switch (UserEntry)
+                {
+                    case 1:
+                        Model.Type = TypeOfSave.Complete.ToString();
+                        break;
+                    case 2:
+                        Model.Type = TypeOfSave.Sequential.ToString();
+                        break;
+                    default:
+                        break;
+                }
+
+                Console.WriteLine("");
+                Console.WriteLine("+---------------------------------------------+");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(DisplayService.GetResource("Number4"));
+                Console.ResetColor();
+                Console.WriteLine(DisplayService.GetResource("SaveName"));
+                Console.WriteLine("+---------------------------------------------+");
+                Console.WriteLine("");
+
+                //Get the name of the save
+                //TODO : AJouter exception dans le cas ou l'utilisateur ne rentre pas de nom
+                do
+                {
+                    try
+                    {
+                        Model.SaveName = Console.ReadLine()!;
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                        System.Threading.Thread.Sleep(1500);
+                        continue; // Go back to the start of the loop to prompt for input again
+                    }
+                } while (Model.SaveName == null || Model.SaveName.Trim() == "");
+
+
+                Console.WriteLine("\n+---------------------------------------------+");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(DisplayService.GetResource("Number5"));
+                Console.ResetColor();
+                Console.WriteLine(DisplayService.GetResource("SaveDate"));
+                Console.WriteLine("|---------------------------------------------|");
+                Console.Write("| ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write("Format:");
+                Console.ResetColor();
+                Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
+                Console.WriteLine("+---------------------------------------------+");
+                //Get the date of the save
+                //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de date
+                do
+                {
+
+                    try
+                    {
+
+                        Model.Date = DateTime.Parse(Console.ReadLine()!);
+                        break; // Break out of the loop if parsing is successful
+                    }
+                    catch (FormatException)
+                    {
+                        // Handle invalid date format
+                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        Console.WriteLine("\n+---------------------------------------------+");
+                        Console.Write("| ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write(DisplayService.GetResource("Number5"));
+                        Console.ResetColor();
+                        Console.WriteLine(DisplayService.GetResource("SaveDate"));
+                        Console.WriteLine("|---------------------------------------------|");
+                        Console.Write("| ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write("Format:");
+                        Console.ResetColor();
+                        Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
+                        Console.WriteLine("+---------------------------------------------+");
+
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        // Handle null input
+                        DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        Console.WriteLine("\n+---------------------------------------------+");
+                        Console.Write("| ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write(DisplayService.GetResource("Number5"));
+                        Console.ResetColor();
+                        Console.WriteLine(DisplayService.GetResource("SaveDate"));
+                        Console.WriteLine("|---------------------------------------------|");
+                        Console.Write("| ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write("Format:");
+                        Console.ResetColor();
+                        Console.WriteLine("  MM/dd/yyyy HH:mm                   |");
+                        Console.WriteLine("+---------------------------------------------+");
+                    }
+                } while (true); // Loop indefinitely until a valid date is provided
+
+                //Create the state of the save
+                StateManagerList.Add(Model.StateManager);
+                //Add the save to the list
+                ListSaveModel.Add(Model);
 
 
                 string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
@@ -319,8 +302,7 @@ namespace App.Cmd.ViewModels
             {
                 //If the list of saves is full
                 Console.ForegroundColor = ConsoleColor.Red;
-                Output = resources.GetString("MaxSaveError");
-                Console.WriteLine(Output);
+                Console.WriteLine(DisplayService.GetResource("MaxSaveError"));
                 Console.ResetColor();
                 System.Threading.Thread.Sleep(2000);
             }
@@ -444,7 +426,6 @@ namespace App.Cmd.ViewModels
             {
                 // Fichier vide, initialiser la liste sans désérialiser
                 ListSaveModel = [];
-                Console.WriteLine("NATHAN ERROR");
             }
         }
         else
@@ -460,7 +441,7 @@ namespace App.Cmd.ViewModels
             SaveService.ShowInfo(item);
         }
 
-            Console.WriteLine(DisplayService.GetResource("\nEnterExit"));
+            Console.WriteLine("\n"+DisplayService.GetResource("EnterExit"));
         Console.ResetColor();
 
 

@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Xml.Serialization;
 using App.Core.Models;
-using System.Xml.Serialization;
 
 namespace App.Core.Services
 {
@@ -10,7 +8,7 @@ namespace App.Core.Services
     {
 
         private readonly string jsonlogFilePath = "logs.json";
-        private readonly string XmllogFilePath = "logs.xml";
+        private readonly string xmlLogFilePath = "logs.xml";
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
