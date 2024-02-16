@@ -20,8 +20,14 @@
     <None Remove="Pictures\iconPlanSave.png" />
     <None Remove="Pictures\iconRealTime.png" />
     <None Remove="Pictures\iconRunSave.png" />
+    <None Remove="Pictures\iconSaveDashboard.png" />
+    <None Remove="Pictures\iconSaveDashboardSelected.png" />
     <None Remove="Pictures\iconShowSave.png" />
     <None Remove="Pictures\logoEasySave.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +42,8 @@
     <Resource Include="Pictures\iconPlanSave.png" />
     <Resource Include="Pictures\iconRealTime.png" />
     <Resource Include="Pictures\iconRunSave.png" />
+    <Resource Include="Pictures\iconSaveDashboard.png" />
+    <Resource Include="Pictures\iconSaveDashboardSelected.png" />
     <Resource Include="Pictures\iconShowSave.png" />
     <Resource Include="Pictures\logoEasySave.png" />
   </ItemGroup>
