@@ -1,7 +1,6 @@
 ﻿using App.Core.Models;
 using System.Resources;
 
-
 namespace App.Core.Services
 {
     public class SaveService
@@ -13,11 +12,13 @@ namespace App.Core.Services
         /// <param name="listSavesModel"></param>
         /// <param name="listStateManager"></param>
         public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
+
         {   //Method to execute the copy service
 
             CopyService copyService = new();
             //Execute the copy service
             copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager);
+
 
         }
 
@@ -35,7 +36,6 @@ namespace App.Core.Services
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(DisplayService.GetResource("Name"));
             
-
             Console.ResetColor();
             Console.WriteLine(saveModel.SaveName);
 
@@ -44,7 +44,6 @@ namespace App.Core.Services
             Console.Write(DisplayService.GetResource("In"));
             Console.ResetColor();
             Console.WriteLine(saveModel.InPath);
-
 
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -67,7 +66,6 @@ namespace App.Core.Services
                 Console.WriteLine(DisplayService.GetResource("TypeAnswer2"));
             }
 
-
             Console.Write("| ");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("Date : ");
@@ -75,8 +73,6 @@ namespace App.Core.Services
             Console.WriteLine(saveModel.Date);
   
             Console.WriteLine("+-------------------------------------------------+");
-            
-
         }
     }
 }

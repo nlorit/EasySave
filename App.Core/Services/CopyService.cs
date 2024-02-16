@@ -7,7 +7,6 @@ namespace App.Core.Services
     {
         private readonly LoggerService loggerService = new();
         private readonly StateManagerService stateManagerService = new();
-   
 
         /// <summary>
         /// Method to execute the copy service
@@ -46,9 +45,6 @@ namespace App.Core.Services
                 Output = DisplayService.GetResource("SourceError");
                 Console.WriteLine(Output);
             }
-            
-           
-
         }
 
         /// <summary>
@@ -60,6 +56,7 @@ namespace App.Core.Services
         /// <param name="listSavesModel"></param>
         /// <param name="listStateManager"></param>
         private void CopyDirectory(string sourceDirPath, string targetDirPath, SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
+
         {
             // Check for nulls
             ArgumentNullException.ThrowIfNull(sourceDirPath);
@@ -90,7 +87,6 @@ namespace App.Core.Services
             {
                 Console.WriteLine($"Error: {e.Message}");
             }
-             
 
             // Copy files recursively
             foreach (string filePath in Directory.GetFiles(sourceDirPath, "*", SearchOption.AllDirectories))
@@ -132,18 +128,11 @@ namespace App.Core.Services
                 {
                     Console.WriteLine($"Error: {e.Message}");
                 }
-
-
-
             }
+
             // Update the state manager
             saveModel.StateManager.State = "END";
             stateManagerService.UpdateState(listStateManager, saveModel, listSavesModel);
-
-
         }
     }
 }
-
-       
-

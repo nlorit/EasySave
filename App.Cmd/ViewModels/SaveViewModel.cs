@@ -1,9 +1,9 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
+using Newtonsoft.Json;
 using System.Resources;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-
 
 namespace App.Cmd.ViewModels
 {
@@ -37,6 +37,7 @@ namespace App.Cmd.ViewModels
         }
 
 
+
         public enum TypeOfSave
         {
             Sequential,
@@ -46,6 +47,25 @@ namespace App.Cmd.ViewModels
         /// <summary>
         /// Constructor of the SaveViewModel
         /// </summary>
+
+        public List<SaveModel> ChargerSauvegardes()
+        {
+            if (File.Exists("saves.json"))
+            {
+                string json = File.ReadAllText("saves.json");
+                ListSaveModel = JsonConvert.DeserializeObject<List<SaveModel>>(json);
+                Console.WriteLine(ListSaveModel);
+                return ListSaveModel;  // Ajoutez cette ligne pour retourner la liste après la désérialisation.
+            }
+            else
+            {
+                // Créer le fichier s'il n'existe pas
+                File.WriteAllText("saves.json", "[]");
+                return new List<SaveModel>();
+            }
+        }
+
+
         public SaveViewModel()
         {
             saveService = new();
@@ -53,62 +73,6 @@ namespace App.Cmd.ViewModels
             loggerService = new();
 
         }
-        /// <summary>
-        /// Method to test the saves
-        /// </summary>
-        /// 
-        //public void TestSaves() //Jeux de test
-        //{
-        //    Model = new SaveModel
-        //    {
-        //        InPath = "C:/Users/Nathan/Desktop/AnnivNathan",
-        //        OutPath = "C:/Users/Nathan/Desktop/AnnivNathan2",
-        //        Type = "Complete",
-        //        SaveName = "Save1",
-        //        Date = DateTime.Parse("02/05/2024 10:00:00")
-        //    };
-
-        //    StateManagerList.Add(Model.StateManager);
-        //    ListSaveModel.Add(Model);
-
-
-        //    Model = new SaveModel
-        //    {
-        //        InPath = "C:/Users/Nathan/Desktop/safran2",
-        //        OutPath = "C:/Users/Nathan/Desktop/safran3",
-        //        Type = "Complete",
-        //        SaveName = "Save2",
-        //        Date = DateTime.Parse("02/05/2024 10:00:00")
-        //    };
-
-        //    StateManagerList.Add(Model.StateManager);
-        //    ListSaveModel.Add(Model);
-
-        //    Model = new SaveModel
-        //    {
-        //        InPath = "C:/Users/Nathan/Desktop/safran2",
-        //        OutPath = "C:/Users/Nathan/Desktop/safran3",
-        //        Type = "Complete",
-        //        SaveName = "Save3",
-        //        Date = DateTime.Parse("02/05/2024 10:00:00")
-        //    };
-
-
-        //    StateManagerList.Add(Model.StateManager);
-        //    ListSaveModel.Add(Model);
-
-        //    Model = new SaveModel
-        //    {
-        //        InPath = "C:/Users/Utilisateur/Documents/Projet/IN",
-        //        OutPath = "C:/Users/Utilisateur/Documents/Projet/OUT",
-        //        Type = "Complete",
-        //        SaveName = "Save4",
-        //        Date = DateTime.Parse("02/05/2024 10:00:00")
-        //    };
-
-        //    StateManagerList.Add(Model.StateManager);
-        //    ListSaveModel.Add(Model);
-        //}
 
 
         /// <summary>
@@ -292,6 +256,7 @@ namespace App.Cmd.ViewModels
             //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de date
             do
             {
+
                 try
                 {
                         
@@ -346,14 +311,24 @@ namespace App.Cmd.ViewModels
             //Add the save to the list
             ListSaveModel.Add(Model);
 
-            string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
-            File.WriteAllText("saves.json", saves);
 
-
+                string saves = JsonConvert.SerializeObject(ListSaveModel, Formatting.Indented);
+                File.WriteAllText("saves.json", saves);
+            }
+            else
+            {
+                //If the list of saves is full
+                Console.ForegroundColor = ConsoleColor.Red;
+                Output = resources.GetString("MaxSaveError");
+                Console.WriteLine(Output);
+                Console.ResetColor();
+                System.Threading.Thread.Sleep(2000);
+            }
 
             //Return to the main menu
             return true;
         }
+
 
         /// <summary>
         /// Method to run a save
@@ -375,6 +350,7 @@ namespace App.Cmd.ViewModels
             Console.ResetColor();
             Console.WriteLine(DisplayService.GetResource("ListAnswer2"));
             Console.WriteLine("|                                                          |");
+
             Console.WriteLine("+----------------------------------------------------------+\n");
 
             //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
@@ -399,7 +375,6 @@ namespace App.Cmd.ViewModels
             {
                 SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1], ListSaveModel, StateManagerList);
             }
-
         }
         /// <summary>
         /// Method to process the input if it is comma separated
@@ -438,8 +413,8 @@ namespace App.Cmd.ViewModels
         public void ShowLogs()
         {
             //Method to show the logs
-            loggerService.OpenLogFile();
 
+            loggerService.OpenLogFile();
         }
 
         /// <summary>

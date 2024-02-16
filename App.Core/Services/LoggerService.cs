@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Xml.Serialization;
 using App.Core.Models;
 using System.Xml.Serialization;
 
@@ -7,6 +8,7 @@ namespace App.Core.Services
 {
     public class LoggerService
     {
+
         private readonly string jsonlogFilePath = "logs.json";
         private readonly string XmllogFilePath = "logs.xml";
         private readonly JsonSerializerOptions options = new()
@@ -30,11 +32,11 @@ namespace App.Core.Services
             {
                 loggerModel.Name = saveModel.SaveName;
                 // Serialize the log model to JSON
+
                 string logEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
                 string jsonlogEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
                 // Append the log entry to the log file or create if not exist
                 using StreamWriter LogWriter = File.AppendText(jsonlogFilePath);
-                LogWriter.WriteLineAsync(logEntry);
                 LogWriter.WriteLineAsync(jsonlogEntry);
 
                 // Serialize the log model to XML
@@ -43,7 +45,8 @@ namespace App.Core.Services
                 xmlSerializer.Serialize(xmlStringWriter, loggerModel);
                 string xmlLogEntry = xmlStringWriter.ToString();
                 // Append the XML log entry to the XML log file or create if not exist
-                using StreamWriter xmlLogWriter = File.AppendText(jsonlogFilePath);
+
+                using StreamWriter xmlLogWriter = File.AppendText(xmlLogFilePath);
                 xmlLogWriter.WriteLineAsync(xmlLogEntry);
             }
             catch (Exception ex)
