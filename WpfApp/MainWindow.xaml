@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp"
         mc:Ignorable="d"
-        Title="EasySave" Height="450" Width="800">
+        Title="EasySave" Height="475" Width="800" MinHeight="475" MinWidth="800">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -19,69 +19,80 @@
 
                 <DockPanel Margin="10,20,10,10">
                     <Image Source="Pictures/logoEasySave.png" Height="25px" Width="auto"/>
-                    <Image Source="Pictures/iconMenu.png" Height="25px" Width="auto" Margin="93,0,0,0"/>
+                    <TextBlock VerticalAlignment="Center" FontSize="15" FontWeight="Medium" Margin="15,0,0,0">EasySave</TextBlock>
                 </DockPanel>
 
                 <DockPanel  Margin="10,10,10,10">
-                    <Image Source="Pictures/iconHomeSelected.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#319af6">
-                        Home
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconHomeSelected.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#319af6" FontWeight="Regular" Margin="10,0,0,0">Home</TextBlock>
+
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconSaveDashboard.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">Save DashBoard</TextBlock>
+                            
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconLogs.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">Logs</TextBlock>
+
+                        </StackPanel>
                     </Button>
                 </DockPanel>
                 
                 <DockPanel  Margin="10,10,10,10">
-                    <Image Source="Pictures/iconPlanSave.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Plan a save
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconRealTime.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">Real Time </TextBlock>
+
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+
+
+                <Border BorderBrush="#8b959d" BorderThickness="0,0.5,0,0" Margin="0,100,0,10"/>
+
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconMoon.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">DarkMode</TextBlock>
+
+                        </StackPanel>
                     </Button>
                 </DockPanel>
 
                 <DockPanel  Margin="10,10,10,10">
-                    <Image Source="Pictures/iconRunSave.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Run a Save
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconLanguage.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">Language</TextBlock>
+
+                        </StackPanel>
                     </Button>
                 </DockPanel>
 
                 <DockPanel  Margin="10,10,10,10">
-                    <Image Source="Pictures/iconLogs.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Logs
-                    </Button>
-                </DockPanel>
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="Pictures/iconExit.png" Height="15px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">Quit</TextBlock>
 
-                <DockPanel  Margin="10,10,10,10">
-                    <Image Source="Pictures/iconRealTime.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Real Time
-                    </Button>
-                </DockPanel>
-
-                <DockPanel  Margin="10,10,10,10">
-                    <Image Source="Pictures/iconShowSave.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Show Save
-                    </Button>
-                </DockPanel>
-
-                <Border BorderBrush="#8b959d" BorderThickness="0,0.5,0,0" Margin="0,40,0,10"/>
-                
-                <DockPanel  Margin="10,5,10,10">
-                    <Image Source="Pictures/iconMoon.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Darkmode
-                    </Button>
-                </DockPanel>
-                <DockPanel  Margin="10,5,10,10">
-                    <Image Source="Pictures/iconLanguage.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Language
-                    </Button>
-                </DockPanel>
-                <DockPanel  Margin="10,5,10,10">
-                    <Image Source="Pictures/iconExit.png" Height="15px" Width="auto" Margin="5,0,0,0"/>
-                    <Button FontFamily="Segoe UI" FontWeight="Regular" Background="Transparent" BorderThickness="0" Margin="10,0,0,0" Foreground="#8b959d">
-                        Quit
+                        </StackPanel>
                     </Button>
                 </DockPanel>
 
