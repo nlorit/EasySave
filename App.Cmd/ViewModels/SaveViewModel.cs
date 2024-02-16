@@ -289,8 +289,11 @@ namespace App.Cmd.ViewModels
                     }
                 } while (true); // Loop indefinitely until a valid date is provided
 
+
+                saveService.CreateSave()
+
                 //Create the state of the save
-                StateManagerList.Add(Model.StateManager);
+                StateManagerList.(Model.StateManager);
                 //Add the save to the list
                 ListSaveModel.Add(Model);
 
@@ -355,7 +358,7 @@ namespace App.Cmd.ViewModels
             }
             catch (System.IndexOutOfRangeException)
             {
-                SaveService.ExecuteCopy(ListSaveModel[int.Parse(UserEntry!) - 1]);
+                SaveService.ExecuteSave(ListSaveModel[int.Parse(UserEntry!) - 1]);
             }
         }
         /// <summary>
@@ -370,8 +373,8 @@ namespace App.Cmd.ViewModels
             int End = int.Parse(CommaSeparatedParts[1]);
 
             //Execute the copy service to First and Last save
-            SaveService.ExecuteCopy(ListSaveModel[Start - 1]);
-            SaveService.ExecuteCopy(ListSaveModel[End - 1]);
+            SaveService.ExecuteSave(ListSaveModel[Start - 1]);
+            SaveService.ExecuteSave(ListSaveModel[End - 1]);
         }
 
         /// <summary>
@@ -385,7 +388,7 @@ namespace App.Cmd.ViewModels
             //Execute the copy service to the range of saves
             for (int i = int.Parse(HyphenSeparatedParts[0]) - 1; i <= int.Parse(HyphenSeparatedParts[1]) - 1; i++)
             {
-                SaveService.ExecuteCopy(ListSaveModel[i]);
+                SaveService.ExecuteSave(ListSaveModel[i]);
             }
         }
 

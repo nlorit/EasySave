@@ -9,34 +9,32 @@ namespace WpfApp.ViewModels
 {
     class ListViewModel : INotifyPropertyChanged
     {
-        public RelayCommand RefreshCommand { get; set; }
-        public RelayCommand CreateCommand { get; set; }
-        public RelayCommand ExecuteCommand { get; set; }
-        public ObservableCollection<SaveModel> Items { get; set; }
-
-        private SaveModel selected;
-        private readonly SaveService service;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
+        private SaveModel _selected;
         public SaveModel Selected
         {
-            get => selected;
+            get => _selected;
             set
             {
-                if (selected != value)
+                if (_selected != value)
                 {
-                    selected = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Selected)));
+                    _selected = value;
+                    OnPropertyChanged();
                 }
             }
         }
 
+        public ObservableCollection<SaveModel> Items { get; } = new ObservableCollection<SaveModel>();
+
+        private readonly SaveService _service = new SaveService();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public RelayCommand RefreshCommand { get; }
+        public RelayCommand CreateCommand { get; }
+        public RelayCommand ExecuteCommand { get; }
+
         public ListViewModel()
         {
-            service = new SaveService();
-            Items = new ObservableCollection<SaveModel>();
-
             RefreshCommand = new RelayCommand(Refresh);
             CreateCommand = new RelayCommand(Create);
             ExecuteCommand = new RelayCommand(Execute);
@@ -45,9 +43,9 @@ namespace WpfApp.ViewModels
 
         public void Execute()
         {
-            if (selected != null)
+            if (Selected != null)
             {
-                SaveService.ExecuteCopy(selected);
+                SaveService.ExecuteSave(Selected);
             }
             else
             {
@@ -57,13 +55,20 @@ namespace WpfApp.ViewModels
 
         public void Create()
         {
-            // Implement create logic
+            // Create a new instance of SaveModel (assuming SaveModel has a default constructor)
+            var newSaveModel = new SaveModel();
+
+            // Add the new SaveModel instance to the Items collection
+            Items.Add(newSaveModel);
+
+            // Optionally, select the newly added item
+            Selected = newSaveModel;
         }
 
         public void Refresh()
         {
             Items.Clear();
-            foreach (var item in service.LoadSave())
+            foreach (var item in _service.LoadSave())
             {
                 Items.Add(item);
             }
