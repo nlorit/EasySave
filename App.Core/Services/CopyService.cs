@@ -68,6 +68,12 @@ namespace App.Core.Services
                         System.IO.File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
                         stateModel.SourceFilePath = this.CopyModel.SourcePath;
                         stateModel.TargetFilePath = this.CopyModel.TargetPath;
+
+                        loggerService!.loggerModel!.Name = saveModel.SaveName;
+                        loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
+                        loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
+                        loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
+                        loggerService.AddEntryLog();
                         stateManagerService.UpdateStateFile();
                     }
                     else if (Directory.Exists(this.CopyModel.SourcePath))
@@ -77,7 +83,9 @@ namespace App.Core.Services
                     }
                     else
                     {
-                        throw new FileNotFoundException("Source file or directory does not exist.", this.CopyModel.SourcePath);
+                        // Log the error and handle it gracefully
+                        loggerService!.loggerModel!.Name = saveModel.SaveName;
+                        loggerService.AddEntryLog();
                     }
 
                     stateModel.State = "END";
@@ -85,6 +93,7 @@ namespace App.Core.Services
                 }
             }
         }
+
 
         private void CopyDirectory(string sourceDirPath, string targetDirPath, StateManagerModel stateModel)
         {
@@ -114,6 +123,11 @@ namespace App.Core.Services
                 string fileName = Path.GetFileName(filePath);
                 string targetFilePath = Path.Combine(targetDirPath, fileName);
                 System.IO.File.Copy(filePath, targetFilePath, true); // The 'true' parameter allows overwriting the file if it already exists in the target directory
+                loggerService!.loggerModel!.Name = stateModel.SaveName;
+                loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
+                loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
+                loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
+                loggerService.AddEntryLog();
 
                 // Update state model
                 stateModel.NbFilesLeftToDo--;

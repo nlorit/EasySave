@@ -22,9 +22,14 @@ namespace WpfApp.ViewModels
             }
         }
 
-        public ObservableCollection<SaveModel> Items { get; } = new ObservableCollection<SaveModel>();
 
-        private readonly SaveService _service = new();
+        public ObservableCollection<StateManagerModel> listStateManager { get; set; } = new ObservableCollection<StateManagerModel>();
+        public ObservableCollection<SaveModel> listSaveModel{ get; set; } = new ObservableCollection<SaveModel>();
+        public ObservableCollection<SaveModel> Items { get; set; } = new ObservableCollection<SaveModel>();
+
+
+        private SaveService? saveService;
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -34,17 +39,30 @@ namespace WpfApp.ViewModels
 
         public ListViewModel()
         {
+            saveService = new()
+            {
+                ListStateManager = this.listStateManager,
+                ListSaveModel = this.listSaveModel
+            };
+
+            saveService.LoadSave();
+            this.listSaveModel = saveService.ListSaveModel;
+            this.listStateManager = saveService.ListStateManager;
+            foreach (var item in listSaveModel)
+            {
+                Items.Add(item);
+            }
             RefreshCommand = new RelayCommand(Refresh);
             CreateCommand = new RelayCommand(Create);
             ExecuteCommand = new RelayCommand(Execute);
-            Refresh();
+
         }
 
         public void Execute()
         {
             if (Selected != null)
             {
-                SaveService.ExecuteSave(Selected);
+                saveService!.ExecuteSave(Selected);
             }
             else
             {
@@ -61,13 +79,17 @@ namespace WpfApp.ViewModels
             Items.Add(newSaveModel);
 
             // Optionally, select the newly added item
-            Selected = newSaveModel;
+            newSaveModel = Selected;
+
+            saveService!.CreateSave(newSaveModel.InPath, newSaveModel.OutPath, newSaveModel.Type, newSaveModel.SaveName);
+            Thread.Sleep(500);
+            Refresh();
         }
 
         public void Refresh()
         {
             Items.Clear();
-            foreach (var item in _service.LoadSave())
+            foreach (var item in listSaveModel)
             {
                 Items.Add(item);
             }

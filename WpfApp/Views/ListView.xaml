@@ -12,9 +12,9 @@
     </UserControl.DataContext>
 
     <Grid>
-        <DataGrid Name="List" ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" AutoGenerateColumns="True" SelectionMode="Single" CanUserAddRows="False" />
+        <DataGrid Name="List" ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" AutoGenerateColumns="True" SelectionMode="Single" CanUserAddRows="True" />
         <DockPanel>
-            <Button Height="25" Width="100" Content="Create New Row" Command="{Binding CreateCommand}" />
+            <Button Height="25" Width="100" Content="Add new save" Command="{Binding CreateCommand}" />
             <Button Height="25" Width="100" Command="{Binding ExecuteCommand}" Content="Execute"/>
             <Button Height="25" Width="100" Command="{Binding RefreshCommand}" Content="Refresh" />
             <Button Height="25" Width="100" Content="Pause"/>
