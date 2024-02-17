@@ -74,10 +74,8 @@ namespace App.Core.Services
 
         public void AddEntryLog()
         {
-            using (StreamWriter logWriter = File.AppendText(jsonlogFilePath))
-            {
-                logWriter.WriteLineAsync(JsonSerializer.Serialize(logWriter, options) + ",");
-            }
+            using StreamWriter logWriter = File.AppendText(jsonlogFilePath);
+            logWriter.WriteLineAsync(JsonSerializer.Serialize(logWriter, options) + ",");
         }
     }
 

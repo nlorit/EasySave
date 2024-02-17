@@ -1,18 +1,22 @@
 ﻿using App.Core.Models;
-using System.Resources;
+using System.IO;
+using System.Threading;
 
 namespace App.Core.Services
 {
     public class CopyService
     {
-        private readonly LoggerService loggerService = new();
-        private readonly StateManagerService stateManagerService;
+        public LoggerService loggerService = new();
+        public StateManagerService stateManagerService = new();
         private bool isStopped;
         private bool isPaused;
 
         public CopyModel CopyModel { get; set; }
 
-
+        public CopyService()
+        {
+            this.CopyModel = new();
+        }
 
         public CopyService(StateManagerService stateManagerService)
         {
@@ -20,93 +24,112 @@ namespace App.Core.Services
             this.stateManagerService = stateManagerService;
         }
 
-        public void ExecuteCopy()
+        public void ExecuteCopy(SaveModel saveModel)
         {
             isPaused = false;
             isStopped = false;
-            ProcessCopy();
+            ProcessCopy(saveModel);
         }
 
-        public void PauseCopy()
+        public void PauseCopy(SaveModel saveModel)
         {
             isPaused = true;
             // Implement any necessary logic for pausing the copying process
         }
 
-        public void StopCopy()
+        public void StopCopy(SaveModel saveModel)
         {
             isStopped = true;
             // Implement any necessary logic for stopping the copying process
         }
 
-        public void ResumeCopy()
+        public void ResumeCopy(SaveModel saveModel)
         {
             isPaused = false;
             // Implement any necessary logic for resuming the copying process
-            ProcessCopy();
+            ProcessCopy(saveModel);
         }
 
-
-
-
-        private void ProcessCopy()
+        private void ProcessCopy(SaveModel saveModel)
         {
             if (isPaused || isStopped)
                 return;
 
-            // Check if the source path exists
-            if (File.Exists(this.CopyModel.SourcePath))
+            foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
             {
-                // File copying operation
-                File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
-            }
-            // Check if the source path is a directory
-            else if (Directory.Exists(this.CopyModel.SourcePath))
-            {
-                // Directory copying operation
-                CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath);
-            }
-            // If the source path does not exist
-            else
-            {
-                //TODO : throw an exception that the file doesnt Recup l'exception
-                // If the source path does not exist
-                throw new FileNotFoundException("Source file or directory does not exist.", this.CopyModel.SourcePath);
+                if (stateModel.SaveName == saveModel.SaveName)
+                {
+                    stateModel.State = "ACTIVE";
+                    stateManagerService.UpdateStateFile();
 
+                    if (System.IO.File.Exists(this.CopyModel.SourcePath))
+                    {
+                        // File copying operation
+                        System.IO.File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
+                        stateModel.SourceFilePath = this.CopyModel.SourcePath;
+                        stateModel.TargetFilePath = this.CopyModel.TargetPath;
+                        stateManagerService.UpdateStateFile();
+                    }
+                    else if (Directory.Exists(this.CopyModel.SourcePath))
+                    {
+                        // Directory copying operation
+                        CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("Source file or directory does not exist.", this.CopyModel.SourcePath);
+                    }
+
+                    stateModel.State = "END";
+                    stateManagerService.UpdateStateFile();
+                }
             }
         }
 
-        private void CopyDirectory(string sourceDirPath, string targetDirPath)
+        private void CopyDirectory(string sourceDirPath, string targetDirPath, StateManagerModel stateModel)
         {
             if (isPaused || isStopped)
                 return;
 
-            // Crée le répertoire cible s'il n'existe pas encore
-            if (Directory.Exists(targetDirPath))
+            // Create the target directory if it does not exist yet
+            if (!Directory.Exists(targetDirPath))
             {
                 Directory.CreateDirectory(targetDirPath);
             }
 
-            // Obtient la liste des fichiers et des sous-répertoires dans le répertoire source
+            // Get the list of files and subdirectories in the source directory
             string[] files = Directory.GetFiles(sourceDirPath);
             string[] subdirectories = Directory.GetDirectories(sourceDirPath);
 
-            // Copie les fichiers
+            // Update total files to copy
+            stateModel.TotalFilesToCopy = Directory.GetFiles(sourceDirPath, "*.*", SearchOption.AllDirectories).Length;
+            stateManagerService.UpdateStateFile();
+
+            // Copy files
             foreach (string filePath in files)
             {
+                if (isPaused || isStopped)
+                    return;
+
                 string fileName = Path.GetFileName(filePath);
                 string targetFilePath = Path.Combine(targetDirPath, fileName);
-                File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
+                System.IO.File.Copy(filePath, targetFilePath, true); // The 'true' parameter allows overwriting the file if it already exists in the target directory
+
+                // Update state model
+                stateModel.NbFilesLeftToDo--;
+                stateModel.Progression = (int)(((double)(stateModel.TotalFilesToCopy - stateModel.NbFilesLeftToDo) / stateModel.TotalFilesToCopy) * 100);
+                stateModel.SourceFilePath = filePath;
+                stateModel.TargetFilePath = targetFilePath;
+                stateManagerService.UpdateStateFile();
             }
 
-            // Copie les sous-répertoires récursivement
+            // Recursively copy subdirectories
             foreach (string subdirectory in subdirectories)
             {
                 string subdirectoryName = Path.GetFileName(subdirectory);
                 string targetSubdirectoryPath = Path.Combine(targetDirPath, subdirectoryName);
-                CopyDirectory(subdirectory, targetSubdirectoryPath); // Appel récursif pour copier les sous-répertoires
+                CopyDirectory(subdirectory, targetSubdirectoryPath, stateModel); // Recursive call to copy subdirectories
             }
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using App.Core.Models;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace App.Core.Services
@@ -6,7 +7,7 @@ namespace App.Core.Services
     public class StateManagerService
     {
 
-        private readonly List<StateManagerModel> listStateModel;
+        public ObservableCollection<StateManagerModel>? listStateModel;
         private readonly string jsonStateFilePath = "state.json";
 
 
@@ -17,16 +18,14 @@ namespace App.Core.Services
         };
 
 
-        public StateManagerService(List<StateManagerModel> listStateModel)
-        {
+        public StateManagerService()
+        {   
             //Create the state file if it does not exist
             if (!File.Exists(jsonStateFilePath))
             {
                 CreateStateFile();
             }
-
-            this.listStateModel = listStateModel;
-            UpdateStateFile();
+            //UpdateStateFile();
 
         }
 
@@ -41,7 +40,7 @@ namespace App.Core.Services
             // Clear the state file
             ClearStateFile();
             int i = 0;
-            foreach (StateManagerModel stateModel in listStateModel)
+            foreach (StateManagerModel stateModel in listStateModel!)
             {
                 using (StreamWriter stateWriter = File.AppendText(jsonStateFilePath))
                 {
@@ -63,5 +62,7 @@ namespace App.Core.Services
             // Clear the state file
             File.WriteAllText(jsonStateFilePath, "");
         }
+
+
     }
 }

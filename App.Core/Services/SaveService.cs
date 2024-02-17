@@ -8,22 +8,26 @@ namespace App.Core.Services
     public class SaveService
     {
 
-        public required ObservableCollection<StateManagerModel> ListStateManager { get; set; }
-        public required ObservableCollection<SaveModel> ListSaveModel { get; set; }
+        public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
+        public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
+        private readonly CopyService copyService = new();
 
 
         public SaveService() 
         { 
-
             LoadSave();
+            copyService.stateManagerService.listStateModel = ListStateManager;
+            copyService.stateManagerService.UpdateStateFile();
         }
 
-        public static void ExecuteSave(SaveModel saveModel)
+        public void ExecuteSave(SaveModel saveModel)
 
         {   //Method to execute the copy service
-            CopyService copyService = new CopyService();
             //Execute the copy service
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel);
+            copyService.CopyModel.SourcePath = saveModel.InPath;
+            copyService.CopyModel.TargetPath = saveModel.OutPath;
+            copyService.stateManagerService.listStateModel = ListStateManager;
+            copyService.ExecuteCopy(saveModel);
 
 
         }
@@ -37,6 +41,19 @@ namespace App.Core.Services
             if (File.Exists("saves.json"))
             {
                 ListSaveModel = JsonConvert.DeserializeObject<ObservableCollection<SaveModel>>(File.ReadAllText("saves.json"))!;
+
+                foreach (SaveModel saveModel in ListSaveModel)
+                {
+                    StateManagerModel stateModel = new()
+                    {
+                        SaveName = saveModel.SaveName,
+                        SourceFilePath = saveModel.InPath,
+                        TargetFilePath = saveModel.OutPath,
+                        State = "END"
+                    };
+                    ListStateManager.Add(stateModel);
+                }
+                
             }
             else
             {
@@ -68,7 +85,8 @@ namespace App.Core.Services
             try
             {
                 ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName });
-                ListStateManager.Add(new StateManagerModel { SaveName = saveName });
+                ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
+                File.WriteAllText("saves.json", JsonConvert.SerializeObject(ListSaveModel));
                 return true;
             }
             catch 

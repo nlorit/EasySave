@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using App.Cmd.ViewModels;
 using App.Core.Models;
 using App.Core.Services;
 
@@ -25,7 +24,7 @@ namespace WpfApp.ViewModels
 
         public ObservableCollection<SaveModel> Items { get; } = new ObservableCollection<SaveModel>();
 
-        private readonly SaveService _service = new SaveService();
+        private readonly SaveService _service = new();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
