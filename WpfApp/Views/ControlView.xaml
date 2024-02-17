@@ -11,13 +11,6 @@
         <viewmodels:ListViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <DockPanel>
-            <Button Height="25" Width="100" Margin="0,0,0,0" Command="{Binding CreateCommand}" Content="Create"/>
-            <Button Height="25" Width="100" Command="{Binding ExecuteCommand}" Content="Execute"/>
-            <Button Height="25" Width="100" Command="{Binding RefreshCommand}" Content="Refresh" />
-            <Button Height="25" Width="100" Content="Pause"/>
-            <Button Height="25" Width="100" Margin="0,0,0,0" Content="Stop"/>
-            <Button Height="25" Width="100" Content="Resume"/>
-        </DockPanel>
+
     </Grid>
 </UserControl>

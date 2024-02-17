@@ -145,7 +145,7 @@ namespace App.Core.Services
                               " \r\n                                                        |___/                                 " +
                               " \r\n                               ");
             Console.WriteLine("                                                          Developped by \n                    ");
-            Console.WriteLine("                                Louis JAGUENEAU  - Nathan LORIT - Julien DESPEZ - Paul PESCHEL");
+            Console.WriteLine("                                Louis JAGUENEAU  - Nathan LORIT - Julien DESPREZ - Paul PESCHEL");
             Console.ResetColor();
         }
         /// <summary>
