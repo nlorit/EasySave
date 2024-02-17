@@ -20,6 +20,7 @@ namespace App.Cmd.ViewModels
         private static partial Regex MyRegex();
 
 
+
         private ObservableCollection<StateManagerModel> listState = [];
         private ObservableCollection<SaveModel> ListSaveModel = [];
 
@@ -292,6 +293,7 @@ namespace App.Cmd.ViewModels
                     return false;
             }
         }
+
 
 
 
