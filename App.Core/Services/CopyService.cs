@@ -71,114 +71,60 @@ namespace App.Core.Services
                 totalFile += 1;
                 totalSize += new FileInfo(item).Length;
             }
-
-            if (isEncrypted)
+            foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
             {
-                foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
+                if (stateModel.SaveName == saveModel.SaveName)
                 {
-                    if (stateModel.SaveName == saveModel.SaveName)
+                    stateModel.TotalFilesToCopy += totalFile;
+                    stateModel.NbFilesLeftToDo = totalFile;
+                    stateModel.TotalFilesSize = totalSize;
+                    stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
+                    progress = stateModel.Progression;
+                    stateModel.State = "ACTIVE";
+                    stateManagerService.UpdateStateFile();
+
+                    if (File.Exists(this.CopyModel.SourcePath))
                     {
-                        stateModel.TotalFilesToCopy = Convert.ToInt32(totalFile);
-                        stateModel.NbFilesLeftToDo = Convert.ToInt32(totalFile);
-                        stateModel.TotalFilesSize = totalSize;
+                        // File copying operation
+                            
+                        stateModel.SourceFilePath = this.CopyModel.SourcePath;
+                        stateModel.TargetFilePath = this.CopyModel.TargetPath;
+                        stateManagerService.UpdateStateFile();
+                            
+                        File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
                         stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
                         progress = stateModel.Progression;
-                        stateModel.State = "ACTIVE";
+                        if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
+                        stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
+
                         stateManagerService.UpdateStateFile();
 
-                        if (File.Exists(this.CopyModel.SourcePath))
-                        {
-                            // File copying operation
-                            
-                            stateModel.SourceFilePath = this.CopyModel.SourcePath;
-                            stateModel.TargetFilePath = this.CopyModel.TargetPath;
-                            stateManagerService.UpdateStateFile();
-                            
-                            File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
-                            stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
-                            progress = stateModel.Progression;
-                            EncryptFile(this.CopyModel.SourcePath);
-                            stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
 
-                            stateManagerService.UpdateStateFile();
+                        loggerService!.loggerModel!.Name = saveModel.SaveName;
+                        loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
+                        loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
+                        loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
+                        loggerService.AddEntryLog();
 
-
-                            loggerService!.loggerModel!.Name = saveModel.SaveName;
-                            loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
-                            loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
-                            loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
-                            loggerService.AddEntryLog();
-
-                        }
-                        else if (Directory.Exists(this.CopyModel.SourcePath))
-                        {
-                            // Directory copying operation
-                            CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
-                        }
-                        else
-                        {
-                            // Log the error and handle it gracefully
-                            loggerService!.loggerModel!.Name = saveModel.SaveName;
-                            loggerService.AddEntryLog();
-                        }
-
-                        stateModel.State = "END";
-                        stateManagerService.UpdateStateFile();
                     }
-                }
-            }
-            else
-            {
-                foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
-                {
-                    if (stateModel.SaveName == saveModel.SaveName)
+                    else if (Directory.Exists(this.CopyModel.SourcePath))
                     {
-                        stateModel.TotalFilesToCopy = Convert.ToInt32(totalFile);
-                        stateModel.NbFilesLeftToDo = Convert.ToInt32(totalFile);
-                        stateModel.TotalFilesSize = totalSize;
-                        stateModel.State = "ACTIVE";
-                        stateManagerService.UpdateStateFile();
-
-                        if (System.IO.File.Exists(this.CopyModel.SourcePath))
-                        {
-                            // File copying operation
-                            stateModel.SourceFilePath = this.CopyModel.SourcePath;
-                            stateModel.TargetFilePath = this.CopyModel.TargetPath;
-                            stateManagerService.UpdateStateFile();
-                            stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
-                            progress = stateModel.Progression;
-
-                            System.IO.File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
-                            EncryptFile(this.CopyModel.SourcePath);
-                            stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
-
-                            stateManagerService.UpdateStateFile();
-
-
-                            loggerService!.loggerModel!.Name = saveModel.SaveName;
-                            loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
-                            loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
-                            loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
-                            loggerService.AddEntryLog();
-
-                        }
-                        else if (Directory.Exists(this.CopyModel.SourcePath))
-                        {
-                            // Directory copying operation
-                            CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
-                        }
-                        else
-                        {
-                            // Log the error and handle it gracefully
-                            loggerService!.loggerModel!.Name = saveModel.SaveName;
-                            loggerService.AddEntryLog();
-                        }
-
-                        stateModel.State = "END";
-                        stateManagerService.UpdateStateFile();
+                        // Directory copying operation
+                        CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
                     }
+                    else
+                    {
+                        // Log the error and handle it gracefully
+                        loggerService!.loggerModel!.Name = saveModel.SaveName;
+                        loggerService.AddEntryLog();
+                    }
+
+                    stateModel.State = "END";
+                    stateManagerService.UpdateStateFile();
                 }
             }
+            
+ 
 
 
             
@@ -213,16 +159,12 @@ namespace App.Core.Services
                 string targetFilePath = Path.Combine(targetDirPath, fileName);
                 stateModel.SourceFilePath = filePath;
                 stateModel.TargetFilePath = targetFilePath;
-                stateModel.TotalFilesToCopy = files.Length;
-
-                
-
 
                 stateManagerService.UpdateStateFile();
-                totalFile += 1;
 
                 DateTime start = DateTime.Now;
                 File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
+                if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
                 stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
 
                 stateManagerService.UpdateStateFile();
