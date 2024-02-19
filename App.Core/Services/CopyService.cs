@@ -1,4 +1,5 @@
 ﻿using App.Core.Models;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -10,7 +11,7 @@ namespace App.Core.Services
         public StateManagerService stateManagerService = new();
         private bool isStopped;
         private bool isPaused;
-        private bool isEncrypted;
+        private bool isEncrypted =true;
         private long totalFile = 0;
         private long totalSize = 0;
         private float progress =0;
@@ -56,10 +57,17 @@ namespace App.Core.Services
             ProcessCopy(saveModel);
         }
 
-        private void EncryptFile(string sourcePathh)
+        private void EncryptFile(string sourcePath)
         {
-            
+            string additionalArgument = "abcabcab";
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            string FileName = @"Library\Cryptosoft.exe"; // Assuming Cryptosoft.exe is located in the Library directory relative to the current working directory
+            startInfo.Arguments = $"{FileName} {sourcePath} {additionalArgument} .*";
+
+            Process.Start(startInfo);
         }
+
 
         private void ProcessCopy(SaveModel saveModel)
         {
@@ -71,10 +79,12 @@ namespace App.Core.Services
                 totalFile += 1;
                 totalSize += new FileInfo(item).Length;
             }
+
             foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
             {
                 if (stateModel.SaveName == saveModel.SaveName)
                 {
+
                     stateModel.TotalFilesToCopy += totalFile;
                     stateModel.NbFilesLeftToDo = totalFile;
                     stateModel.TotalFilesSize = totalSize;
@@ -86,11 +96,13 @@ namespace App.Core.Services
                     if (File.Exists(this.CopyModel.SourcePath))
                     {
                         // File copying operation
-                            
+
                         stateModel.SourceFilePath = this.CopyModel.SourcePath;
                         stateModel.TargetFilePath = this.CopyModel.TargetPath;
                         stateManagerService.UpdateStateFile();
                             
+
+
                         File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
                         stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
                         progress = stateModel.Progression;
@@ -111,6 +123,7 @@ namespace App.Core.Services
                     {
                         // Directory copying operation
                         CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
+
                     }
                     else
                     {
@@ -124,7 +137,7 @@ namespace App.Core.Services
                 }
             }
             
- 
+
 
 
             
@@ -133,6 +146,7 @@ namespace App.Core.Services
 
         private void CopyDirectory(string sourceDirPath, string targetDirPath, StateManagerModel stateModel)
         {
+
 
             // Vérifie si le répertoire source existe
             if (!Directory.Exists(sourceDirPath))
@@ -166,6 +180,10 @@ namespace App.Core.Services
                 File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
                 if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
                 stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
+                start = DateTime.Now;
+
+                if (isEncrypted) EncryptFile(targetFilePath);
+                loggerService!.loggerModel!.FileEncryptionTime = (DateTime.Now - start).ToString();
 
                 stateManagerService.UpdateStateFile();
                 loggerService!.loggerModel!.Name = stateModel.SaveName;
