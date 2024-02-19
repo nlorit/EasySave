@@ -1,5 +1,6 @@
 ﻿namespace App.Core.Models
 {
+
     public class StateManagerModel
     {
         public string SaveName { get; set; } = string.Empty;                                // Name of the save
