@@ -81,7 +81,7 @@ namespace App.Core.Services
         {
             try
             {
-                ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName });
+                ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName});
                 ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
                 File.WriteAllText("saves.json", JsonSerializer.Serialize(ListSaveModel, options));
                 return true;

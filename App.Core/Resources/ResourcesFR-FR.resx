@@ -123,6 +123,9 @@
   <data name="Element" xml:space="preserve">
     <value>Certains éléments :</value>
   </data>
+  <data name="EncryptChoice" xml:space="preserve">
+    <value>Souhaitez vous chiffrer vos fichiers ?</value>
+  </data>
   <data name="EnterExit" xml:space="preserve">
     <value>Appuyez sur ENTRER pour quitter </value>
   </data>
@@ -177,11 +180,20 @@
   <data name="Name" xml:space="preserve">
     <value>Nom :  </value>
   </data>
+  <data name="No" xml:space="preserve">
+    <value>Non</value>
+  </data>
   <data name="Number1" xml:space="preserve">
     <value>         1- </value>
   </data>
+  <data name="Number1WithoutSpace" xml:space="preserve">
+    <value>1-  </value>
+  </data>
   <data name="Number2" xml:space="preserve">
     <value>         2- </value>
+  </data>
+  <data name="Number2WithoutSpace" xml:space="preserve">
+    <value>2- </value>
   </data>
   <data name="Number3" xml:space="preserve">
     <value>         3- </value>
@@ -242,5 +254,8 @@
   </data>
   <data name="TypeAnswer2" xml:space="preserve">
     <value>Différentiel</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
   </data>
 </root>

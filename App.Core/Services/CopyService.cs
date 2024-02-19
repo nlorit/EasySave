@@ -11,7 +11,7 @@ namespace App.Core.Services
         public StateManagerService stateManagerService = new();
         private bool isStopped;
         private bool isPaused;
-        private bool isEncrypted =true;
+        public bool isEncrypted;
         private long totalFile = 0;
         private long totalSize = 0;
         private float progress =0;

@@ -181,8 +181,38 @@ namespace App.Cmd.ViewModels
                         } while (SaveName == null || SaveName.Trim() == "");
 
 
+
+                        Console.WriteLine("");
+                        Console.WriteLine("+---------------------------------------------+");
+                        Console.Write("| ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write(DisplayService.GetResource("Number5WithoutSpace"));
+                        Console.ResetColor();
+                        Console.Write(DisplayService.GetResource("EncryptChoice"));
+                        Console.WriteLine("       |");
+                        Console.WriteLine("+---------------------------------------------+");
+                        Console.Write(DisplayService.GetResource("Number1WithoutSpace"));
+                        Console.WriteLine(DisplayService.GetResource("Yes"));
+                        Console.Write(DisplayService.GetResource("Number2WithoutSpace"));
+                        Console.WriteLine(DisplayService.GetResource("No"));
+                        Console.WriteLine("\n");
+
+                      
+
+                        switch (int.Parse(Console.ReadLine()!))
+                        {
+                            case 1:
+                                copyService!.isEncrypted = true;
+                                break;
+                            case 2:
+                                copyService!.isEncrypted = false;
+                                break;
+                            default:
+                                break;
+                        }
+
                         //TODO : Ajouter message de confirmation de save créé avec le try catch ...
-                        saveService!.CreateSave("@" + InPath, "@" + OutPath, type, SaveName);
+                        saveService!.CreateSave( InPath, OutPath, type, SaveName);
                         stateManagerService!.UpdateStateFile();
                         ListSaveModel = saveService.ListSaveModel;
                         listState = stateManagerService!.listStateModel!;
@@ -200,20 +230,22 @@ namespace App.Cmd.ViewModels
                         System.Threading.Thread.Sleep(2000);
                     }
 
+
                     //Return to the main menu
                     DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
-           
-
-
-
-
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                     return true;
+                
+                
+                
+                
                 case 2:
                     Console.Clear();
                     Console.WriteLine(DisplayService.GetResource("RunSave"));
 
                     try
                     {
+
                         int i = 0;
                         foreach (var item in ListSaveModel!)
                         {
@@ -228,6 +260,7 @@ namespace App.Cmd.ViewModels
                         {
                             //try
                             //{
+
                                 string[] parts = UserChoice.Split(';');
                                 int z1 = int.Parse(parts[0]);
                                 int z2 = int.Parse(parts[1]);
@@ -240,6 +273,7 @@ namespace App.Cmd.ViewModels
                                 saveService!.ExecuteSave(ListSaveModel[z2]);
                                 DisplayService.SetForegroundColor("Green", $"Save {z2} Executed");
                                 Thread.Sleep(1000);
+                            
                             //}
                             //catch (IndexOutOfRangeException)
                             //{
