@@ -63,7 +63,8 @@ namespace App.Core.Services
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             string FileName = @"Library\Cryptosoft.exe"; // Assuming Cryptosoft.exe is located in the Library directory relative to the current working directory
-            startInfo.Arguments = $"{FileName} {sourcePath} {additionalArgument} .*";
+            startInfo.FileName = FileName;
+            startInfo.Arguments = $" {sourcePath} {additionalArgument} .png";
 
             Process.Start(startInfo);
         }
@@ -106,7 +107,6 @@ namespace App.Core.Services
                         File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
                         stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
                         progress = stateModel.Progression;
-                        if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
                         stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
 
                         stateManagerService.UpdateStateFile();
@@ -132,15 +132,17 @@ namespace App.Core.Services
                         loggerService.AddEntryLog();
                     }
 
+                    
+
                     stateModel.State = "END";
                     stateManagerService.UpdateStateFile();
                 }
             }
-            
 
 
+            if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
 
-            
+
         }
 
 
@@ -178,11 +180,9 @@ namespace App.Core.Services
 
                 DateTime start = DateTime.Now;
                 File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
-                if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
                 stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
                 start = DateTime.Now;
 
-                if (isEncrypted) EncryptFile(targetFilePath);
                 loggerService!.loggerModel!.FileEncryptionTime = (DateTime.Now - start).ToString();
 
                 stateManagerService.UpdateStateFile();
