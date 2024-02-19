@@ -42,4 +42,22 @@
 	  <Folder Include="Library\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Library\Cryptosoft.deps.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Library\Cryptosoft.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Library\Cryptosoft.exe">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Library\Cryptosoft.pdb">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Library\Cryptosoft.runtimeconfig.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

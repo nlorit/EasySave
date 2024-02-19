@@ -11,7 +11,7 @@ namespace App.Core.Services
         public StateManagerService stateManagerService = new();
         private bool isStopped;
         private bool isPaused;
-        private bool isEncrypted;
+        private bool isEncrypted =true;
         private long totalFile = 0;
         private long totalSize = 0;
 
@@ -61,12 +61,12 @@ namespace App.Core.Services
             string additionalArgument = "abcabcab";
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "Cryptosoft.exe";
-            startInfo.Arguments = $"{sourcePath} {additionalArgument}";
+            string FileName = @"Library\Cryptosoft.exe"; // Assuming Cryptosoft.exe is located in the Library directory relative to the current working directory
+            startInfo.Arguments = $"{FileName} {sourcePath} {additionalArgument} .*";
 
             Process.Start(startInfo);
-
         }
+
 
         private void ProcessCopy(SaveModel saveModel)
         {
