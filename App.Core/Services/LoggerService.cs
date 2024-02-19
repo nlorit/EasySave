@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Xml.Serialization;
 using App.Core.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace App.Core.Services
 {
@@ -22,7 +23,6 @@ namespace App.Core.Services
 
         public void WriteLog()
         {
-            // Check for nulls
             //TODO : Gerer les exeptions
 
             try
@@ -69,13 +69,20 @@ namespace App.Core.Services
         public void CreateLogFile()
         {
             // Create the log file
-            File.WriteAllText(jsonlogFilePath, "");
+            File.WriteAllText(jsonlogFilePath, "[]");
         }
 
         public void AddEntryLog()
         {
-            using StreamWriter logWriter = File.AppendText(jsonlogFilePath);
-            logWriter.WriteLineAsync(JsonSerializer.Serialize(logWriter, options) + ",");
+            try
+            {
+                using StreamWriter logWriter = File.AppendText(jsonlogFilePath);
+                logWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ",");
+            }
+            catch (InvalidOperationException)
+            {
+                CreateLogFile();
+            }
         }
     }
 

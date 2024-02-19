@@ -1,7 +1,6 @@
 ﻿using App.Core.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Collections.ObjectModel;
-using System.Resources;
 
 namespace App.Core.Services
 {
@@ -11,6 +10,11 @@ namespace App.Core.Services
         public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
         private readonly CopyService copyService = new();
+
+        private readonly JsonSerializerOptions options = new()
+        {
+            WriteIndented = true
+        };
 
 
         public SaveService() 
@@ -32,15 +36,13 @@ namespace App.Core.Services
 
         }
             
-        /// <summary>
-        ///  Load Save from saves.json
-        /// </summary>
+
         public void LoadSave()
         {
 
             if (File.Exists("saves.json"))
             {
-                ListSaveModel = JsonConvert.DeserializeObject<ObservableCollection<SaveModel>>(File.ReadAllText("saves.json"))!;
+                ListSaveModel = JsonSerializer.Deserialize<ObservableCollection<SaveModel>>(File.ReadAllText("saves.json"))!;
 
                 foreach (SaveModel saveModel in ListSaveModel)
                 {
@@ -72,34 +74,26 @@ namespace App.Core.Services
             return Tuple.Create(saveModel.SaveName, saveModel.InPath, saveModel.OutPath, saveModel.Type, saveModel.Date);
         }
 
-        /// <summary>
-        /// Create a save
-        /// </summary>
-        /// <param name="inPath"></param>
-        /// <param name="outPath"></param>
-        /// <param name="type"></param>
-        /// <param name="saveName"></param>
-        /// <returns></returns>
-        public bool CreateSave(string inPath, string outPath, string type, string saveName )
+
+       
+
+        public bool CreateSave(string inPath, string outPath, string type, string saveName)
         {
             try
             {
                 ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName });
                 ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
-                File.WriteAllText("saves.json", JsonConvert.SerializeObject(ListSaveModel));
+                File.WriteAllText("saves.json", JsonSerializer.Serialize(ListSaveModel, options));
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
-
         }
 
-        /// <summary>
-        /// Delete a save
-        /// </summary>
-        /// <param name="saveModel"></param>
+
+
         public void DeleteSave(SaveModel saveModel)
         {
             ListSaveModel.Remove(saveModel);

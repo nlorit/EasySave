@@ -10,6 +10,9 @@ namespace App.Core.Services
         public StateManagerService stateManagerService = new();
         private bool isStopped;
         private bool isPaused;
+        private bool isEncrypted;
+        private long totalFile = 0;
+        private long totalSize = 0;
 
         public CopyModel CopyModel { get; set; }
 
@@ -28,6 +31,8 @@ namespace App.Core.Services
         {
             isPaused = false;
             isStopped = false;
+            totalFile = 0;
+            totalSize = 0;
             ProcessCopy(saveModel);
         }
 
@@ -50,99 +55,183 @@ namespace App.Core.Services
             ProcessCopy(saveModel);
         }
 
+        private void EncryptFile(string sourcePathh)
+        {
+            
+        }
+
         private void ProcessCopy(SaveModel saveModel)
         {
             if (isPaused || isStopped)
                 return;
 
-            foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
+            foreach (var item in Directory.GetFiles(this.CopyModel.SourcePath, "*", SearchOption.AllDirectories))
             {
-                if (stateModel.SaveName == saveModel.SaveName)
+                totalFile += 1;
+                totalSize += new FileInfo(item).Length;
+            }
+
+            if (isEncrypted)
+            {
+                foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
                 {
-                    stateModel.State = "ACTIVE";
-                    stateManagerService.UpdateStateFile();
-
-                    if (System.IO.File.Exists(this.CopyModel.SourcePath))
+                    if (stateModel.SaveName == saveModel.SaveName)
                     {
-                        // File copying operation
-                        System.IO.File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
-                        stateModel.SourceFilePath = this.CopyModel.SourcePath;
-                        stateModel.TargetFilePath = this.CopyModel.TargetPath;
+                        stateModel.TotalFilesToCopy = Convert.ToInt32(totalFile);
+                        stateModel.NbFilesLeftToDo = Convert.ToInt32(totalFile);
+                        stateModel.TotalFilesSize = totalSize;
+                        stateModel.State = "ACTIVE";
+                        stateManagerService.UpdateStateFile();
 
-                        loggerService!.loggerModel!.Name = saveModel.SaveName;
-                        loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
-                        loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
-                        loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
-                        loggerService.AddEntryLog();
+                        if (File.Exists(this.CopyModel.SourcePath))
+                        {
+                            // File copying operation
+                            stateModel.SourceFilePath = this.CopyModel.SourcePath;
+                            stateModel.TargetFilePath = this.CopyModel.TargetPath;
+                            stateManagerService.UpdateStateFile();
+                            
+                            File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
+                            EncryptFile(this.CopyModel.SourcePath);
+                            stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
+
+                            stateManagerService.UpdateStateFile();
+
+
+                            loggerService!.loggerModel!.Name = saveModel.SaveName;
+                            loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
+                            loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
+                            loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
+                            loggerService.AddEntryLog();
+
+                        }
+                        else if (Directory.Exists(this.CopyModel.SourcePath))
+                        {
+                            // Directory copying operation
+                            CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
+                        }
+                        else
+                        {
+                            // Log the error and handle it gracefully
+                            loggerService!.loggerModel!.Name = saveModel.SaveName;
+                            loggerService.AddEntryLog();
+                        }
+
+                        stateModel.State = "END";
                         stateManagerService.UpdateStateFile();
                     }
-                    else if (Directory.Exists(this.CopyModel.SourcePath))
-                    {
-                        // Directory copying operation
-                        CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
-                    }
-                    else
-                    {
-                        // Log the error and handle it gracefully
-                        loggerService!.loggerModel!.Name = saveModel.SaveName;
-                        loggerService.AddEntryLog();
-                    }
-
-                    stateModel.State = "END";
-                    stateManagerService.UpdateStateFile();
                 }
             }
+            else
+            {
+                foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
+                {
+                    if (stateModel.SaveName == saveModel.SaveName)
+                    {
+                        stateModel.TotalFilesToCopy = Convert.ToInt32(totalFile);
+                        stateModel.NbFilesLeftToDo = Convert.ToInt32(totalFile);
+                        stateModel.TotalFilesSize = totalSize;
+                        stateModel.State = "ACTIVE";
+                        stateManagerService.UpdateStateFile();
+
+                        if (System.IO.File.Exists(this.CopyModel.SourcePath))
+                        {
+                            // File copying operation
+                            stateModel.SourceFilePath = this.CopyModel.SourcePath;
+                            stateModel.TargetFilePath = this.CopyModel.TargetPath;
+                            stateManagerService.UpdateStateFile();
+                            
+                            System.IO.File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
+                            EncryptFile(this.CopyModel.SourcePath);
+                            stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
+
+                            stateManagerService.UpdateStateFile();
+
+
+                            loggerService!.loggerModel!.Name = saveModel.SaveName;
+                            loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
+                            loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
+                            loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
+                            loggerService.AddEntryLog();
+
+                        }
+                        else if (Directory.Exists(this.CopyModel.SourcePath))
+                        {
+                            // Directory copying operation
+                            CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
+                        }
+                        else
+                        {
+                            // Log the error and handle it gracefully
+                            loggerService!.loggerModel!.Name = saveModel.SaveName;
+                            loggerService.AddEntryLog();
+                        }
+
+                        stateModel.State = "END";
+                        stateManagerService.UpdateStateFile();
+                    }
+                }
+            }
+
+
+            
         }
 
 
         private void CopyDirectory(string sourceDirPath, string targetDirPath, StateManagerModel stateModel)
         {
-            if (isPaused || isStopped)
-                return;
 
-            // Create the target directory if it does not exist yet
+            // Vérifie si le répertoire source existe
+            if (!Directory.Exists(sourceDirPath))
+            {
+                Console.WriteLine("Le répertoire source n'existe pas.");
+                return;
+            }
+
+            // Crée le répertoire cible s'il n'existe pas encore
             if (!Directory.Exists(targetDirPath))
             {
                 Directory.CreateDirectory(targetDirPath);
             }
 
-            // Get the list of files and subdirectories in the source directory
+            // Obtient la liste des fichiers et des sous-répertoires dans le répertoire source
             string[] files = Directory.GetFiles(sourceDirPath);
             string[] subdirectories = Directory.GetDirectories(sourceDirPath);
 
-            // Update total files to copy
-            stateModel.TotalFilesToCopy = Directory.GetFiles(sourceDirPath, "*.*", SearchOption.AllDirectories).Length;
-            stateManagerService.UpdateStateFile();
-
-            // Copy files
+            
+            // Copie les fichiers
             foreach (string filePath in files)
             {
-                if (isPaused || isStopped)
-                    return;
-
                 string fileName = Path.GetFileName(filePath);
                 string targetFilePath = Path.Combine(targetDirPath, fileName);
-                System.IO.File.Copy(filePath, targetFilePath, true); // The 'true' parameter allows overwriting the file if it already exists in the target directory
-                loggerService!.loggerModel!.Name = stateModel.SaveName;
-                loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
-                loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
-                loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
-                loggerService.AddEntryLog();
-
-                // Update state model
-                stateModel.NbFilesLeftToDo--;
-                stateModel.Progression = (int)(((double)(stateModel.TotalFilesToCopy - stateModel.NbFilesLeftToDo) / stateModel.TotalFilesToCopy) * 100);
                 stateModel.SourceFilePath = filePath;
                 stateModel.TargetFilePath = targetFilePath;
+                stateModel.TotalFilesToCopy = files.Length;
+
+                
+
+
                 stateManagerService.UpdateStateFile();
+                totalFile += 1;
+
+                DateTime start = DateTime.Now;
+                File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
+                stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
+
+                stateManagerService.UpdateStateFile();
+                loggerService!.loggerModel!.Name = stateModel.SaveName;
+                loggerService!.loggerModel!.FileSource = filePath;
+                loggerService!.loggerModel.FileTarget = targetFilePath;
+                loggerService!.loggerModel.FileSize = new FileInfo(filePath).Length.ToString();
+                loggerService!.loggerModel.FileTransferTime = (DateTime.Now - start).ToString();
+                loggerService.AddEntryLog();
             }
 
-            // Recursively copy subdirectories
+            // Copie les sous-répertoires récursivement
             foreach (string subdirectory in subdirectories)
             {
                 string subdirectoryName = Path.GetFileName(subdirectory);
                 string targetSubdirectoryPath = Path.Combine(targetDirPath, subdirectoryName);
-                CopyDirectory(subdirectory, targetSubdirectoryPath, stateModel); // Recursive call to copy subdirectories
+                CopyDirectory(subdirectory, targetSubdirectoryPath, stateModel); // Appel récursif pour copier les sous-répertoires
             }
         }
     }

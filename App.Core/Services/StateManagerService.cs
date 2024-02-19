@@ -8,7 +8,7 @@ namespace App.Core.Services
     {
 
         public ObservableCollection<StateManagerModel>? listStateModel;
-        private readonly string jsonStateFilePath = "state.json";
+        private readonly string stateFilePath = "state.json";
 
 
         //Options for the JsonSerializer
@@ -21,7 +21,7 @@ namespace App.Core.Services
         public StateManagerService()
         {   
             //Create the state file if it does not exist
-            if (!File.Exists(jsonStateFilePath))
+            if (!File.Exists(stateFilePath))
             {
                 CreateStateFile();
             }
@@ -32,7 +32,7 @@ namespace App.Core.Services
         public void OpenStateFile()
         {
             // Open the state file in notepad
-            System.Diagnostics.Process.Start("notepad.exe", jsonStateFilePath);
+            System.Diagnostics.Process.Start("notepad.exe", stateFilePath);
         }
 
         public void UpdateStateFile()
@@ -42,7 +42,7 @@ namespace App.Core.Services
             int i = 0;
             foreach (StateManagerModel stateModel in listStateModel!)
             {
-                using (StreamWriter stateWriter = File.AppendText(jsonStateFilePath))
+                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
                 {
                     stateWriter.WriteLineAsync(JsonSerializer.Serialize(stateModel, options) + ",");
                 }
@@ -54,13 +54,13 @@ namespace App.Core.Services
         public void CreateStateFile() 
         {
             // Create the state file
-            File.WriteAllText(jsonStateFilePath, "[]");
+            File.WriteAllText(stateFilePath, "[]");
         }
 
         public void ClearStateFile()
         {
             // Clear the state file
-            File.WriteAllText(jsonStateFilePath, "");
+            File.WriteAllText(stateFilePath, "");
         }
 
 
