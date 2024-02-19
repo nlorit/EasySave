@@ -13,6 +13,7 @@ namespace App.Core.Services
         private bool isEncrypted;
         private long totalFile = 0;
         private long totalSize = 0;
+        private float progress =0;
 
         public CopyModel CopyModel { get; set; }
 
@@ -80,17 +81,22 @@ namespace App.Core.Services
                         stateModel.TotalFilesToCopy = Convert.ToInt32(totalFile);
                         stateModel.NbFilesLeftToDo = Convert.ToInt32(totalFile);
                         stateModel.TotalFilesSize = totalSize;
+                        stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
+                        progress = stateModel.Progression;
                         stateModel.State = "ACTIVE";
                         stateManagerService.UpdateStateFile();
 
                         if (File.Exists(this.CopyModel.SourcePath))
                         {
                             // File copying operation
+                            
                             stateModel.SourceFilePath = this.CopyModel.SourcePath;
                             stateModel.TargetFilePath = this.CopyModel.TargetPath;
                             stateManagerService.UpdateStateFile();
                             
                             File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
+                            stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
+                            progress = stateModel.Progression;
                             EncryptFile(this.CopyModel.SourcePath);
                             stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
 
@@ -139,7 +145,9 @@ namespace App.Core.Services
                             stateModel.SourceFilePath = this.CopyModel.SourcePath;
                             stateModel.TargetFilePath = this.CopyModel.TargetPath;
                             stateManagerService.UpdateStateFile();
-                            
+                            stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
+                            progress = stateModel.Progression;
+
                             System.IO.File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
                             EncryptFile(this.CopyModel.SourcePath);
                             stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;

@@ -230,7 +230,7 @@ namespace App.Cmd.ViewModels
                             {
                                 string[] parts = UserChoice.Split(';');
                                 int z1 = int.Parse(parts[0]);
-                                int z2 = int.Parse(parts[0]);
+                                int z2 = int.Parse(parts[1]);
                                 DisplayService.SetForegroundColor("Green", $"Save {z1} is running");
 
                                 saveService!.ExecuteSave(ListSaveModel[z1]);
@@ -316,7 +316,7 @@ namespace App.Cmd.ViewModels
                             }
                             catch (Exception)
                             {
-                                DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                                DisplayService.SetBackForeColor("Black", "DarkRed","An error as occured when running the save...");
                                 System.Threading.Thread.Sleep(1500);
                                 return true;
                             }   
