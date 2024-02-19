@@ -316,7 +316,7 @@ namespace App.Cmd.ViewModels
                             }
                             catch (Exception)
                             {
-                                DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
+                                DisplayService.SetBackForeColor("Black", "DarkRed","An error as occured when running the save...");
                                 System.Threading.Thread.Sleep(1500);
                                 return true;
                             }   
