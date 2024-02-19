@@ -226,8 +226,9 @@ namespace App.Cmd.ViewModels
 
                         if (MyRegex().IsMatch(UserChoice))
                         {
-                            //try
-                            //{
+                            if (!saveService!.IsSoftwareRunning())
+                            {
+
                                 string[] parts = UserChoice.Split(';');
                                 int z1 = int.Parse(parts[0]);
                                 int z2 = int.Parse(parts[1]);
@@ -240,45 +241,21 @@ namespace App.Cmd.ViewModels
                                 saveService!.ExecuteSave(ListSaveModel[z2]);
                                 DisplayService.SetForegroundColor("Green", $"Save {z2} Executed");
                                 Thread.Sleep(1000);
-                            //}
-                            //catch (IndexOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (FormatException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (OverflowException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (ArgumentOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (Exception)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
 
+                            }
+                            else
+                            {
+                                DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
+                                System.Threading.Thread.Sleep(1500);
+                            }
 
                         }
                         else
                         {
                             //TODO : Ajouter un try catch pour la gestion des entrées de l'utilisateur
-                            //try
-                            //{
+                            if (!saveService!.IsSoftwareRunning())
+                            {
+
                                 string[] parts = UserChoice.Split('-');
                                 int min = int.Parse(parts[0]);
                                 int max = int.Parse(parts[1]);
@@ -289,38 +266,15 @@ namespace App.Cmd.ViewModels
                                     DisplayService.SetForegroundColor("Green", $"Save {x} Executed");
                                     Thread.Sleep(1000);
                                 }
-                            //}
-                            //catch (IndexOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}   
-                            //catch (FormatException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (OverflowException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (ArgumentOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (Exception)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed","An error as occured when running the save...");
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}   
-                            
+
+                            }
+                            else
+                            {
+                                DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
+                                System.Threading.Thread.Sleep(1500);
+                            }
+
+
                         }
                         //return true;
                     }                    
