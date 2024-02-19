@@ -36,6 +36,7 @@ namespace WpfApp.ViewModels
         public RelayCommand RefreshCommand { get; }
         public RelayCommand CreateCommand { get; }
         public RelayCommand ExecuteCommand { get; }
+        public RelayCommand DeleteCommand { get; }
 
         public ListViewModel()
         {
@@ -55,6 +56,7 @@ namespace WpfApp.ViewModels
             RefreshCommand = new RelayCommand(Refresh);
             CreateCommand = new RelayCommand(Create);
             ExecuteCommand = new RelayCommand(Execute);
+            DeleteCommand = new RelayCommand(Delete);
 
         }
 
@@ -62,7 +64,7 @@ namespace WpfApp.ViewModels
         {
             if (Selected != null)
             {
-                saveService!.ExecuteSave(Selected);
+                Task.Run(() => saveService!.ExecuteSave(Selected));
             }
             else
             {
@@ -92,6 +94,19 @@ namespace WpfApp.ViewModels
             foreach (var item in listSaveModel)
             {
                 Items.Add(item);
+            }
+        }
+
+        public void Delete()
+        {
+            if (Selected != null)
+            {
+                saveService!.DeleteSave(Selected);
+                Refresh();
+            }
+            else
+            {
+                // Handle case where no item is selected
             }
         }
 
