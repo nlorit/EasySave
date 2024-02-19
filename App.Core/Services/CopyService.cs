@@ -75,6 +75,8 @@ namespace App.Core.Services
             if (isPaused || isStopped)
                 return;
 
+            Thread.Sleep(100);
+
             foreach (var item in Directory.GetFiles(this.CopyModel.SourcePath, "*", SearchOption.AllDirectories))
             {
                 totalFile += 1;
@@ -89,8 +91,9 @@ namespace App.Core.Services
                     stateModel.TotalFilesToCopy += totalFile;
                     stateModel.NbFilesLeftToDo = totalFile;
                     stateModel.TotalFilesSize = totalSize;
-                    stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
-                    progress = stateModel.Progression;
+                    progress = 100 - (((float)stateModel.NbFilesLeftToDo / totalFile) * 100);
+                    stateModel.Progression = progress;
+
                     stateModel.State = "ACTIVE";
                     stateManagerService.UpdateStateFile();
 
@@ -105,8 +108,8 @@ namespace App.Core.Services
 
 
                         File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
-                        stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
-                        progress = stateModel.Progression;
+                        progress = 100 - (((float)stateModel.NbFilesLeftToDo / totalFile) * 100);
+                        stateModel.Progression = progress;
                         stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
 
                         stateManagerService.UpdateStateFile();
@@ -181,6 +184,9 @@ namespace App.Core.Services
                 DateTime start = DateTime.Now;
                 File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
                 stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
+                progress = 100 - (((float)stateModel.NbFilesLeftToDo / totalFile) * 100);
+                stateModel.Progression = progress;
+         
                 start = DateTime.Now;
 
                 loggerService!.loggerModel!.FileEncryptionTime = (DateTime.Now - start).ToString();
