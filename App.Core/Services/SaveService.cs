@@ -1,6 +1,7 @@
 ﻿using App.Core.Models;
 using System.Text.Json;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace App.Core.Services
 {
@@ -9,8 +10,8 @@ namespace App.Core.Services
 
         public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
-        private readonly CopyService copyService = new();
-
+        private readonly ConfigService configService = new();
+        public CopyService copyService = new();
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
@@ -24,20 +25,35 @@ namespace App.Core.Services
             copyService.stateManagerService.UpdateStateFile();
         }
 
-        public void ExecuteSave(SaveModel saveModel)
+        public bool IsSoftwareRunning()
+        {
+            // Check if the software is running (e.g., "notepad.exe")
+            Process[] processes = Process.GetProcessesByName(configService.Software);
+            if (processes.Length > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
-        {   //Method to execute the copy service
-            //Execute the copy service
+        }
+
+        public void ExecuteSave(SaveModel saveModel)
+        {
+            // Method to execute the copy service
+            // Execute the copy service
             copyService.CopyModel.SourcePath = saveModel.InPath;
             copyService.CopyModel.TargetPath = saveModel.OutPath;
             copyService.stateManagerService.listStateModel = ListStateManager;
             copyService.ExecuteCopy(saveModel);
 
-
         }
-            
 
-        public void LoadSave()
+
+
+    public void LoadSave()
         {
 
             if (File.Exists("saves.json"))
@@ -81,7 +97,7 @@ namespace App.Core.Services
         {
             try
             {
-                ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName });
+                ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName});
                 ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
                 File.WriteAllText("saves.json", JsonSerializer.Serialize(ListSaveModel, options));
                 return true;

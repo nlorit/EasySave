@@ -181,8 +181,40 @@ namespace App.Cmd.ViewModels
                         } while (SaveName == null || SaveName.Trim() == "");
 
 
+
+                        Console.WriteLine("");
+                        Console.WriteLine("+---------------------------------------------+");
+                        Console.Write("| ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write(DisplayService.GetResource("Number5WithoutSpace"));
+                        Console.ResetColor();
+                        Console.Write(DisplayService.GetResource("EncryptChoice"));
+                        Console.WriteLine("       |");
+                        Console.WriteLine("+---------------------------------------------+");
+                        Console.Write(DisplayService.GetResource("Number1WithoutSpace"));
+                        Console.WriteLine(DisplayService.GetResource("Yes"));
+                        Console.Write(DisplayService.GetResource("Number2WithoutSpace"));
+                        Console.WriteLine(DisplayService.GetResource("No"));
+                        Console.WriteLine("\n");
+
+                      
+
+                        switch (int.Parse(Console.ReadLine()!))
+                        {
+                            case 1:
+                                saveService.copyService!.isEncrypted = true;
+                                break;
+                            case 2:
+                                saveService.copyService!.isEncrypted = false;
+                                break;
+                            default:
+                                break;
+                        }
+
                         //TODO : Ajouter message de confirmation de save créé avec le try catch ...
-                        saveService!.CreateSave(InPath, OutPath, type, SaveName);
+
+                        saveService!.CreateSave( InPath, OutPath, type, SaveName);
+
                         stateManagerService!.UpdateStateFile();
                         ListSaveModel = saveService.ListSaveModel;
                         listState = stateManagerService!.listStateModel!;
@@ -200,20 +232,22 @@ namespace App.Cmd.ViewModels
                         System.Threading.Thread.Sleep(2000);
                     }
 
+
                     //Return to the main menu
                     DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
-           
-
-
-
-
+                    while (Console.ReadKey().Key != ConsoleKey.Enter) ;
                     return true;
+                
+                
+                
+                
                 case 2:
                     Console.Clear();
                     Console.WriteLine(DisplayService.GetResource("RunSave"));
 
                     try
                     {
+
                         int i = 0;
                         foreach (var item in ListSaveModel!)
                         {
@@ -226,8 +260,9 @@ namespace App.Cmd.ViewModels
 
                         if (MyRegex().IsMatch(UserChoice))
                         {
-                            //try
-                            //{
+                            if (!saveService!.IsSoftwareRunning())
+                            {
+
                                 string[] parts = UserChoice.Split(';');
                                 int z1 = int.Parse(parts[0]);
                                 int z2 = int.Parse(parts[1]);
@@ -240,45 +275,22 @@ namespace App.Cmd.ViewModels
                                 saveService!.ExecuteSave(ListSaveModel[z2]);
                                 DisplayService.SetForegroundColor("Green", $"Save {z2} Executed");
                                 Thread.Sleep(1000);
-                            //}
-                            //catch (IndexOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (FormatException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (OverflowException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (ArgumentOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (Exception)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
 
+
+                            }
+                            else
+                            {
+                                DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
+                                System.Threading.Thread.Sleep(1500);
+                            }
 
                         }
                         else
                         {
                             //TODO : Ajouter un try catch pour la gestion des entrées de l'utilisateur
-                            //try
-                            //{
+                            if (!saveService!.IsSoftwareRunning())
+                            {
+
                                 string[] parts = UserChoice.Split('-');
                                 int min = int.Parse(parts[0]);
                                 int max = int.Parse(parts[1]);
@@ -289,38 +301,15 @@ namespace App.Cmd.ViewModels
                                     DisplayService.SetForegroundColor("Green", $"Save {x} Executed");
                                     Thread.Sleep(1000);
                                 }
-                            //}
-                            //catch (IndexOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}   
-                            //catch (FormatException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (OverflowException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (ArgumentOutOfRangeException)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed", DisplayService.GetResource("InvalidChoice")!);
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}
-                            //catch (Exception)
-                            //{
-                            //    DisplayService.SetBackForeColor("Black", "DarkRed","An error as occured when running the save...");
-                            //    System.Threading.Thread.Sleep(1500);
-                            //    return true;
-                            //}   
-                            
+
+                            }
+                            else
+                            {
+                                DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
+                                System.Threading.Thread.Sleep(1500);
+                            }
+
+
                         }
                         //return true;
                     }                    
@@ -369,65 +358,7 @@ namespace App.Cmd.ViewModels
 
 
 
-        //saveService.CreateSave();
 
-
-        /// <summary>
-        ///  Method to create a save
-        /// </summary
-
-        /// <summary>
-        /// Method to run a save
-        /// </summary>
-        //public void RunSave()
-        //{
-        //    Console.WriteLine("\n+----------------------------------------------------------+");
-        //    Console.WriteLine(DisplayService.GetResource("Run"));
-        //    Console.WriteLine("|----------------------------------------------------------|");
-        //    Console.WriteLine("|                                                          |");
-        //    Console.Write("| ");
-        //    Console.ForegroundColor = ConsoleColor.Cyan;
-        //    Console.Write(DisplayService.GetResource("List"));
-        //    Console.ResetColor();
-        //    Console.WriteLine(DisplayService.GetResource("ListAnswer1"));
-        //    Console.Write("| ");
-        //    Console.ForegroundColor = ConsoleColor.Cyan;
-        //    Console.Write(DisplayService.GetResource("Element"));
-        //    Console.ResetColor();
-        //    Console.WriteLine(DisplayService.GetResource("ListAnswer2"));
-        //    Console.WriteLine("|                                                          |");
-
-        //    Console.WriteLine("+----------------------------------------------------------+\n");
-
-        //    //TODO : Ajouter une exception dans le cas ou l'utilisateur ne rentre pas de valeur
-        //    string? UserEntry = Console.ReadLine();
-        //    try
-        //    {
-        //        //TODO : Revoir ça 
-        //        bool isCommaSeparatedOrHyphen = MyRegex().IsMatch(UserEntry!);
-        //        switch (isCommaSeparatedOrHyphen)
-        //        {
-        //            case true:
-        //                ProcessCommaSeparatedInput(UserEntry!);
-        //                break;
-
-        //            case false:
-        //                ProcessHyphenSeparatedInput(UserEntry!);
-        //                break;
-        //        }
-
-        //    }
-        //    catch (System.IndexOutOfRangeException)
-        //    {
-        //        SaveService.ExecuteSave(ListSaveModel[int.Parse(UserEntry!) - 1]);
-        //    }
-
-        //    DisplayService.SetForegroundColor("Gray", "\n" + DisplayService.GetResource("EnterExit")!);
-
-
-        /// <summary>
-        /// Method to show the logs
-        /// </summary>
         public void ShowLogs()
         {
             //Method to show the logs

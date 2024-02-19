@@ -9,14 +9,17 @@ namespace App.Core.Services
 {
     public class ConfigService
     {
-        public string ActiveLanguage { get; set; }
 
+        public string ActiveLanguage { get; set; } 
+        public string Software { get; set; }
         public string LogsFormat { get; set; }
        
         public ConfigService() 
         {
-            ActiveLanguage =  ConfigurationManager.AppSettings["Language"];
+            ActiveLanguage = ConfigurationManager.AppSettings["Language"];
+            Software = ConfigurationManager.AppSettings["LogicielMetier"];
             LogsFormat =  ConfigurationManager.AppSettings["LogsExtension"];
+
         }
     }   
 }
