@@ -11,7 +11,7 @@ namespace App.Core.Services
         public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
         private readonly ConfigService configService = new();
-        private readonly CopyService copyService = new();
+        public CopyService copyService = new();
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true

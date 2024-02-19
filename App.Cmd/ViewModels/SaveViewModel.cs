@@ -202,10 +202,10 @@ namespace App.Cmd.ViewModels
                         switch (int.Parse(Console.ReadLine()!))
                         {
                             case 1:
-                                copyService!.isEncrypted = true;
+                                saveService.copyService!.isEncrypted = true;
                                 break;
                             case 2:
-                                copyService!.isEncrypted = false;
+                                saveService.copyService!.isEncrypted = false;
                                 break;
                             default:
                                 break;
