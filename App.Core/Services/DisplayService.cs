@@ -1,4 +1,5 @@
-﻿using System;
+﻿using App.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,6 +15,8 @@ namespace App.Core.Services
     /// </summary>
     public class DisplayService
     {
+
+        private static ConfigService configService = new();
         /// <summary>
         /// Method to display the text in the specified color
         /// </summary>
@@ -144,7 +147,7 @@ namespace App.Core.Services
                               " \r\n                                                        |___/                                 " +
                               " \r\n                               ");
             Console.WriteLine("                                                          Developped by \n                    ");
-            Console.WriteLine("                                Louis JAGUENEAU  - Nathan LORIT - Julien DESPEZ - Paul PESCHEL");
+            Console.WriteLine("                                Louis JAGUENEAU  - Nathan LORIT - Julien DESPREZ - Paul PESCHEL");
             Console.ResetColor();
         }
         /// <summary>
@@ -184,7 +187,8 @@ namespace App.Core.Services
         /// <returns></returns>
         public static string? GetResource(string key)
         {
-            string resourceFileName = CultureInfo.CurrentCulture.Name == "fr-FR" ? "ResourcesFR-FR" : "ResourcesEN-UK";
+            
+            string resourceFileName = configService.ActiveLanguage;
             string baseName = "App.Core.Resources." + resourceFileName;
 
             // Load the resources

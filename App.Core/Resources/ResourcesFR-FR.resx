@@ -151,7 +151,7 @@
     <value>1-3 =&gt; 1 à 3                                  |</value>
   </data>
   <data name="ListAnswer2" xml:space="preserve">
-    <value>1,3 =&gt; 1 et 3                         |</value>
+    <value>1;3 =&gt; 1 et 3                         |</value>
   </data>
   <data name="MaxSaveError" xml:space="preserve">
     <value>Erreur : Vous avez atteint le nombre maximum de sauvegardes</value>
