@@ -91,8 +91,12 @@ namespace App.Core.Services
             {
                 try
                 {
-                    using StreamWriter logWriter = File.AppendText(xmlLogFilePath);
-                    logWriter.WriteLineAsync(XmlSerializer.Serialize(new typeof(loggerModel) + ","));
+                    XmlSerializer xmlSerializer = new XmlSerializer(typeof(LoggerModel));
+
+                    using (StreamWriter streamWriter = File.AppendText(xmlLogFilePath))
+                    {
+                        xmlSerializer.Serialize(streamWriter, loggerModel);
+                    }
                 }
                 catch (InvalidOperationException)
                 {
