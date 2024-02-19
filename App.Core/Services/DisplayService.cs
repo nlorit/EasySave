@@ -15,6 +15,8 @@ namespace App.Core.Services
     /// </summary>
     public class DisplayService
     {
+
+        private static ConfigService configService = new();
         /// <summary>
         /// Method to display the text in the specified color
         /// </summary>
@@ -185,11 +187,7 @@ namespace App.Core.Services
         /// <returns></returns>
         public static string? GetResource(string key)
         {
-            ConfigService configService = new ConfigService();
-            //string langue = configService.ActiveLanguage;
-
-
-            //TODO : Gestion des ressources pour l'instanciation de la classe
+            
             string resourceFileName = configService.ActiveLanguage;
             string baseName = "App.Core.Resources." + resourceFileName;
 
