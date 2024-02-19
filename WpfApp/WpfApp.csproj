@@ -8,6 +8,13 @@
     <UseWPF>true</UseWPF>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
+    <PackageId>EasySave</PackageId>
+    <Title>EasySave</Title>
+    <Version>2.0</Version>
+    <Authors>Nathan LORIT - Julien DESPREZ - Paul PESCHEL - Louis JAGUENEAU</Authors>
+    <Company>CESI A3 Info 2023-2026</Company>
+    <Product>EasySave</Product>
+    <PackageIcon>logoEasySave.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +32,6 @@
     <None Remove="Pictures\iconSaveDashboard.png" />
     <None Remove="Pictures\iconSaveDashboardSelected.png" />
     <None Remove="Pictures\iconShowSave.png" />
-    <None Remove="Pictures\logoEasySave.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +58,13 @@
     <Resource Include="Pictures\iconSaveDashboardSelected.png" />
     <Resource Include="Pictures\iconShowSave.png" />
     <Resource Include="Pictures\logoEasySave.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Pictures\logoEasySave.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
