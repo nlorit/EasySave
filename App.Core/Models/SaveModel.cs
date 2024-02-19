@@ -1,5 +1,4 @@
-﻿
-namespace App.Core.Models
+﻿namespace App.Core.Models
 {
     public class SaveModel
     {
@@ -7,7 +6,6 @@ namespace App.Core.Models
         public string OutPath { get; set; } = "";                                     // Path of the target file
         public string Type { get; set; } = "";                                         // Type of the save // false = Complete, true = Sequentiel          
         public string SaveName { get; set; } = "" ;                                   // Name of the save
-        public DateTime Date { get; set; }                                                      // Date of the save
-        public StateManagerModel StateManager { get; set; } = new();                            // State of the save
+        public DateTime Date { get; } = DateTime.Now;                // Date of the save
     }
 }

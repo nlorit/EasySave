@@ -1,82 +1,106 @@
 ﻿using App.Core.Models;
-using System.Resources;
-
+using System.Text.Json;
+using System.Collections.ObjectModel;
 
 namespace App.Core.Services
 {
     public class SaveService
     {
-        /// <summary>
-        /// Method to execute the copy service
-        /// </summary>
-        /// <param name="saveModel"></param>
-        /// <param name="listSavesModel"></param>
-        /// <param name="listStateManager"></param>
-        public static void ExecuteCopy(SaveModel saveModel, List<SaveModel> listSavesModel, List<StateManagerModel> listStateManager)
-        {   //Method to execute the copy service
 
-            CopyService copyService = new();
-            //Execute the copy service
-            copyService.RunCopy(new CopyModel { SourcePath = saveModel.InPath, TargetPath = saveModel.OutPath }, saveModel, listSavesModel, listStateManager);
+        public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
+        public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
+        private readonly CopyService copyService = new();
 
+        private readonly JsonSerializerOptions options = new()
+        {
+            WriteIndented = true
+        };
+
+
+        public SaveService() 
+        { 
+            LoadSave();
+            copyService.stateManagerService.listStateModel = ListStateManager;
+            copyService.stateManagerService.UpdateStateFile();
         }
 
-        /// <summary>
-        /// Method to show the information of the save
-        /// </summary>
-        /// <param name="saveModel"></param>
-        public static void ShowInfo(SaveModel saveModel)
+        public void ExecuteSave(SaveModel saveModel)
+
+        {   //Method to execute the copy service
+            //Execute the copy service
+            copyService.CopyModel.SourcePath = saveModel.InPath;
+            copyService.CopyModel.TargetPath = saveModel.OutPath;
+            copyService.stateManagerService.listStateModel = ListStateManager;
+            copyService.ExecuteCopy(saveModel);
+
+
+        }
+            
+
+        public void LoadSave()
         {
-            //Method to show the information of the save
-            Console.WriteLine("");
-            Console.WriteLine("+-------------------------------------------------+");
 
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Name"));
-            
-
-            Console.ResetColor();
-            Console.WriteLine(saveModel.SaveName);
-
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("In"));
-            Console.ResetColor();
-            Console.WriteLine(saveModel.InPath);
-
-
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(DisplayService.GetResource("Out"));
-            Console.ResetColor();
-            Console.WriteLine(saveModel.OutPath);
-            
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Type : ");
-            Console.ResetColor();
-
-            //Check the type of the save (Complete or Sequentiel)
-            if(saveModel.Type == "Complete")
+            if (File.Exists("saves.json"))
             {
-                Console.WriteLine(DisplayService.GetResource("TypeAnswer1"));
+                ListSaveModel = JsonSerializer.Deserialize<ObservableCollection<SaveModel>>(File.ReadAllText("saves.json"))!;
+
+                foreach (SaveModel saveModel in ListSaveModel)
+                {
+                    StateManagerModel stateModel = new()
+                    {
+                        SaveName = saveModel.SaveName,
+                        SourceFilePath = saveModel.InPath,
+                        TargetFilePath = saveModel.OutPath,
+                        State = "END"
+                    };
+                    ListStateManager.Add(stateModel);
+                }
+                
             }
             else
             {
-                Console.WriteLine(DisplayService.GetResource("TypeAnswer2"));
+                File.WriteAllText("saves.json", "[]");
             }
 
-
-            Console.Write("| ");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Date : ");
-            Console.ResetColor();
-            Console.WriteLine(saveModel.Date);
-  
-            Console.WriteLine("+-------------------------------------------------+");
-            
-
         }
+
+        /// <summary>
+        /// Show info of a save
+        /// </summary>
+        /// <param name="saveModel"></param>
+        /// <returns></returns>
+        public Tuple<string, string, string, string, DateTime> ShowInfo(SaveModel saveModel)
+        {
+            return Tuple.Create(saveModel.SaveName, saveModel.InPath, saveModel.OutPath, saveModel.Type, saveModel.Date);
+        }
+
+
+       
+
+        public bool CreateSave(string inPath, string outPath, string type, string saveName)
+        {
+            try
+            {
+                ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName });
+                ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
+                File.WriteAllText("saves.json", JsonSerializer.Serialize(ListSaveModel, options));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+
+        public void DeleteSave(SaveModel saveModel)
+        {
+            ListSaveModel.Remove(saveModel);
+        }
+        
+
+
+
     }
 }
