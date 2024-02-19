@@ -123,6 +123,9 @@
   <data name="Element" xml:space="preserve">
     <value>Some Element:</value>
   </data>
+  <data name="EncryptChoice" xml:space="preserve">
+    <value>Do you want to encrypt files ?</value>
+  </data>
   <data name="EnterExit" xml:space="preserve">
     <value>Press ENTER to exit</value>
   </data>
@@ -177,11 +180,20 @@
   <data name="Name" xml:space="preserve">
     <value>Name: </value>
   </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
   <data name="Number1" xml:space="preserve">
     <value>           1- </value>
   </data>
+  <data name="Number1WithoutSpace" xml:space="preserve">
+    <value>1- </value>
+  </data>
   <data name="Number2" xml:space="preserve">
     <value>          2- </value>
+  </data>
+  <data name="Number2WithoutSpace" xml:space="preserve">
+    <value>2- </value>
   </data>
   <data name="Number3" xml:space="preserve">
     <value>          3- </value>
@@ -191,6 +203,9 @@
   </data>
   <data name="Number5" xml:space="preserve">
     <value>            5- </value>
+  </data>
+  <data name="Number5WithoutSpace" xml:space="preserve">
+    <value>     5-</value>
   </data>
   <data name="Out" xml:space="preserve">
     <value>Out: </value>
@@ -242,5 +257,8 @@
   </data>
   <data name="TypeAnswer2" xml:space="preserve">
     <value>Différential</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>
