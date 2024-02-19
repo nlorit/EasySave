@@ -10,6 +10,7 @@ namespace App.Core.Services
         public LoggerModel? loggerModel;
         private readonly string jsonlogFilePath = "logs.json";
         private readonly string xmlLogFilePath = "logs.xml";
+        private readonly ConfigService configService = new ConfigService();
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
@@ -21,36 +22,36 @@ namespace App.Core.Services
         }
 
 
-        public void WriteLog()
-        {
-            //TODO : Gerer les exeptions
+        //public void WriteLog()
+        //{
+        //    //TODO : Gerer les exeptions
 
-            try
-            { 
-                // Serialize the log model to JSON
+        //    try
+        //    { 
+        //        // Serialize the log model to JSON
 
-                string logEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
-                string jsonlogEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
-                // Append the log entry to the log file or create if not exist
-                using StreamWriter LogWriter = File.AppendText(jsonlogFilePath);
-                LogWriter.WriteLineAsync(jsonlogEntry);
+        //        string logEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
+        //        string jsonlogEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
+        //        // Append the log entry to the log file or create if not exist
+        //        using StreamWriter LogWriter = File.AppendText(jsonlogFilePath);
+        //        LogWriter.WriteLineAsync(jsonlogEntry);
 
-                // Serialize the log model to XML
-                using StringWriter xmlStringWriter = new();
-                XmlSerializer xmlSerializer = new(typeof(LoggerModel));
-                xmlSerializer.Serialize(xmlStringWriter, loggerModel);
-                string xmlLogEntry = xmlStringWriter.ToString();
-                // Append the XML log entry to the XML log file or create if not exist
+        //        // Serialize the log model to XML
+        //        using StringWriter xmlStringWriter = new();
+        //        XmlSerializer xmlSerializer = new(typeof(loggerModel));
+        //        xmlSerializer.Serialize(xmlStringWriter, loggerModel);
+        //        string xmlLogEntry = xmlStringWriter.ToString();
+        //        // Append the XML log entry to the XML log file or create if not exist
 
-                using StreamWriter xmlLogWriter = File.AppendText(xmlLogFilePath);
-                xmlLogWriter.WriteLineAsync(xmlLogEntry);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error writing to log file: {ex.Message}");
+        //        using StreamWriter xmlLogWriter = File.AppendText(xmlLogFilePath);
+        //        xmlLogWriter.WriteLineAsync(xmlLogEntry);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error writing to log file: {ex.Message}");
 
-            }
-        }
+        //    }
+        //}
             /// <summary>
             /// Method to open the log file
             /// </summary>
@@ -74,14 +75,29 @@ namespace App.Core.Services
 
         public void AddEntryLog()
         {
-            try
+            if (configService.LogsFormat == "JSON")
             {
-                using StreamWriter logWriter = File.AppendText(jsonlogFilePath);
-                logWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ",");
+                try
+                {
+                    using StreamWriter logWriter = File.AppendText(jsonlogFilePath);
+                    logWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ",");
+                }
+                catch (InvalidOperationException)
+                {
+                    CreateLogFile();
+                }
             }
-            catch (InvalidOperationException)
+            else
             {
-                CreateLogFile();
+                try
+                {
+                    using StreamWriter logWriter = File.AppendText(xmlLogFilePath);
+                    logWriter.WriteLineAsync(XmlSerializer.Serialize(new typeof(loggerModel) + ","));
+                }
+                catch (InvalidOperationException)
+                {
+                    CreateLogFile();
+                }
             }
         }
     }

@@ -182,7 +182,7 @@ namespace App.Cmd.ViewModels
 
 
                         //TODO : Ajouter message de confirmation de save créé avec le try catch ...
-                        saveService!.CreateSave("@" + InPath, "@" + OutPath, type, SaveName);
+                        saveService!.CreateSave(InPath, OutPath, type, SaveName);
                         stateManagerService!.UpdateStateFile();
                         ListSaveModel = saveService.ListSaveModel;
                         listState = stateManagerService!.listStateModel!;
