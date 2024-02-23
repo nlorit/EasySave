@@ -6,8 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>App.Cmd.Program</StartupObject>
-    <AssemblyName>EasySave V1.0</AssemblyName>
+    <AssemblyName>EasySave</AssemblyName>
     <ApplicationIcon>databackup_theapplication_dedatos_3366.ico</ApplicationIcon>
+    <AssemblyVersion>1.1</AssemblyVersion>
+    <FileVersion>1.1</FileVersion>
+    <Title>EasySave</Title>
+    <Version>1.1.0</Version>
+    <Authors>Nathan LORIT - Julien DESPREZ - Paul PESCHEL - Louis JAGUENEAU</Authors>
+    <Company>CESI A3 INFO 2023-2026</Company>
+    <PackageIcon>logoEasySave.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +29,13 @@
 	  <EmbeddedResource Include="..\App.Core\Resources\ResourcesFR-FR.resx">
 		  <Link>ResourcesFR-FR.resx</Link>
 	  </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\WpfApp\Pictures\logoEasySave.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

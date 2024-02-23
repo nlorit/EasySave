@@ -7,14 +7,14 @@ using App.Core.Services;
 namespace App.Cmd.Views
 {
     public class SaveView
-    { 
+    {
         public SaveViewModel ViewModel;
 
         public SaveView()
         {
             ViewModel = new SaveViewModel();
             //Create test saves for the first run
-            ViewModel.TestSaves();
+            //ViewModel.TestSaves();
         }
 
         /// <summary>
