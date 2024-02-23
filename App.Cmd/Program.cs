@@ -12,6 +12,7 @@ namespace App.Cmd
         {
             if (!mutex.WaitOne(TimeSpan.Zero, true))
             {
+                
                 return;
             }
 
