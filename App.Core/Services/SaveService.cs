@@ -10,7 +10,13 @@ namespace App.Core.Services
 
         public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
+
+        private readonly StreamWriter? logWriter ;
+        private readonly StreamWriter? stateWriter;
+
+
         private readonly ConfigService configService = new();
+        private readonly LoggerService loggerService = new();
         public CopyService copyService = new();
         private readonly JsonSerializerOptions options = new()
         {
@@ -20,9 +26,11 @@ namespace App.Core.Services
 
         public SaveService() 
         { 
+            logWriter = new StreamWriter(loggerService.GetLogFormat());
+            stateWriter = new StreamWriter(StateManagerService.stateFilePath);
             LoadSave();
             copyService.stateManagerService.listStateModel = ListStateManager;
-            copyService.stateManagerService.UpdateStateFile();
+            copyService.stateManagerService.UpdateStateFile(stateWriter);
         }
 
         public bool IsSoftwareRunning()
@@ -42,18 +50,17 @@ namespace App.Core.Services
 
         public void ExecuteSave(SaveModel saveModel)
         {
-            // Method to execute the copy service
-            // Execute the copy service
+
             copyService.CopyModel.SourcePath = saveModel.InPath;
             copyService.CopyModel.TargetPath = saveModel.OutPath;
             copyService.stateManagerService.listStateModel = ListStateManager;
-            copyService.ExecuteCopy(saveModel);
+            copyService.ExecuteCopy(saveModel, logWriter!, stateWriter!);
 
         }
 
 
 
-    public void LoadSave()
+        public void LoadSave()
         {
 
             if (File.Exists("saves.json"))
@@ -80,11 +87,6 @@ namespace App.Core.Services
 
         }
 
-        /// <summary>
-        /// Show info of a save
-        /// </summary>
-        /// <param name="saveModel"></param>
-        /// <returns></returns>
         public Tuple<string, string, string, string, DateTime> ShowInfo(SaveModel saveModel)
         {
             return Tuple.Create(saveModel.SaveName, saveModel.InPath, saveModel.OutPath, saveModel.Type, saveModel.Date);

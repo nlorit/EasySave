@@ -215,7 +215,7 @@ namespace App.Cmd.ViewModels
 
                         saveService!.CreateSave( InPath, OutPath, type, SaveName);
 
-                        stateManagerService!.UpdateStateFile();
+                        //stateManagerService!.UpdateStateFile();
                         ListSaveModel = saveService.ListSaveModel;
                         listState = stateManagerService!.listStateModel!;
                         

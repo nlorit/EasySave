@@ -8,7 +8,7 @@ namespace App.Core.Services
     {
 
         public ObservableCollection<StateManagerModel>? listStateModel;
-        private readonly string stateFilePath = "state.json";
+        public static readonly string stateFilePath = "state.json";
 
 
         //Options for the JsonSerializer
@@ -35,32 +35,39 @@ namespace App.Core.Services
             System.Diagnostics.Process.Start("notepad.exe", stateFilePath);
         }
 
-        public void UpdateStateFile()
+        public void UpdateStateFile(StreamWriter streamWriter)
         {
-            // Clear the state file
-            ClearStateFile();
-            int i = 0;
-            foreach (StateManagerModel stateModel in listStateModel!)
+            try
             {
-                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+                // Open the file for writing (append mode)
+                using (streamWriter = File.AppendText(stateFilePath))
                 {
-                    stateWriter.WriteLineAsync(JsonSerializer.Serialize(stateModel, options) + ",");
+                    foreach (StateManagerModel stateModel in listStateModel!)
+                    {
+                        // Write the serialized stateModel to the file
+                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(stateModel, options) + ",");
+                    }
                 }
-                //Increment the index to get the next save name
-                i += 1;
+            }
+            catch (IOException ex)
+            {
+                // Handle the exception (e.g., log or retry)
+                Console.WriteLine($"Error updating state file: {ex.Message}");
             }
         }
+
 
         public void CreateStateFile() 
         {
             // Create the state file
             File.WriteAllText(stateFilePath, "[]");
+            
         }
 
         public void ClearStateFile()
         {
             // Clear the state file
-            File.WriteAllText(stateFilePath, "");
+            File.WriteAllText(stateFilePath, "") ;
         }
 
 
