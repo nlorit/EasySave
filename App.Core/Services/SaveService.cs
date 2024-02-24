@@ -50,12 +50,23 @@ namespace App.Core.Services
 
         public void ExecuteSave(SaveModel saveModel)
         {
-
             copyService.CopyModel.SourcePath = saveModel.InPath;
             copyService.CopyModel.TargetPath = saveModel.OutPath;
             copyService.stateManagerService.listStateModel = ListStateManager;
-            copyService.ExecuteCopy(saveModel, logWriter!, stateWriter!);
 
+            // Start copying process in a separate thread
+            Thread thread = new Thread(() => copyService.ExecuteCopy(saveModel, logWriter!, stateWriter!));
+            thread.Start();
+        }
+
+        public void PauseSave()
+        {
+            copyService.PauseCopy();
+        }
+
+        public void StopSave()
+        {
+            copyService.StopCopy();
         }
 
 
