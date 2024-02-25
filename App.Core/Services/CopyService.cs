@@ -15,9 +15,8 @@ namespace App.Core.Services
         private ManualResetEvent? manualReset = new(false);
         public CopyModel CopyModel { get; set; }
 
-        public event EventHandler? CopyCompleted;
-        public event EventHandler? CopyPaused;
-        public event EventHandler? CopyStopped;
+        public event EventHandler<BackupEventArgs>? BackupStarted;
+        public event EventHandler<BackupEventArgs>? BackupCompleted;
 
 
 
@@ -29,25 +28,29 @@ namespace App.Core.Services
 
         public void ExecuteCopy(SaveModel saveModel, StreamWriter logWriter, StreamWriter stateWriter)
         {
-            Thread thread = new Thread(() => BackupDirectory(saveModel.InPath, saveModel.OutPath, logWriter, stateWriter));
+            
+            Thread thread = new Thread(() =>
+            {
+                OnBackupStarted(saveModel);
+                BackupDirectory(saveModel.InPath, saveModel.OutPath, logWriter, stateWriter);
+                OnBackupCompleted(saveModel);
+            });
             thread.Start();
+            
         }
 
         public void PauseCopy()
         {
-            CopyPaused?.Invoke(this, EventArgs.Empty);
             manualReset?.Reset();
         }
 
         public void ResumeCopy()
         {
-            CopyCompleted?.Invoke(this, EventArgs.Empty);
             manualReset?.Set();
         }
 
         public void StopCopy()
         {
-            CopyStopped?.Invoke(this, EventArgs.Empty);
         }
 
 
@@ -179,6 +182,8 @@ namespace App.Core.Services
                 {
                     EncryptFile(this.CopyModel.TargetPath);
                 }
+                
+                 
             }
         }
 
@@ -186,8 +191,38 @@ namespace App.Core.Services
         {
             manualReset!.Dispose();
         }
+
+        protected void OnBackupStarted(SaveModel save)
+        {
+            BackupStarted?.Invoke(this, new BackupEventArgs
+            {
+                SourcePath = save.InPath,
+                TargetPath = save.OutPath,
+                StartTime = DateTime.Now
+            });
+        }
+
+        protected void OnBackupCompleted(SaveModel save)
+        {
+            BackupCompleted?.Invoke(this, new BackupEventArgs
+            {
+                SourcePath = save.InPath,
+                TargetPath = save.OutPath,
+                EndTime = DateTime.Now
+            });
+        }
     }
+
+
          
+}
+
+public class BackupEventArgs : EventArgs
+{
+    public string SourcePath { get; set; }
+    public string TargetPath { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
 }
 
 

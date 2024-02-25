@@ -14,6 +14,8 @@ namespace App.Core.Services
         private readonly StreamWriter? logWriter ;
         private readonly StreamWriter? stateWriter;
 
+        
+
 
         private readonly ConfigService configService = new();
         private readonly LoggerService loggerService = new();
@@ -48,15 +50,45 @@ namespace App.Core.Services
 
         }
 
-        public void ExecuteSave(SaveModel saveModel)
+        public void ExecuteSave(List<SaveModel> saveModel)
         {
-            copyService.CopyModel.SourcePath = saveModel.InPath;
-            copyService.CopyModel.TargetPath = saveModel.OutPath;
-            copyService.stateManagerService.listStateModel = ListStateManager;
+            foreach (SaveModel save in saveModel)
+            {
+                copyService = new();
+                copyService.CopyModel.SourcePath = save.InPath;
+                copyService.CopyModel.TargetPath = save.OutPath;
+                copyService.stateManagerService.listStateModel = ListStateManager;
 
-            // Start copying process in a separate thread
-            Thread thread = new Thread(() => copyService.ExecuteCopy(saveModel, logWriter!, stateWriter!));
-            thread.Start();
+                // Start copying process in a separate thread
+
+
+                copyService.BackupStarted += (sender, args) =>
+                {
+                    Console.WriteLine($"Backup started from {args.SourcePath} to {args.TargetPath} at {args.StartTime}");
+                };
+
+                copyService.BackupCompleted += (sender, args) =>
+                {
+                    Console.WriteLine($"Backup completed from {args.SourcePath} to {args.TargetPath} at {args.EndTime}");
+                };
+                Thread thread = new Thread(() =>
+                {
+                    copyService.ExecuteCopy(save, logWriter!, stateWriter!);
+                });
+                thread.Start();
+
+                copyService.BackupStarted -= (sender, args) =>
+                {
+                    Console.WriteLine($"Backup started from {args.SourcePath} to {args.TargetPath} at {args.StartTime}");
+                };
+
+                copyService.BackupCompleted -= (sender, args) =>
+                {
+                    Console.WriteLine($"Backup completed from {args.SourcePath} to {args.TargetPath} at {args.EndTime}");
+                };
+
+
+            }
         }
 
         public void PauseSave()
@@ -127,9 +159,5 @@ namespace App.Core.Services
         {
             ListSaveModel.Remove(saveModel);
         }
-        
-
-
-
     }
 }

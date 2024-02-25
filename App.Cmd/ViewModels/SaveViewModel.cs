@@ -1,6 +1,7 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -254,86 +255,45 @@ namespace App.Cmd.ViewModels
                         {
                             if (!saveService!.IsSoftwareRunning())
                             {
-
+                                List<SaveModel> list = new List<SaveModel>();
                                 string[] parts = UserChoice.Split(';');
                                 int z1 = int.Parse(parts[0]);
                                 int z2 = int.Parse(parts[1]);
-
-                                new Thread(() =>
-                                {
-                                    saveService!.copyService!.CopyPaused += SaveViewModel_CopyPaused;
-                                    saveService!.copyService!.CopyStopped += SaveViewModel_CopyStopped;
-                                    DisplayService.SetForegroundColor("Green", $"Save {z1} is running");
-                                    saveService!.ExecuteSave(ListSaveModel[z1]);
-                                    DisplayService.SetForegroundColor("Green", $"Save {z1} Executed");
-                                    saveService!.copyService!.CopyPaused -= SaveViewModel_CopyPaused;
-                                    saveService!.copyService!.CopyStopped -= SaveViewModel_CopyStopped;
-
-                                }).Start();
-
-                                
-
-
-
-                                new Thread(() =>
-                                {
-                                    saveService!.copyService!.CopyPaused += SaveViewModel_CopyPaused;
-                                    saveService!.copyService!.CopyStopped += SaveViewModel_CopyStopped;
-                                    DisplayService.SetForegroundColor("Green", $"Save {z2} is running");
-                                    saveService!.ExecuteSave(ListSaveModel[z2]);
-                                    DisplayService.SetForegroundColor("Green", $"Save {z2} Executed");
-                                    saveService!.copyService!.CopyPaused -= SaveViewModel_CopyPaused;
-                                    saveService!.copyService!.CopyStopped -= SaveViewModel_CopyStopped;
-                                }).Start();
-
-
-
-
-
+                                Console.WriteLine();
+                                list.Add(ListSaveModel[z1]);
+                                list.Add(ListSaveModel[z2]);
+                                saveService!.ExecuteSave(list);
                             }
                             else
                             {
                                 DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
                                 System.Threading.Thread.Sleep(1500);
                             }
-
                         }
                         else
                         {
                             //TODO : Ajouter un try catch pour la gestion des entrées de l'utilisateur
                             if (!saveService!.IsSoftwareRunning())
                             {
+                                List<SaveModel> list = new List<SaveModel>();
 
                                 string[] parts = UserChoice.Split('-');
                                 int min = int.Parse(parts[0]);
                                 int max = int.Parse(parts[1]);
                                 for (int x = min; x <= max; x++)
                                 {
-                                    new Thread(() =>
-                                    {
-                                        saveService!.copyService!.CopyPaused += SaveViewModel_CopyPaused;
-                                        saveService!.copyService!.CopyStopped += SaveViewModel_CopyStopped;
-                                        DisplayService.SetForegroundColor("Green", $"Save {x} is running");
-                                        saveService!.ExecuteSave(ListSaveModel[x]);
-                                        DisplayService.SetForegroundColor("Green", $"Save {x} Executed");
-                                        saveService!.copyService!.CopyPaused -= SaveViewModel_CopyPaused;
-                                        saveService!.copyService!.CopyStopped -= SaveViewModel_CopyStopped;
-                                    }).Start();
-
-                                    
+                                    list.Add(ListSaveModel[x]);                                
                                 }
-
+                                saveService!.ExecuteSave(list);
                             }
                             else
                             {
                                 DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
                                 System.Threading.Thread.Sleep(1500);
                             }
-
-
                         }
-                        //return true;
-                    }                    
+                    }
+                    
                     catch (ArgumentOutOfRangeException)
                     {
                         //TODO : Quand save est vide
