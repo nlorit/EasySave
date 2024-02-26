@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Security.Policy;
+using System.Threading;
 
 namespace App.Core.Services
 {
@@ -12,6 +13,7 @@ namespace App.Core.Services
 
         public ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
+        public AutoResetEvent pauseEvent { get; private set; } = new AutoResetEvent(false);
 
         private readonly StreamWriter? logWriter ;
         private readonly StreamWriter? stateWriter;
@@ -20,11 +22,14 @@ namespace App.Core.Services
         private readonly StateManagerService stateManagerService = new();
         private readonly LoggerService loggerService = new();
         public CopyService copyService = new();
-        private ManualResetEvent resetEvent = new ManualResetEvent(false);
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
         };
+
+        private Thread saveThread;
+        private bool isPaused;
+        private bool shouldAbort;
 
         public SaveService() 
         { 
@@ -38,7 +43,7 @@ namespace App.Core.Services
         public bool IsSoftwareRunning()
         {
             // Check if the software is running (e.g., "notepad.exe")
-            Process[] processes = Process.GetProcessesByName(configService.Software);
+            Process[] processes = Process.GetProcessesByName("Paint.exe");
             if (processes.Length > 0)
             {
                 return true;
@@ -79,42 +84,50 @@ namespace App.Core.Services
             }
         }
 
-        public void PauseSave()
-        {
-            copyService.PauseCopy();
-        }
-
-        public void StopSave()
-        {
-            copyService.StopCopy();
-        }
-
-        public async Task<bool> LaunchSave(SaveModel saveModel)
+        public void LaunchSave(SaveModel saveModel)
         {
             //TODO : Detection logicel Métier
 
             if (saveModel.Type == "Complete")
             {
-                // Run CompleteSave asynchronously
-                await Task.Run(() =>
-                {
-                    while (CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel))
-                    {
-                        // Optionally, you can introduce a small delay to avoid tight loops
-                        Thread.Sleep(100); // Adjust as needed
-                    }
-                });
+           
+                saveThread = new Thread(() =>
+                
+                   CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel)
+                );
 
-                return false;
+                // Start the thread
+                saveThread.Start();
+
             }
 
             if (saveModel.Type == "Incremental")
             {
-                IncrementalSave(saveModel.InPath, saveModel.OutPath, true);
-                return false;
+                //IncrementalSave(saveModel.InPath, saveModel.OutPath, true);
             }
+        }
 
-            return true;
+        public void PauseSave()
+        {
+            Thread pauseThread = new Thread(() =>
+            {
+                isPaused = true;
+                this.pauseEvent.WaitOne(); // Met en pause le thread jusqu'à ce que le signal soit reçu
+            });
+
+            pauseThread.Start(); // Start the thread; // Met en pause le thread jusqu'à ce que le signal soit reçu
+        }
+
+        public void StopSave()
+        {
+
+        }
+
+        // Ajoutez une méthode pour reprendre la sauvegarde
+        public void ResumeSave()
+        {
+            isPaused = false;
+            pauseEvent.Set(); // Signale au thread de reprendre
         }
 
 
@@ -123,6 +136,23 @@ namespace App.Core.Services
         {
             //DataState = new DataState(NameStateFile);
             //this.DataState.SaveState = true;
+
+            while (IsSoftwareRunning())
+            {
+                //wait for the software to close
+                Thread.Sleep(1000);
+                //display message box to inform the user that the software is still running
+
+            }
+
+            if (isPaused)
+            {
+                // Attendre l'événement de reprise avant de continuer
+                pauseEvent.WaitOne(); // Attend que l'événement soit déclenché
+            }
+
+
+
             StateManagerModel stateModel = new()
             {
                 SaveName = saveModel.SaveName,
@@ -218,94 +248,14 @@ namespace App.Core.Services
                 string tempPath = Path.Combine(OutPath, subdir.Name);
                 CompleteSave(subdir.FullName, tempPath, true, saveModel);
             }
-            //System which allows the values ​​to be reset to 0 at the end of the backup
-            //DataState.TotalSize = TotalSize;
-            //DataState.SourceFile = null;
-            //DataState.TargetFile = null;
-            //DataState.TotalFile = 0;
-            //DataState.TotalSize = 0;
-            //DataState.TotalSizeRest = 0;
-            //DataState.FileRest = 0;
-            //DataState.Progress = 0;
-            //DataState.SaveState = false;
 
-            //UpdateStatefile(); //Call of the function to start the state file system
 
             stopwatch.Stop(); //Stop the stopwatch
             return false;
             //this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
         }
 
-        //public void DifferentialSave(string pathA, string pathB, string pathC) // Function that allows you to make a differential backup
-        //{
-        //    DataState = new DataState(NameStateFile); //Instattation of the method
-        //    Stopwatch stopwatch = new Stopwatch(); // Instattation of the method
-        //    stopwatch.Start(); //Starting the stopwatch
-
-        //    DataState.SaveState = true;
-        //    TotalSize = 0;
-        //    nbfilesmax = 0;
-
-        //    System.IO.DirectoryInfo dir1 = new System.IO.DirectoryInfo(pathA);
-        //    System.IO.DirectoryInfo dir2 = new System.IO.DirectoryInfo(pathB);
-
-        //    // Take a snapshot of the file system.  
-        //    IEnumerable<System.IO.FileInfo> list1 = dir1.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
-        //    IEnumerable<System.IO.FileInfo> list2 = dir2.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
-
-        //    //A custom file comparer defined below  
-        //    FileCompare myFileCompare = new FileCompare();
-
-        //    var queryList1Only = (from file in list1 select file).Except(list2, myFileCompare);
-        //    size = 0;
-        //    nbfiles = 0;
-        //    progs = 0;
-
-        //    foreach (var v in queryList1Only)
-        //    {
-        //        TotalSize += v.Length;
-        //        nbfilesmax++;
-
-        //    }
-
-        //    //Loop that allows the backup of different files
-        //    foreach (var v in queryList1Only)
-        //    {
-        //        string tempPath = Path.Combine(pathC, v.Name);
-        //        //Systems which allows to insert the values ​​of each file in the report file.
-        //        DataState.SourceFile = Path.Combine(pathA, v.Name);
-        //        DataState.TargetFile = tempPath;
-        //        DataState.TotalSize = nbfilesmax;
-        //        DataState.TotalFile = TotalSize;
-        //        DataState.TotalSizeRest = TotalSize - size;
-        //        DataState.FileRest = nbfilesmax - nbfiles;
-        //        DataState.Progress = progs;
-
-        //        UpdateStatefile();//Call of the function to start the state file system
-        //        v.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
-        //        size += v.Length;
-        //        nbfiles++;
-        //    }
-
-        //    //System which allows the values ​​to be reset to 0 at the end of the backup
-        //    DataState.SourceFile = null;
-        //    DataState.TargetFile = null;
-        //    DataState.TotalFile = 0;
-        //    DataState.TotalSize = 0;
-        //    DataState.TotalSizeRest = 0;
-        //    DataState.FileRest = 0;
-        //    DataState.Progress = 0;
-        //    DataState.SaveState = false;
-        //    UpdateStatefile();//Call of the function to start the state file system
-
-        //    stopwatch.Stop(); //Stop the stopwatch
-        //    this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
-        //}
-
-        private void IncrementalSave(string InPath, string OutPath, bool verif)
-        {
-
-        }
+        
 
 
 
@@ -359,23 +309,6 @@ namespace App.Core.Services
             }
         }
        
-
-        //public bool CreateSave(string inPath, string outPath, string type, string saveName)
-        //{
-        //    try
-        //    {
-        //        ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName});
-        //        ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
-        //        File.WriteAllText("saves.json", JsonSerializer.Serialize(ListSaveModel, options));
-        //        return true;
-        //    }
-        //    catch
-        //    {
-        //        return false;
-        //    }
-        //}
-
-
 
         public void DeleteSave(SaveModel saveModel)
         {

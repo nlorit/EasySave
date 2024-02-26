@@ -83,45 +83,22 @@ namespace WpfApp
         {
             if (List_Save.SelectedItem != null)
             {
-                // Start the save operation
-                viewModel!.StartSave((SaveModel)List_Save.SelectedItem);
-
-                // Change the visual appearance of the selected item to indicate that it's running
-                var selectedItem = List_Save.SelectedItem as SaveModel;
-                if (selectedItem != null)
+                // Start the save operation asynchronously
+                var selectedItem = (SaveModel)List_Save.SelectedItem;
+                var row_init = (DataGridRow)List_Save.ItemContainerGenerator.ContainerFromItem(selectedItem);
+                if (row_init != null)
                 {
-                    // Get the row corresponding to the selected item
-                    var row = (DataGridRow)List_Save.ItemContainerGenerator.ContainerFromItem(selectedItem);
-                    if (row != null)
-                    {
-                        // Change the background color of the row to green
-                        row.Background = Brushes.Green;
-
-                        // Wait for the save operation to complete
-                        Task.Run(() =>
-                        {
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                while (viewModel!.IsSaveRunning((SaveModel)List_Save.SelectedItem))
-                                {
-                                    Thread.Sleep(1000); // Sleep for 1 second before checking again
-                                }
-
-                                // Update the row color to red when the save operation is completed
-                                row.Dispatcher.Invoke(() =>
-                                {
-                                    row.Background = Brushes.Red;
-                                });
-                            });
-                        });
-                    }
+                    row_init.Background = Brushes.Green;
                 }
+                viewModel!.LaunchSave(selectedItem);
+                
             }
             else
             {
                 // Handle case where no item is selected
             }
         }
+
 
 
 
@@ -138,17 +115,36 @@ namespace WpfApp
 
         private void PlaySave_Click(object sender, RoutedEventArgs e)
         {
-
+            var selectedItem = (SaveModel)List_Save.SelectedItem;
+            var row_init = (DataGridRow)List_Save.ItemContainerGenerator.ContainerFromItem(selectedItem);
+            if (row_init != null)
+            {
+                row_init.Background = Brushes.Green;
+            }
+            viewModel!.PlaySave();
         }
 
         private void PauseSave_Click(object sender, RoutedEventArgs e)
         {
-
+            var selectedItem = (SaveModel)List_Save.SelectedItem;
+            var row_init = (DataGridRow)List_Save.ItemContainerGenerator.ContainerFromItem(selectedItem);
+            if (row_init != null)
+            {
+                row_init.Background = Brushes.Orange;
+            }
+            viewModel!.PauseSave();
         }
+
 
         private void StopSave_Click(object sender, RoutedEventArgs e)
         {
-
+            var selectedItem = (SaveModel)List_Save.SelectedItem;
+            var row_init = (DataGridRow)List_Save.ItemContainerGenerator.ContainerFromItem(selectedItem);
+            if (row_init != null)
+            {
+                row_init.Background = Brushes.Red;
+            }
+            viewModel!.StopSave();
         }
     }
 }

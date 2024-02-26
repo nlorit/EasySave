@@ -2,6 +2,7 @@
 using App.Core.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media.Animation;
 
 namespace WpfApp.ViewModels
 {
@@ -32,14 +33,17 @@ namespace WpfApp.ViewModels
 
         public void PlaySave()
         {
+            saveService.ResumeSave();
         }
 
         public void PauseSave()
         {
+            saveService.PauseSave();
         }
 
         public void StopSave()
         {
+            saveService.ResumeSave();
         }
 
         public bool IsSaveRunning(SaveModel saveModel)
@@ -50,22 +54,14 @@ namespace WpfApp.ViewModels
             }
         }
 
-        public void StartSave(SaveModel saveModel)
+        public void LaunchSave(SaveModel saveModel)
         {
-            lock (runningSaves)
-            {
-                runningSaves.Add(saveModel); // Add the saveModel instance to the runningSaves collection
-            }
-
-            // Start the save operation
+            // Vérifiez si la sauvegarde est en cours d'exécution
             saveService.LaunchSave(saveModel);
-
-            // Remove the saveModel instance from the runningSaves collection when the operation is completed
-            lock (runningSaves)
-            {
-                runningSaves.Remove(saveModel);
-            }
+            
         }
+
+
 
     }
 }
