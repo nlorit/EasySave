@@ -1,18 +1,18 @@
 ﻿using App.Core.Models;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 
 namespace App.Core.Services
 {
-    public class CopyService : IDisposable
+    public class CopyService 
     {
         public LoggerService loggerService = new();
         public StateManagerService stateManagerService = new();
         public bool isEncrypted;
 
         private readonly object locker = new();
-        private ManualResetEvent? manualReset = new(false);
         public CopyModel CopyModel { get; set; }
 
         public event EventHandler<BackupEventArgs>? BackupStarted;
@@ -41,12 +41,11 @@ namespace App.Core.Services
 
         public void PauseCopy()
         {
-            manualReset?.Reset();
         }
 
         public void ResumeCopy()
         {
-            manualReset?.Set();
+
         }
 
         public void StopCopy()
@@ -68,7 +67,7 @@ namespace App.Core.Services
 
         void BackupDirectory(string sourceDirPath, string targetDirPath, StreamWriter logWriter, StreamWriter stateWriter)
         {
-            while (!manualReset!.WaitOne(0))
+            while (true)
             { // Wait until manualReset is set
 
                 int TotalFailed = 0;
@@ -187,10 +186,242 @@ namespace App.Core.Services
             }
         }
 
-        public void Dispose()
-        {
-            manualReset!.Dispose();
-        }
+
+
+        //public void CompleteSave(string inputpathsave, string inputDestToSave, bool copyDir, bool verif) //Function for full folder backup
+        //{
+        //    StateManagerModel stateModel = new StateManagerModel();
+        //    stateModel.State = "ACTIVE";
+        //    Stopwatch stopwatch = new Stopwatch();
+        //    Stopwatch cryptwatch = new Stopwatch();
+        //    stopwatch.Start(); //Starting the timed for the log file
+
+        //    DirectoryInfo dir = new DirectoryInfo(inputpathsave);  // Get the subdirectories for the specified directory.
+
+        //    if (!dir.Exists) //Check if the file is present
+        //    {
+        //        throw new DirectoryNotFoundException("ERROR 404 : Directory Not Found ! " + inputpathsave);
+        //    }
+
+        //    DirectoryInfo[] dirs = dir.GetDirectories();
+        //    Directory.CreateDirectory(inputDestToSave); // If the destination directory doesn't exist, create it.  
+
+        //    FileInfo[] files = dir.GetFiles(); // Get the files in the directory and copy them to the new location.
+
+        //    if (!verif) //  Check for the status file if it needs to reset the variables
+        //    {
+        //        TotalSize = 0;
+        //        nbfilesmax = 0;
+        //        size = 0;
+        //        nbfiles = 0;
+        //        progs = 0;
+
+        //        foreach (FileInfo file in files) // Loop to allow calculation of files and folder size
+        //        {
+        //            TotalSize += file.Length;
+        //            nbfilesmax++;
+        //        }
+        //        foreach (DirectoryInfo subdir in dirs) // Loop to allow calculation of subfiles and subfolder size
+        //        {
+        //            FileInfo[] Maxfiles = subdir.GetFiles();
+        //            foreach (FileInfo file in Maxfiles)
+        //            {
+        //                TotalSize += file.Length;
+        //                nbfilesmax++;
+        //            }
+        //        }
+
+        //    }
+
+        //    Loop that allows to copy the files to make the backup
+        //    foreach (FileInfo file in files)
+        //    {
+        //        if (this.button_pause == true)
+        //        {
+        //            MessageBox.Show("test");
+        //        }
+        //        if (this.button_stop == true)
+        //        {
+        //            Thread.ResetAbort();
+        //        }
+
+        //        string tempPath = Path.Combine(inputDestToSave, file.Name);
+
+        //        if (size > 0)
+        //        {
+        //            progs = ((float)size / TotalSize) * 100;
+        //        }
+
+        //        Systems which allows to insert the values ​​of each file in the report file.
+        //        DataState.SourceFile = Path.Combine(inputpathsave, file.Name);
+        //        DataState.TargetFile = tempPath;
+        //        DataState.TotalSize = nbfilesmax;
+        //        DataState.TotalFile = TotalSize;
+        //        DataState.TotalSizeRest = TotalSize - size;
+        //        DataState.FileRest = nbfilesmax - nbfiles;
+        //        DataState.Progress = progs;
+        //        UpdateStatefile(); //Call of the function to start the state file system
+
+        //        if (PriorityExt(Path.GetExtension(file.Name)))
+        //        {
+        //            if (CryptExt(Path.GetExtension(file.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            if (CryptExt(Path.GetExtension(file.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+        //        }
+
+        //        nbfiles++;
+        //        size += file.Length;
+
+        //    }
+
+        //    If copying subdirectories, copy them and their contents to new location.
+        //    if (copyDir)
+        //    {
+        //        foreach (DirectoryInfo subdir in dirs)
+        //        {
+        //            string tempPath = Path.Combine(inputDestToSave, subdir.Name);
+        //            CompleteSave(subdir.FullName, tempPath, copyDir, true);
+        //        }
+        //    }
+        //    System which allows the values ​​to be reset to 0 at the end of the backup
+        //    DataState.TotalSize = TotalSize;
+        //    DataState.SourceFile = null;
+        //    DataState.TargetFile = null;
+        //    DataState.TotalFile = 0;
+        //    DataState.TotalSize = 0;
+        //    DataState.TotalSizeRest = 0;
+        //    DataState.FileRest = 0;
+        //    DataState.Progress = 0;
+        //    DataState.SaveState = false;
+
+        //    UpdateStatefile(); //Call of the function to start the state file system
+
+        //    stopwatch.Stop(); //Stop the stopwatch
+        //    cryptwatch.Stop();
+        //    this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
+        //    this.CryptTransfert = cryptwatch.Elapsed;
+        //}
+
+        //public void DifferentialSave(string pathA, string pathB, string pathC) // Function that allows you to make a differential backup
+        //{
+        //    DataState = new DataState(NameStateFile); //Instattation of the method
+        //    Stopwatch stopwatch = new Stopwatch(); // Instattation of the method
+        //    Stopwatch cryptwatch = new Stopwatch();
+        //    stopwatch.Start(); //Starting the stopwatch
+
+        //    DataState.SaveState = true;
+        //    TotalSize = 0;
+        //    nbfilesmax = 0;
+
+        //    System.IO.DirectoryInfo dir1 = new System.IO.DirectoryInfo(pathA);
+        //    System.IO.DirectoryInfo dir2 = new System.IO.DirectoryInfo(pathB);
+
+        //    Take a snapshot of the file system.
+        //   IEnumerable<System.IO.FileInfo> list1 = dir1.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+        //    IEnumerable<System.IO.FileInfo> list2 = dir2.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+        //    A custom file comparer defined below
+        //    FileCompare myFileCompare = new FileCompare();
+
+        //    var queryList1Only = (from file in list1 select file).Except(list2, myFileCompare);
+        //    size = 0;
+        //    nbfiles = 0;
+        //    progs = 0;
+
+        //    foreach (var v in queryList1Only)
+        //    {
+        //        TotalSize += v.Length;
+        //        nbfilesmax++;
+
+        //    }
+
+        //    Loop that allows the backup of different files
+        //    foreach (var v in queryList1Only)
+        //    {
+        //        string tempPath = Path.Combine(pathC, v.Name);
+        //        Systems which allows to insert the values ​​of each file in the report file.
+        //        DataState.SourceFile = Path.Combine(pathA, v.Name);
+        //        DataState.TargetFile = tempPath;
+        //        DataState.TotalSize = nbfilesmax;
+        //        DataState.TotalFile = TotalSize;
+        //        DataState.TotalSizeRest = TotalSize - size;
+        //        DataState.FileRest = nbfilesmax - nbfiles;
+        //        DataState.Progress = progs;
+
+        //        UpdateStatefile();//Call of the function to start the state file system
+
+        //        if (PriorityExt(Path.GetExtension(v.Name)))
+        //        {
+        //            if (CryptExt(Path.GetExtension(v.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                v.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (CryptExt(Path.GetExtension(v.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                v.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+        //        }
+
+        //        size += v.Length;
+        //        nbfiles++;
+        //    }
+
+        //    System which allows the values ​​to be reset to 0 at the end of the backup
+        //    DataState.SourceFile = null;
+        //    DataState.TargetFile = null;
+        //    DataState.TotalFile = 0;
+        //    DataState.TotalSize = 0;
+        //    DataState.TotalSizeRest = 0;
+        //    DataState.FileRest = 0;
+        //    DataState.Progress = 0;
+        //    DataState.SaveState = false;
+        //    UpdateStatefile();//Call of the function to start the state file system
+
+        //    stopwatch.Stop(); //Stop the stopwatch
+        //    this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
+        //    this.CryptTransfert = cryptwatch.Elapsed;
+        //}
+
+
+
+
+
 
         protected void OnBackupStarted(SaveModel save)
         {

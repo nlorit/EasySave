@@ -16,6 +16,7 @@ namespace App.Cmd.ViewModels
         private readonly LoggerService? loggerService;
         private readonly CopyService? copyService;
         private readonly DisplayService displayService;
+        private ThreadManagerService threadManagerService = new(); 
 
         [GeneratedRegex(@"^\d+;\d+$")]
         private static partial Regex MyRegex();
@@ -262,7 +263,7 @@ namespace App.Cmd.ViewModels
                                 Console.WriteLine();
                                 list.Add(ListSaveModel[z1]);
                                 list.Add(ListSaveModel[z2]);
-                                saveService!.ExecuteSave(list);
+                                saveService!.ExecuteSave(list, threadManagerService);
                             }
                             else
                             {
@@ -284,7 +285,7 @@ namespace App.Cmd.ViewModels
                                 {
                                     list.Add(ListSaveModel[x]);                                
                                 }
-                                saveService!.ExecuteSave(list);
+                                saveService!.ExecuteSave(list, threadManagerService);
                             }
                             else
                             {
@@ -393,7 +394,7 @@ namespace App.Cmd.ViewModels
         foreach (SaveModel item in ListSaveModel)
         {
 
-            Console.WriteLine($"{i} "+saveService!.ShowInfo(item));
+            Console.WriteLine($"{i} "+saveService!.ShowInfo(item) + threadManagerService.AreThreadsRunning(i));
             i++;
         }
 
