@@ -77,31 +77,41 @@
 
         <!--Forms Column-->
         <Border Grid.Column="1">
-            <StackPanel>
-                
-                <TextBlock Text="Add a save" FontSize="15" FontFamily="Segoe UI" Margin="10,25,0,0"/>
-                
-                <TextBlock Text="Save Name *" FontSize="12" FontFamily="Segoe UI" Margin="10,25,0,0"/>
+            <StackPanel HorizontalAlignment="Left">
+                <StackPanel HorizontalAlignment="Center">
+                    <DockPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Controls" FontSize="20" FontFamily="Segoe UI" Margin="0,20,0,0"/>
+                        <Border BorderBrush="#319af6" BorderThickness="0,2,0,0" Margin="0,0,0,0" Width="100"/>
+                    </DockPanel>
+                </StackPanel>
+
+                <TextBlock Text="Add a save:" FontSize="15" FontFamily="Segoe UI" Margin="10,25,0,0"/>
+                <TextBlock Text="Save Name *" FontSize="12" FontFamily="Segoe UI" Margin="10,15,0,0"/>
                 <TextBox x:Name="SaveName" HorizontalAlignment="Left" Margin="10,3,0,0" FontSize="12" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="20" />
 
-                <TextBlock Text="Source *" FontSize="12" FontFamily="Segoe UI" Margin="10,15,0,0"/>
+                <TextBlock Text="Source *" FontSize="12" FontFamily="Segoe UI" Margin="10,10,0,0"/>
                 <DockPanel Margin="10,3,0,0">
                     <TextBox x:Name="SourceName" FontSize="12" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="20"/>
                     <Button x:Name="SourcePopup" Content="..." HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="25" Click="SourcePopup_Click"/>
                 </DockPanel>
 
-                <TextBlock Text="Destination *" FontSize="12" FontFamily="Segoe UI" Margin="10,15,0,0"/>
+                <TextBlock Text="Destination *" FontSize="12" FontFamily="Segoe UI" Margin="10,10,0,0"/>
+                <DockPanel Margin="10,3,0,0">
+                    <TextBox x:Name="DestinationName" FontSize="12" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="20"/>
+                    <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
+                </DockPanel>
                 
-                <TextBox x:Name="DestinationName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
-                <TextBlock x:Name="Destination" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
-                <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
-
-                <Button x:Name="StartSave" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
-                <Button x:Name="DeleteSave" Content="Delete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
-                <Button x:Name="addSave" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addSave_Click"/>
                 <CheckBox x:Name="IsEncrypted" Content="Encrypted" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
 
                 <CheckBox x:Name="IsComplete" Content="Complete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <DockPanel HorizontalAlignment="Center">
+                    <Button x:Name="addSave" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="180" Click="addSave_Click"/>
+                </DockPanel>
+                
+                
+                <Button x:Name="StartSave" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
+                <Button x:Name="DeleteSave" Content="Delete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
 
             </StackPanel>
         </Border>
