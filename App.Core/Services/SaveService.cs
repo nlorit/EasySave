@@ -31,11 +31,11 @@ namespace App.Core.Services
             (ListSaveModel,_) = LoadSave();
         }
 
-        public bool IsSoftwareRunning()
+        public bool IsProcessRunning(string processName)
         {
-            Process[] processes = Process.GetProcessesByName("mspaint");
-            return processes.Length > 0;
+            return Process.GetProcesses().Any(process => process.ProcessName.Equals("mspaint.exe", StringComparison.OrdinalIgnoreCase));
         }
+
         public void LaunchSave(SaveModel saveModel)
         {
             //TODO : Detection logicel Métier
@@ -147,7 +147,7 @@ namespace App.Core.Services
             // Wait for pauseEvent to be signaled before proceeding
             listThreads[index].Item2.WaitOne(0);
 
-            while (IsSoftwareRunning() && !listThreads[index].Item3.WaitOne(0))
+            while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
             {
                 // Software is running, wait for it to close
                 Thread.Sleep(1000);
@@ -271,7 +271,7 @@ namespace App.Core.Services
             // Wait for pauseEvent to be signaled before proceeding
             listThreads[index].Item2.WaitOne(0);
 
-            while (IsSoftwareRunning() && !listThreads[index].Item3.WaitOne(0))
+            while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
             {
                 // Software is running, wait for it to close
                 Thread.Sleep(1000);
