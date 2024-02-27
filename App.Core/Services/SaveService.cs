@@ -14,6 +14,7 @@ namespace App.Core.Services
         public ManualResetEvent resumeEvent { get; private set; } = new ManualResetEvent(true);
         public ManualResetEvent stopEvent { get; private set; } = new ManualResetEvent(false);
 
+        private int progress = 0;
         //TODO : Mettre manualResetsEvent et autre event resume 
 
         private readonly StreamWriter? logWriter ;
@@ -27,6 +28,8 @@ namespace App.Core.Services
         };
 
         private Thread saveThread;
+        private long fileDo =0;
+        private long fileTotal = 0;
 
 
         public SaveService() 
@@ -89,8 +92,11 @@ namespace App.Core.Services
                     //resumeEvent.Set();
                     //pauseEvent.Set();
 
-                    //stopEvent.Set();
+                    stopEvent.Reset();
+                    fileDo = 0;
                     CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel);
+                    fileDo = fileTotal;
+                    saveModel.percentage = (fileDo * 100 / fileTotal);
                 });
 
                 // Start the thread
@@ -112,6 +118,7 @@ namespace App.Core.Services
 
         public void StopSave()
         {
+            fileDo = 0;
             stopEvent.Set(); // Signal the stop event to stop the save operation
         }
 
@@ -125,8 +132,8 @@ namespace App.Core.Services
 
         private bool CompleteSave(string InPath, string OutPath, bool verif, SaveModel saveModel)
         {
-            //DataState = new DataState(NameStateFile);
-            //this.DataState.SaveState = true;
+            // DataState = new DataState(NameStateFile);
+            // this.DataState.SaveState = true;
 
             // Wait for pauseEvent to be signaled before proceeding
             pauseEvent.WaitOne(0);
@@ -149,6 +156,11 @@ namespace App.Core.Services
             // Wait for resumeEvent to be signaled before continuing
             resumeEvent.WaitOne();
 
+            fileTotal += Directory.GetFiles(InPath).Length;
+
+            // Recursively count files in subdirectories
+
+            fileTotal += CountFiles(InPath);
 
             StateManagerModel stateModel = new()
             {
@@ -168,14 +180,13 @@ namespace App.Core.Services
             long nbfilesmax = 0;
             long size = 0;
             long nbfiles = 0;
-            float progs = 0;
 
             Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start(); //Starting the timed for the log file
+            stopwatch.Start(); // Starting the timed for the log file
 
             DirectoryInfo dir = new DirectoryInfo(InPath);  // Get the subdirectories for the specified directory.
 
-            if (!dir.Exists) //Check if the file is present
+            if (!dir.Exists) // Check if the file is present
             {
                 throw new DirectoryNotFoundException("ERROR 404 : Directory Not Found ! " + InPath);
             }
@@ -184,14 +195,12 @@ namespace App.Core.Services
             Directory.CreateDirectory(OutPath); // If the destination directory doesn't exist, create it.  
 
             FileInfo[] files = dir.GetFiles(); // Get the files in the directory and copy them to the new location.
-
-            if (!verif) //  Check for the status file if it needs to reset the variables
+            if (verif) // Check for the status file if it needs to reset the variables
             {
                 TotalSize = 0;
                 nbfilesmax = 0;
                 size = 0;
                 nbfiles = 0;
-                progs = 0;
 
                 foreach (FileInfo file in files) // Loop to allow calculation of files and folder size
                 {
@@ -210,31 +219,29 @@ namespace App.Core.Services
 
             }
 
-            //Loop that allows to copy the files to make the backup
+            // Loop that allows to copy the files to make the backup
             foreach (FileInfo file in files)
             {
                 string tempPath = Path.Combine(OutPath, file.Name);
-
-                if (size > 0)
-                {
-                    progs = ((float)size / TotalSize) * 100;
-                }
 
                 stateModel.SourceFilePath = Path.Combine(OutPath, file.Name);
                 stateModel.TargetFilePath = tempPath;
                 stateModel.TotalFilesToCopy = nbfilesmax;
                 stateModel.TotalFilesSize = TotalSize;
                 stateModel.NbFilesLeftToDo = nbfilesmax - nbfiles;
-                stateModel.Progression = progs;
                 stateModel.State = "IN PROGRESS";
-         
+
                 stateManagerService.UpdateStateFile(ListStateManager);
 
-                //Systems which allows to insert the values ​​of each file in the report file.
+                // Systems which allows to insert the values of each file in the report file.
 
-                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+                file.CopyTo(tempPath, true); // Function that allows you to copy the file to its new folder.
                 nbfiles++;
+                fileDo+= nbfiles;
                 size += file.Length;
+                saveModel.percentage = (int)((fileDo * 100) / fileTotal);
+
+                // Calculate the global percentage of execution and store it in saveModel.percentage
 
             }
 
@@ -246,15 +253,9 @@ namespace App.Core.Services
                 CompleteSave(subdir.FullName, tempPath, true, saveModel);
             }
 
-
-            stopwatch.Stop(); //Stop the stopwatch
+            stopwatch.Stop(); // Stop the stopwatch
             return false;
-            //this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
         }
-
-        
-
-
 
 
         public ObservableCollection<SaveModel> LoadSave()
@@ -317,5 +318,23 @@ namespace App.Core.Services
             logWriter?.Dispose();
             stateWriter?.Dispose();
         }
+
+     
+        public int CountFiles(string directoryPath)
+        {
+            int fileCount = 0;
+
+            // Count files in the current directory
+            fileCount += Directory.GetFiles(directoryPath).Length;
+
+            // Recursively count files in subdirectories
+            foreach (string subDirectory in Directory.GetDirectories(directoryPath))
+            {
+                fileCount += CountFiles(subDirectory);
+            }
+
+            return fileCount;
+        }
+
     }
 }
