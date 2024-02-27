@@ -26,6 +26,10 @@ namespace WpfApp
             List_Save.ItemsSource = this.Saves;
         }
 
+        private void QuitBtns_CLick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
         private void LangBtns_Click(object sender, RoutedEventArgs e)
         {
             SetLang(((Button)sender).Tag.ToString());
@@ -90,6 +94,9 @@ namespace WpfApp
             {
                 // TODO : Handle exception
             }
+            DestinationName.Text = string.Empty;
+            SourceName.Text = string.Empty;
+            SaveName.Text = string.Empty;
         }
 
         private void SourcePopup_Click(object sender, RoutedEventArgs e)
@@ -133,11 +140,6 @@ namespace WpfApp
                 // Handle case where no item is selected
             }
         }
-
-
-
-
-
 
         private void DeleteSave_Click(object sender, RoutedEventArgs e)
         {

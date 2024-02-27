@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp.ViewModels"
         mc:Ignorable="d"
-        Title="EasySave" Height="475" Width="800" MinHeight="525" MinWidth="800"
+        Title="EasySave" Height="600" Width="800" MinHeight="525" MinWidth="800"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
     <Window.Resources>
         <System:String x:Key="DestinationText">Destination *</System:String>
@@ -80,10 +80,10 @@
                 <Border BorderBrush="#8b959d" BorderThickness="0,0.5,0,0" Margin="0,40,0,10"/>
 
                 <DockPanel  Margin="10,20,10,10">
-                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0" Click ="QuitBtns_CLick">
                         <StackPanel Orientation="Horizontal" >
                             <Image Source="../Pictures/iconExit.png" Height="20px" Width="auto"/>
-                            <TextBlock Text="{DynamicResource QuitText}" FontSize="15" FontFamily="Segoe UI" Foreground="Black" FontWeight="Regular" Margin="10,0,0,0"/>
+                            <TextBlock Text="{DynamicResource QuitText}" FontSize="15" FontFamily="Segoe UI" Foreground="Black" FontWeight="Regular" Margin="10,0,0,0" />
                         </StackPanel>
                     </Button>
                 </DockPanel>
@@ -122,9 +122,9 @@
                     <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
                 </DockPanel>
                 
-                <CheckBox x:Name="IsEncrypted" Content="{DynamicResource EncryptedButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+                <CheckBox x:Name="IsEncrypted" Content="{DynamicResource EncryptedButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="150"/>
 
-                <CheckBox x:Name="IsComplete" Content="{DynamicResource CompleteButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+                <CheckBox x:Name="IsComplete" Content="{DynamicResource CompleteButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="150"/>
 
                 <DockPanel HorizontalAlignment="Center">
                     <Button x:Name="addSave" Content="{DynamicResource AddButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="230" Click="addSave_Click"/>
