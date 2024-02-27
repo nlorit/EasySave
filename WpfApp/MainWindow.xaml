@@ -14,10 +14,93 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <!--Navigation Column-->
+        <Border Grid.Column="0">
+            <StackPanel>
+                
+                <DockPanel Margin="10,20,10,10">
+                    <Image Source="../Pictures/logoEasySave.png" Height="30px" Width="auto"/>
+                    <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="Medium" Margin="15,0,0,0">EasySave</TextBlock>
+                </DockPanel>
+
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconHomeSelected.png" Height="20px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" FontSize="15" Foreground="#319af6" FontWeight="Regular" Margin="10,0,0,0" Text="Home"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconLogs.png" Height="20px" Width="auto"/>
+                            <TextBlock FontFamily="Segoe UI" FontSize="15" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0">Logs</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconRealTime.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="Real Time" FontSize="15" FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <Border BorderBrush="#8b959d" BorderThickness="0,0.5,0,0" Margin="0,40,0,10"/>
+                <DockPanel  Margin="10,10,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconLanguage.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="Language" FontSize="15" FontFamily="Segoe UI" Foreground="#8b959d" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel Margin="20,0,0,0">
+                    <Button x:Name="FrenchBtn" Tag="fr-FR" IsEnabled="false" Width="30" Background="Transparent" BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,0" Foreground="#8b959d" Click="LangBtns_Click">FR</Button>
+
+
+                    <Button x:Name="EnglishBtn" Tag="en-US" Width="30" Background="Transparent" BorderThickness="1" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="#8b959d" Click="LangBtns_Click">EN</Button>
+                </DockPanel>
+                
+            </StackPanel>
+        </Border>
+
+
+        <!--Forms Column-->
         <Border Grid.Column="1">
+            <StackPanel>
+                <Button x:Name="addSave" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addSave_Click"/>
+                <TextBox x:Name="SaveName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="75"/>
+
+                <CheckBox x:Name="IsEncrypted" Content="Encrypted" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <CheckBox x:Name="IsComplete" Content="Complete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <TextBox x:Name="SourceName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
+                <TextBlock x:Name="Source" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="SourcePopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="SourcePopup_Click"/>
+
+                <TextBox x:Name="DestinationName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
+                <TextBlock x:Name="Destination" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
+
+                <Button x:Name="StartSave" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
+                <Button x:Name="DeleteSave" Content="Delete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
+
+            </StackPanel>
+        </Border>
+
+        <!--DashBoard Column-->
+        <Border Grid.Column="2">
             <DataGrid  x:Name="List_Save" ItemsSource="{Binding saves}"  IsReadOnly="True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
                     <!-- Name save -->
@@ -55,28 +138,7 @@
             </DataGrid>
         </Border>
 
-        <Border Grid.Column="0"> 
-            <StackPanel>
-                <Button x:Name="addSave" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addSave_Click"/>
-                <TextBox x:Name="SaveName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="75"/>
-                
-                <CheckBox x:Name="IsEncrypted" Content="Encrypted" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
-
-                <CheckBox x:Name="IsComplete" Content="Complete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
-
-                <TextBox x:Name="SourceName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
-                <TextBlock x:Name="Source" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
-                <Button x:Name="SourcePopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="SourcePopup_Click"/>
-
-                <TextBox x:Name="DestinationName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
-                <TextBlock x:Name="Destination" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
-                <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
-
-                <Button x:Name="StartSave" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
-                <Button x:Name="DeleteSave" Content="Delete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
-
-            </StackPanel>
-        </Border>
+       
 
     </Grid>
 </Window>

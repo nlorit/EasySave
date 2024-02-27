@@ -42,7 +42,7 @@ namespace WpfApp
             };
             try
             {
-                if (string.IsNullOrEmpty(SaveName.Text) || SourceName.Text == "" || DestinationName.Text == "" || Destination.Text == "Destination" || Source.Text == "Source" )
+                if (false)
                 {
                     MessageBox.Show("Please fill in all the fields");
                     return;
