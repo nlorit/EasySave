@@ -2,9 +2,6 @@
 using System.Text.Json;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Security.Policy;
-using System.Threading;
 
 namespace App.Core.Services
 {
@@ -13,14 +10,16 @@ namespace App.Core.Services
 
         public ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
-        public AutoResetEvent pauseEvent { get; private set; } = new AutoResetEvent(false);
+        public ManualResetEvent pauseEvent { get; private set; } = new ManualResetEvent(false);
+        public ManualResetEvent resumeEvent { get; private set; } = new ManualResetEvent(true);
+        public ManualResetEvent stopEvent { get; private set; } = new ManualResetEvent(false);
+
+        //TODO : Mettre manualResetsEvent et autre event resume 
 
         private readonly StreamWriter? logWriter ;
         private readonly StreamWriter? stateWriter;
 
-        private readonly ConfigService configService = new();
         private readonly StateManagerService stateManagerService = new();
-        private readonly LoggerService loggerService = new();
         public CopyService copyService = new();
         private readonly JsonSerializerOptions options = new()
         {
@@ -28,8 +27,7 @@ namespace App.Core.Services
         };
 
         private Thread saveThread;
-        private bool isPaused;
-        private bool shouldAbort;
+
 
         public SaveService() 
         { 
@@ -43,15 +41,10 @@ namespace App.Core.Services
         public bool IsSoftwareRunning()
         {
             // Check if the software is running (e.g., "notepad.exe")
-            Process[] processes = Process.GetProcessesByName("Paint.exe");
-            if (processes.Length > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            Process[] processes = Process.GetProcessesByName("mspaint");
+            return processes.Length > 0;
+            
 
         }
 
@@ -90,11 +83,15 @@ namespace App.Core.Services
 
             if (saveModel.Type == "Complete")
             {
-           
+                 // Set the resume event to allow it to be resumed later
                 saveThread = new Thread(() =>
-                
-                   CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel)
-                );
+                {
+                    //resumeEvent.Set();
+                    //pauseEvent.Set();
+
+                    //stopEvent.Set();
+                    CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel);
+                });
 
                 // Start the thread
                 saveThread.Start();
@@ -109,25 +106,19 @@ namespace App.Core.Services
 
         public void PauseSave()
         {
-            Thread pauseThread = new Thread(() =>
-            {
-                isPaused = true;
-                this.pauseEvent.WaitOne(); // Met en pause le thread jusqu'à ce que le signal soit reçu
-            });
-
-            pauseThread.Start(); // Start the thread; // Met en pause le thread jusqu'à ce que le signal soit reçu
+            pauseEvent.Set(); // Reset the pause event to block threads
+            resumeEvent.Reset(); // Set the resume event to allow it to be resumed later
         }
 
         public void StopSave()
         {
-
+            stopEvent.Set(); // Signal the stop event to stop the save operation
         }
 
-        // Ajoutez une méthode pour reprendre la sauvegarde
         public void ResumeSave()
         {
-            isPaused = false;
-            pauseEvent.Set(); // Signale au thread de reprendre
+            pauseEvent.Reset(); // Signal the pause event to resume the save operation
+            resumeEvent.Set(); // Reset the resume event to block it until it's signaled again
         }
 
 
@@ -137,20 +128,26 @@ namespace App.Core.Services
             //DataState = new DataState(NameStateFile);
             //this.DataState.SaveState = true;
 
-            while (IsSoftwareRunning())
+            // Wait for pauseEvent to be signaled before proceeding
+            pauseEvent.WaitOne(0);
+
+            while (IsSoftwareRunning() && !stopEvent.WaitOne(0))
             {
-                //wait for the software to close
+                // Software is running, wait for it to close
                 Thread.Sleep(1000);
-                //display message box to inform the user that the software is still running
-
+                // Display message box to inform the user that the software is still running
             }
 
-            if (isPaused)
+            if (stopEvent.WaitOne(0))
             {
-                // Attendre l'événement de reprise avant de continuer
-                pauseEvent.WaitOne(); // Attend que l'événement soit déclenché
+                // Stop event has been signaled, return false to indicate incomplete save
+                return false;
             }
 
+            // Implement the logic with the event resume, pause, and stop
+
+            // Wait for resumeEvent to be signaled before continuing
+            resumeEvent.WaitOne();
 
 
             StateManagerModel stateModel = new()

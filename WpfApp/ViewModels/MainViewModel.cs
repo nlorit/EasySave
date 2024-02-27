@@ -43,7 +43,7 @@ namespace WpfApp.ViewModels
 
         public void StopSave()
         {
-            saveService.ResumeSave();
+            saveService.StopSave();
         }
 
         public bool IsSaveRunning(SaveModel saveModel)

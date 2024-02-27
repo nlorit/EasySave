@@ -27,6 +27,7 @@
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
 
+
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
