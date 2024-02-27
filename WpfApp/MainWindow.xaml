@@ -159,6 +159,7 @@
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
 
+
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -183,11 +184,33 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ProgressBar x:Name="Progress_bar" Width="150" Height="20"
+             Value="{Binding percentage}" Minimum="0" Maximum="100"
+             Background="#E0E0E0" Foreground="#319AF6" BorderBrush="Transparent">
+                                    <ProgressBar.Template>
+                                        <ControlTemplate TargetType="ProgressBar">
+                                            <Grid x:Name="TemplateRoot" Background="Transparent">
+                                                <Rectangle x:Name="PART_Track" Fill="{TemplateBinding Background}" />
+                                                <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="{TemplateBinding Foreground}" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </ProgressBar.Template>
+                                </ProgressBar>
+
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                 </DataGrid.Columns>
+                
             </DataGrid>
+            
         </Border>
 
-       
+
 
     </Grid>
 </Window>

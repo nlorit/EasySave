@@ -2,9 +2,6 @@
 using System.Text.Json;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Security.Policy;
-using System.Threading;
 
 namespace App.Core.Services
 {
@@ -13,14 +10,17 @@ namespace App.Core.Services
 
         public ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
         public ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
-        public AutoResetEvent pauseEvent { get; private set; } = new AutoResetEvent(false);
+        public ManualResetEvent pauseEvent { get; private set; } = new ManualResetEvent(false);
+        public ManualResetEvent resumeEvent { get; private set; } = new ManualResetEvent(true);
+        public ManualResetEvent stopEvent { get; private set; } = new ManualResetEvent(false);
+
+        private int progress = 0;
+        //TODO : Mettre manualResetsEvent et autre event resume 
 
         private readonly StreamWriter? logWriter ;
         private readonly StreamWriter? stateWriter;
 
-        private readonly ConfigService configService = new();
         private readonly StateManagerService stateManagerService = new();
-        private readonly LoggerService loggerService = new();
         public CopyService copyService = new();
         private readonly JsonSerializerOptions options = new()
         {
@@ -28,8 +28,9 @@ namespace App.Core.Services
         };
 
         private Thread saveThread;
-        private bool isPaused;
-        private bool shouldAbort;
+        private long fileDo =0;
+        private long fileTotal = 0;
+
 
         public SaveService() 
         { 
@@ -43,15 +44,10 @@ namespace App.Core.Services
         public bool IsSoftwareRunning()
         {
             // Check if the software is running (e.g., "notepad.exe")
-            Process[] processes = Process.GetProcessesByName("Paint.exe");
-            if (processes.Length > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            Process[] processes = Process.GetProcessesByName("mspaint");
+            return processes.Length > 0;
+            
 
         }
 
@@ -90,11 +86,18 @@ namespace App.Core.Services
 
             if (saveModel.Type == "Complete")
             {
-           
+                 // Set the resume event to allow it to be resumed later
                 saveThread = new Thread(() =>
-                
-                   CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel)
-                );
+                {
+                    //resumeEvent.Set();
+                    //pauseEvent.Set();
+
+                    stopEvent.Reset();
+                    fileDo = 0;
+                    CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel);
+                    fileDo = fileTotal;
+                    saveModel.percentage = (fileDo * 100 / fileTotal);
+                });
 
                 // Start the thread
                 saveThread.Start();
@@ -109,49 +112,55 @@ namespace App.Core.Services
 
         public void PauseSave()
         {
-            Thread pauseThread = new Thread(() =>
-            {
-                isPaused = true;
-                this.pauseEvent.WaitOne(); // Met en pause le thread jusqu'à ce que le signal soit reçu
-            });
-
-            pauseThread.Start(); // Start the thread; // Met en pause le thread jusqu'à ce que le signal soit reçu
+            pauseEvent.Set(); // Reset the pause event to block threads
+            resumeEvent.Reset(); // Set the resume event to allow it to be resumed later
         }
 
         public void StopSave()
         {
-
+            fileDo = 0;
+            stopEvent.Set(); // Signal the stop event to stop the save operation
         }
 
-        // Ajoutez une méthode pour reprendre la sauvegarde
         public void ResumeSave()
         {
-            isPaused = false;
-            pauseEvent.Set(); // Signale au thread de reprendre
+            pauseEvent.Reset(); // Signal the pause event to resume the save operation
+            resumeEvent.Set(); // Reset the resume event to block it until it's signaled again
         }
 
 
 
         private bool CompleteSave(string InPath, string OutPath, bool verif, SaveModel saveModel)
         {
-            //DataState = new DataState(NameStateFile);
-            //this.DataState.SaveState = true;
+            // DataState = new DataState(NameStateFile);
+            // this.DataState.SaveState = true;
 
-            while (IsSoftwareRunning())
+            // Wait for pauseEvent to be signaled before proceeding
+            pauseEvent.WaitOne(0);
+
+            while (IsSoftwareRunning() && !stopEvent.WaitOne(0))
             {
-                //wait for the software to close
+                // Software is running, wait for it to close
                 Thread.Sleep(1000);
-                //display message box to inform the user that the software is still running
-
+                // Display message box to inform the user that the software is still running
             }
 
-            if (isPaused)
+            if (stopEvent.WaitOne(0))
             {
-                // Attendre l'événement de reprise avant de continuer
-                pauseEvent.WaitOne(); // Attend que l'événement soit déclenché
+                // Stop event has been signaled, return false to indicate incomplete save
+                return false;
             }
 
+            // Implement the logic with the event resume, pause, and stop
 
+            // Wait for resumeEvent to be signaled before continuing
+            resumeEvent.WaitOne();
+
+            fileTotal += Directory.GetFiles(InPath).Length;
+
+            // Recursively count files in subdirectories
+
+            fileTotal += CountFiles(InPath);
 
             StateManagerModel stateModel = new()
             {
@@ -171,14 +180,13 @@ namespace App.Core.Services
             long nbfilesmax = 0;
             long size = 0;
             long nbfiles = 0;
-            float progs = 0;
 
             Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start(); //Starting the timed for the log file
+            stopwatch.Start(); // Starting the timed for the log file
 
             DirectoryInfo dir = new DirectoryInfo(InPath);  // Get the subdirectories for the specified directory.
 
-            if (!dir.Exists) //Check if the file is present
+            if (!dir.Exists) // Check if the file is present
             {
                 throw new DirectoryNotFoundException("ERROR 404 : Directory Not Found ! " + InPath);
             }
@@ -187,14 +195,12 @@ namespace App.Core.Services
             Directory.CreateDirectory(OutPath); // If the destination directory doesn't exist, create it.  
 
             FileInfo[] files = dir.GetFiles(); // Get the files in the directory and copy them to the new location.
-
-            if (!verif) //  Check for the status file if it needs to reset the variables
+            if (verif) // Check for the status file if it needs to reset the variables
             {
                 TotalSize = 0;
                 nbfilesmax = 0;
                 size = 0;
                 nbfiles = 0;
-                progs = 0;
 
                 foreach (FileInfo file in files) // Loop to allow calculation of files and folder size
                 {
@@ -213,31 +219,29 @@ namespace App.Core.Services
 
             }
 
-            //Loop that allows to copy the files to make the backup
+            // Loop that allows to copy the files to make the backup
             foreach (FileInfo file in files)
             {
                 string tempPath = Path.Combine(OutPath, file.Name);
-
-                if (size > 0)
-                {
-                    progs = ((float)size / TotalSize) * 100;
-                }
 
                 stateModel.SourceFilePath = Path.Combine(OutPath, file.Name);
                 stateModel.TargetFilePath = tempPath;
                 stateModel.TotalFilesToCopy = nbfilesmax;
                 stateModel.TotalFilesSize = TotalSize;
                 stateModel.NbFilesLeftToDo = nbfilesmax - nbfiles;
-                stateModel.Progression = progs;
                 stateModel.State = "IN PROGRESS";
-         
+
                 stateManagerService.UpdateStateFile(ListStateManager);
 
-                //Systems which allows to insert the values ​​of each file in the report file.
+                // Systems which allows to insert the values of each file in the report file.
 
-                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+                file.CopyTo(tempPath, true); // Function that allows you to copy the file to its new folder.
                 nbfiles++;
+                fileDo+= nbfiles;
                 size += file.Length;
+                saveModel.percentage = (int)((fileDo * 100) / fileTotal);
+
+                // Calculate the global percentage of execution and store it in saveModel.percentage
 
             }
 
@@ -249,15 +253,9 @@ namespace App.Core.Services
                 CompleteSave(subdir.FullName, tempPath, true, saveModel);
             }
 
-
-            stopwatch.Stop(); //Stop the stopwatch
+            stopwatch.Stop(); // Stop the stopwatch
             return false;
-            //this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
         }
-
-        
-
-
 
 
         public ObservableCollection<SaveModel> LoadSave()
@@ -320,5 +318,23 @@ namespace App.Core.Services
             logWriter?.Dispose();
             stateWriter?.Dispose();
         }
+
+     
+        public int CountFiles(string directoryPath)
+        {
+            int fileCount = 0;
+
+            // Count files in the current directory
+            fileCount += Directory.GetFiles(directoryPath).Length;
+
+            // Recursively count files in subdirectories
+            foreach (string subDirectory in Directory.GetDirectories(directoryPath))
+            {
+                fileCount += CountFiles(subDirectory);
+            }
+
+            return fileCount;
+        }
+
     }
 }

@@ -11,6 +11,7 @@ namespace WpfApp.ViewModels
         public readonly ObservableCollection<SaveModel> saves = new();
         private readonly SaveService saveService = new();
         private readonly HashSet<SaveModel> runningSaves = new(); // HashSet to store the IDs of running saves
+        public int percentage { get; set; } = 100;
 
 
 
@@ -43,7 +44,7 @@ namespace WpfApp.ViewModels
 
         public void StopSave()
         {
-            saveService.ResumeSave();
+            saveService.StopSave();
         }
 
         public bool IsSaveRunning(SaveModel saveModel)
