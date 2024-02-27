@@ -3,34 +3,105 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp.Views"
+        xmlns:local="clr-namespace:WpfApp.ViewModels"
         mc:Ignorable="d"
         Title="EasySave" Height="475" Width="800" MinHeight="475" MinWidth="800">
+
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
-        
-        <Border Grid.Column="0" Background="White">
-            <local:Menu></local:Menu>
 
-        </Border>
+        <Border Grid.Column="1">
+            <DataGrid  x:Name="List_Save" ItemsSource="{Binding saves}"  IsReadOnly="True" AutoGenerateColumns = "False">
+                <DataGrid.Columns>
+                    <!-- Name save -->
+                    <DataGridTextColumn Binding="{Binding SaveName}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock x:Name="Grid_Name" Text="NAME" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
 
-        <Border Grid.Column="1" Background="#f2f5fa">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button x:Name="buttun_play" Content="Play" Background="#FF0056A7" Foreground="White" Width="50" Click="PlaySave_Click"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button x:Name="buttun_pause" Content="Pause" Background="#FF0056A7" Foreground="White" Width="50" Click="PauseSave_Click"></Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button x:Name="buttun_stop" Content="Stop" Background="#FF0056A7" Foreground="White" Width="50" Click="StopSave_Click"></Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ProgressBar x:Name="Progress_bar" Width="150" Height="20"
+             Value="{Binding percentage}" Minimum="0" Maximum="100"
+             Background="#E0E0E0" Foreground="#319AF6" BorderBrush="Transparent">
+                                    <ProgressBar.Template>
+                                        <ControlTemplate TargetType="ProgressBar">
+                                            <Grid x:Name="TemplateRoot" Background="Transparent">
+                                                <Rectangle x:Name="PART_Track" Fill="{TemplateBinding Background}" />
+                                                <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left" Fill="{TemplateBinding Foreground}" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </ProgressBar.Template>
+                                </ProgressBar>
+
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
                 
-                <local:ListView Grid.Row="0" />
-                <local:ControlView Grid.Row="1" />
-            </Grid>
+            </DataGrid>
+            
         </Border>
 
+        
+
+        <Border Grid.Column="0"> 
+            <StackPanel>
+                <Button x:Name="addSave" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addSave_Click"/>
+                <TextBox x:Name="SaveName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="75"/>
+                
+                <CheckBox x:Name="IsEncrypted" Content="Encrypted" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <CheckBox x:Name="IsComplete" Content="Complete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <TextBox x:Name="SourceName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
+                <TextBlock x:Name="Source" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="SourcePopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="SourcePopup_Click"/>
+
+                <TextBox x:Name="DestinationName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
+                <TextBlock x:Name="Destination" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
+
+                <Button x:Name="StartSave" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
+                <Button x:Name="DeleteSave" Content="Delete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
+
+            </StackPanel>
+        </Border>
 
     </Grid>
 </Window>

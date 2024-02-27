@@ -1,4 +1,5 @@
 ﻿using App.Core.Models;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 
@@ -6,16 +7,11 @@ namespace App.Core.Services
 {
     public class StateManagerService
     {
-
+        
         public ObservableCollection<StateManagerModel>? listStateModel;
-        private readonly string stateFilePath = "state.json";
+        public static readonly string stateFilePath = "state.json";
 
-
-        //Options for the JsonSerializer
-        private readonly JsonSerializerOptions options = new()
-        {
-            WriteIndented = true
-        };
+        private static Mutex mut = new();
 
 
         public StateManagerService()
@@ -23,7 +19,7 @@ namespace App.Core.Services
             //Create the state file if it does not exist
             if (!File.Exists(stateFilePath))
             {
-                CreateStateFile();
+                //CreateStateFile();
             }
             //UpdateStateFile();
 
@@ -35,33 +31,41 @@ namespace App.Core.Services
             System.Diagnostics.Process.Start("notepad.exe", stateFilePath);
         }
 
-        public void UpdateStateFile()
+
+        public void UpdateStateFile(ObservableCollection<StateManagerModel> stateManagerModels)
         {
-            // Clear the state file
-            ClearStateFile();
-            int i = 0;
-            foreach (StateManagerModel stateModel in listStateModel!)
+            //TODO : Voir les states files
+            mut.WaitOne();
+            try
             {
-                using (StreamWriter stateWriter = File.AppendText(stateFilePath))
+                ClearStateFile();
+                // Open the file for writing (append mode)
+                StreamWriter? streamWriter = null;
+                using (streamWriter = File.AppendText(stateFilePath))
                 {
-                    stateWriter.WriteLineAsync(JsonSerializer.Serialize(stateModel, options) + ",");
+                    foreach (StateManagerModel stateModel in stateManagerModels!)
+                    {
+                        // Write the serialized stateModel to the file
+                        streamWriter.WriteLineAsync(JsonConvert.SerializeObject(stateModel, Formatting.Indented) + Environment.NewLine);
+                    }
                 }
-                //Increment the index to get the next save name
-                i += 1;
+                streamWriter?.Dispose();
             }
+            catch (IOException ex)
+            {
+                // Handle the exception (e.g., log or retry)
+                Console.WriteLine($"Error updating state file: {ex.Message}");
+            }
+            mut.ReleaseMutex();
         }
 
-        public void CreateStateFile() 
-        {
-            // Create the state file
-            File.WriteAllText(stateFilePath, "[]");
-        }
 
         public void ClearStateFile()
         {
             // Clear the state file
-            File.WriteAllText(stateFilePath, "");
+            File.WriteAllText(stateFilePath, "") ;
         }
+
 
 
     }

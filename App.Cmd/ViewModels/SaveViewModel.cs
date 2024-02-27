@@ -1,6 +1,7 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -15,6 +16,7 @@ namespace App.Cmd.ViewModels
         private readonly LoggerService? loggerService;
         private readonly CopyService? copyService;
         private readonly DisplayService displayService;
+        private ThreadManagerService threadManagerService = new(); 
 
         [GeneratedRegex(@"^\d+;\d+$")]
         private static partial Regex MyRegex();
@@ -32,7 +34,8 @@ namespace App.Cmd.ViewModels
             };
             
             loggerService = new();
-            copyService = new(stateManagerService);
+            copyService = new();
+            copyService.stateManagerService = stateManagerService;
             displayService = new();
 
             saveService = new()
@@ -46,21 +49,12 @@ namespace App.Cmd.ViewModels
             saveService.ListStateManager = listState;
         }
 
-
-
-
         public enum TypeOfSave
         {
             Sequential,
             Complete
         }
 
-
-        /// <summary>
-        /// Method to get the user choice
-        /// </summary>
-        /// <param name="UserEntry"></param>
-        /// <returns></returns>
         public bool UserChoice(int UserEntry)
         {
             saveService!.ListSaveModel = ListSaveModel;
@@ -215,7 +209,7 @@ namespace App.Cmd.ViewModels
 
                         saveService!.CreateSave( InPath, OutPath, type, SaveName);
 
-                        stateManagerService!.UpdateStateFile();
+                        //stateManagerService!.UpdateStateFile();
                         ListSaveModel = saveService.ListSaveModel;
                         listState = stateManagerService!.listStateModel!;
                         
@@ -262,57 +256,45 @@ namespace App.Cmd.ViewModels
                         {
                             if (!saveService!.IsSoftwareRunning())
                             {
-
+                                List<SaveModel> list = new List<SaveModel>();
                                 string[] parts = UserChoice.Split(';');
                                 int z1 = int.Parse(parts[0]);
                                 int z2 = int.Parse(parts[1]);
-                                DisplayService.SetForegroundColor("Green", $"Save {z1} is running");
-
-                                saveService!.ExecuteSave(ListSaveModel[z1]);
-                                DisplayService.SetForegroundColor("Green", $"Save {z1} Executed");
-                                Thread.Sleep(1000);
-                                DisplayService.SetForegroundColor("Green", $"Save {z2} is running");
-                                saveService!.ExecuteSave(ListSaveModel[z2]);
-                                DisplayService.SetForegroundColor("Green", $"Save {z2} Executed");
-                                Thread.Sleep(1000);
-
-
+                                Console.WriteLine();
+                                list.Add(ListSaveModel[z1]);
+                                list.Add(ListSaveModel[z2]);
+                                saveService!.ExecuteSave(list, threadManagerService);
                             }
                             else
                             {
                                 DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
                                 System.Threading.Thread.Sleep(1500);
                             }
-
                         }
                         else
                         {
                             //TODO : Ajouter un try catch pour la gestion des entrées de l'utilisateur
                             if (!saveService!.IsSoftwareRunning())
                             {
+                                List<SaveModel> list = new List<SaveModel>();
 
                                 string[] parts = UserChoice.Split('-');
                                 int min = int.Parse(parts[0]);
                                 int max = int.Parse(parts[1]);
                                 for (int x = min; x <= max; x++)
                                 {
-                                    DisplayService.SetForegroundColor("Green", $"Save {x} is running");
-                                    saveService!.ExecuteSave(ListSaveModel[x]);
-                                    DisplayService.SetForegroundColor("Green", $"Save {x} Executed");
-                                    Thread.Sleep(1000);
+                                    list.Add(ListSaveModel[x]);                                
                                 }
-
+                                saveService!.ExecuteSave(list, threadManagerService);
                             }
                             else
                             {
                                 DisplayService.SetBackForeColor("Black", "DarkRed", "Software is running save cannot be executed...");
                                 System.Threading.Thread.Sleep(1500);
                             }
-
-
                         }
-                        //return true;
-                    }                    
+                    }
+                    
                     catch (ArgumentOutOfRangeException)
                     {
                         //TODO : Quand save est vide
@@ -355,15 +337,21 @@ namespace App.Cmd.ViewModels
             }
         }
 
+        private void SaveViewModel_CopyPaused(object? sender, EventArgs e)
+        {
+            Console.WriteLine("Save Paused");
+        }
 
-
-
+        private void SaveViewModel_CopyStopped(object? sender, EventArgs e)
+        {
+            Console.WriteLine("Save Stopped");
+        }
 
         public void ShowLogs()
         {
             //Method to show the logs
 
-            loggerService.OpenLogFile();
+            loggerService?.OpenLogFile();
         }
 
         /// <summary>
@@ -384,17 +372,17 @@ namespace App.Cmd.ViewModels
             {
                 FileInfo fileInfo = new("saves.json");
 
-            if (fileInfo.Length > 0)
-            {
-                string json = File.ReadAllText("saves.json");
-                ListSaveModel = JsonConvert.DeserializeObject<ObservableCollection<SaveModel>>(json) ?? [];
+                if (fileInfo.Length > 0)
+                {
+                    string json = File.ReadAllText("saves.json");
+                    ListSaveModel = JsonConvert.DeserializeObject<ObservableCollection<SaveModel>>(json) ?? [];
+                }
+                else
+                {
+                    // Fichier vide, initialiser la liste sans désérialiser
+                    ListSaveModel = [];
+                }
             }
-            else
-            {
-                // Fichier vide, initialiser la liste sans désérialiser
-                ListSaveModel = [];
-            }
-        }
         else
         {
             // Créer le fichier s'il n'existe pas
@@ -406,7 +394,7 @@ namespace App.Cmd.ViewModels
         foreach (SaveModel item in ListSaveModel)
         {
 
-            Console.WriteLine($"{i} "+saveService!.ShowInfo(item));
+            Console.WriteLine($"{i} "+saveService!.ShowInfo(item) + threadManagerService.AreThreadsRunning(i));
             i++;
         }
 
