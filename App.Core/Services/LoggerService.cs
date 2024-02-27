@@ -22,7 +22,7 @@ namespace App.Core.Services
             loggerModel = new();
         }
 
-            public void OpenLogFile()
+        public void OpenLogFile()
         {
             // Open the log file in notepad
             System.Diagnostics.Process.Start("notepad.exe", jsonlogFilePath);

@@ -14,7 +14,6 @@ namespace App.Cmd.ViewModels
         private readonly SaveService? saveService;
         private readonly StateManagerService? stateManagerService;
         private readonly LoggerService? loggerService;
-        private readonly CopyService? copyService;
         private readonly DisplayService displayService;
         private ThreadManagerService threadManagerService = new(); 
 

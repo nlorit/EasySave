@@ -26,9 +26,13 @@ namespace WpfApp
             List_Save.ItemsSource = this.Saves;
         }
 
+        private void QuitBtns_CLick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
         private void LangBtns_Click(object sender, RoutedEventArgs e)
         {
-            SetLang(((Button)sender).Tag.ToString());
+            SetLang(((Button)sender).Tag.ToString()!);
         }
 
         private void SetLang(string lang)
@@ -62,7 +66,17 @@ namespace WpfApp
 
         private void LoadSave()
         {
-            this.Saves = viewModel!.saves;
+            if (viewModel!.IsLoadCorrectly)
+            {
+                this.Saves = viewModel!.saves;
+                MessageBox.Show("Saves loaded successfully", "Succes" ,MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                //error message box
+                MessageBox.Show("Error loading saves", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private void addSave_Click(object sender, RoutedEventArgs e)
@@ -84,19 +98,28 @@ namespace WpfApp
                 }
 
                 viewModel!.AddSave(save);
-                MessageBox.Show("Save added successfully");
+                
+                this.Saves = viewModel!.LoadSave();
+                List_Save.ItemsSource = this.Saves;
+                MessageBox.Show("Save added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
             }
             catch
             {
                 // TODO : Handle exception
             }
+            DestinationName.Text = string.Empty;
+            SourceName.Text = string.Empty;
+            SaveName.Text = string.Empty;
         }
+
 
         private void SourcePopup_Click(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog dialog = new OpenFolderDialog(); //Declaration of the method to open the window to choose the folder path.
             dialog.DefaultDirectory = "";
-            if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog()!)
             {
                 SourceName.Text = dialog.FolderName;
             }
@@ -108,7 +131,7 @@ namespace WpfApp
         {
             OpenFolderDialog dialog = new OpenFolderDialog(); //Declaration of the method to open the window to choose the folder path.
             dialog.DefaultDirectory = "";
-            if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog()!)
             {
                 DestinationName.Text = dialog.FolderName;
             }
@@ -134,17 +157,14 @@ namespace WpfApp
             }
         }
 
-
-
-
-
-
         private void DeleteSave_Click(object sender, RoutedEventArgs e)
         {
             if (List_Save.SelectedItem != null)
             {
                 // Start the save operation
                 viewModel!.DeleteSave((SaveModel)List_Save.SelectedItem);
+                this.Saves = viewModel!.saves;
+                List_Save.ItemsSource = this.Saves;
             }
         }
 
@@ -156,7 +176,7 @@ namespace WpfApp
             {
                 row_init.Background = Brushes.Green;
             }
-            viewModel!.PlaySave();
+            viewModel!.PlaySave(selectedItem);
         }
 
         private void PauseSave_Click(object sender, RoutedEventArgs e)
@@ -167,7 +187,7 @@ namespace WpfApp
             {
                 row_init.Background = Brushes.Orange;
             }
-            viewModel!.PauseSave();
+            viewModel!.PauseSave(selectedItem);
         }
 
 
@@ -179,7 +199,7 @@ namespace WpfApp
             {
                 row_init.Background = Brushes.Red;
             }
-            viewModel!.StopSave();
+            viewModel!.StopSave(selectedItem);
         }
     }
 }

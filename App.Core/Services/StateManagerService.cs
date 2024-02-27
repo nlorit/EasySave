@@ -16,6 +16,7 @@ namespace App.Core.Services
 
         public StateManagerService()
         {   
+            listStateModel = new ObservableCollection<StateManagerModel>();
             //Create the state file if it does not exist
             if (!File.Exists(stateFilePath))
             {
