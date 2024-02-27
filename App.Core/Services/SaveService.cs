@@ -176,6 +176,10 @@ namespace App.Core.Services
 
             fileTotal += CountFiles(InPath);
 
+            // Recursively count files in subdirectories
+
+            fileTotal += CountFiles(InPath);
+
             StateManagerModel stateModel = new()
             {
                 SaveName = saveModel.SaveName,
@@ -260,6 +264,8 @@ namespace App.Core.Services
                 fileDo += nbfiles;
                 size += file.Length;
                 saveModel.percentage = (int)((fileDo * 100) / fileTotal);
+
+                // Calculate the global percentage of execution and store it in saveModel.percentage
 
                 // Calculate the global percentage of execution and store it in saveModel.percentage
 
