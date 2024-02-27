@@ -1,11 +1,10 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace App.Core.Models
 {
     public class SaveModel : INotifyPropertyChanged
     {
-        private int _percentage;
+        public int percentage { get; set; }
 
         public string InPath { get; set; } = "";            // Path of the source file
         public string OutPath { get; set; } = "";           // Path of the target file
@@ -31,10 +30,5 @@ namespace App.Core.Models
         public long fileTotal { get;  set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }
