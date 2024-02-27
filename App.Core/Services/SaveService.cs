@@ -67,8 +67,10 @@ namespace App.Core.Services
                         
                         // Replace the element in listThreads with the updated tuple
                         listThreads[i] = (element.thread, listThreads[i].pauseEvent, listThreads[i].resumeEvent, listThreads[i].stopEvent, listThreads[i].savemodel);
-
+                        
                         thread.Start();
+                        listThreads[i].stopEvent.Reset();
+                        listThreads[i].resumeEvent.Set();
                         break; // Exit the loop since we found the matching element
                     }
                 }
@@ -76,7 +78,29 @@ namespace App.Core.Services
 
             if (saveModel.Type == "Incremental")
             {
-                //IncrementalSave(saveModel.InPath, saveModel.OutPath, true);
+                for (int i = 0; i < listThreads.Count; i++)
+                {
+                    var element = listThreads[i];
+
+                    if (element.savemodel.SaveName == saveModel.SaveName)
+                    {
+                        listThreads[i].stopEvent.Reset();
+                        listThreads[i].resumeEvent.Set(); // Signal the resume event to allow the save operation to proceed
+                        Thread thread = new Thread(() =>
+                        {
+                            IncrementalSave(saveModel.InPath, saveModel.OutPath, true, saveModel, i);
+                        });
+                        element.thread = thread; // Assign the newly created thread
+
+                        // Replace the element in listThreads with the updated tuple
+                        listThreads[i] = (element.thread, listThreads[i].pauseEvent, listThreads[i].resumeEvent, listThreads[i].stopEvent, listThreads[i].savemodel);
+
+                        thread.Start();
+                        listThreads[i].stopEvent.Reset();
+                        listThreads[i].resumeEvent.Set();
+                        break; // Exit the loop since we found the matching element
+                    }
+                }
             }
         }
 
@@ -119,8 +143,6 @@ namespace App.Core.Services
 
         private bool CompleteSave(string InPath, string OutPath, bool verif, SaveModel saveModel, int index)
         {
-            // DataState = new DataState(NameStateFile);
-            // this.DataState.SaveState = true;
 
             // Wait for pauseEvent to be signaled before proceeding
             listThreads[index].Item2.WaitOne(0);
@@ -241,9 +263,110 @@ namespace App.Core.Services
             }
 
             stopwatch.Stop(); // Stop the stopwatch
+            if (Convert.ToBoolean(saveModel.EncryptChoice)) EncryptFile(OutPath); // Encrypt the file
             return false;
         }
+        private bool IncrementalSave(string InPath, string OutPath, bool verif, SaveModel saveModel, int index)
+        {
+            // Wait for pauseEvent to be signaled before proceeding
+            listThreads[index].Item2.WaitOne(0);
 
+            while (IsSoftwareRunning() && !listThreads[index].Item3.WaitOne(0))
+            {
+                // Software is running, wait for it to close
+                Thread.Sleep(1000);
+                // Display message box to inform the user that the software is still running
+            }
+
+            if (listThreads[index].Item4.WaitOne(0))
+            {
+                return false;
+            }
+
+            // Implement the logic with the event resume, pause, and stop
+
+            // Wait for resumeEvent to be signaled before continuing
+            listThreads[index].Item3.WaitOne();
+
+            DirectoryInfo sourceDir = new DirectoryInfo(InPath);
+            DirectoryInfo destinationDir = new DirectoryInfo(OutPath);
+
+            // Create the destination directory if it doesn't exist
+            if (!destinationDir.Exists)
+            {
+                destinationDir.Create();
+            }
+
+            // Get the list of files in the source directory
+            FileInfo[] sourceFiles = sourceDir.GetFiles("*.*", SearchOption.AllDirectories);
+
+            // Get the list of files in the destination directory
+            FileInfo[] destinationFiles = destinationDir.GetFiles("*.*", SearchOption.AllDirectories);
+
+            // Dictionary to store the last modified time of files in the destination directory
+            Dictionary<string, DateTime> destinationFileLastModified = new Dictionary<string, DateTime>();
+            foreach (FileInfo file in destinationFiles)
+            {
+                destinationFileLastModified[file.FullName] = file.LastWriteTimeUtc;
+            }
+
+            long totalSize = 0;
+            long filesCopied = 0;
+
+            foreach (FileInfo sourceFile in sourceFiles)
+            {
+                string relativePath = sourceFile.FullName.Substring(sourceDir.FullName.Length + 1);
+                string destinationFilePath = Path.Combine(OutPath, relativePath);
+                DateTime lastModifiedTime;
+
+                if (destinationFileLastModified.TryGetValue(destinationFilePath, out lastModifiedTime))
+                {
+                    // Compare last modified time of source and destination files
+                    if (sourceFile.LastWriteTimeUtc > lastModifiedTime)
+                    {
+                        // File in source directory is newer, copy it to destination
+                        string destinationDirectory = Path.GetDirectoryName(destinationFilePath)!;
+                        if (!Directory.Exists(destinationDirectory))
+                        {
+                            Directory.CreateDirectory(destinationDirectory);
+                        }
+
+                        sourceFile.CopyTo(destinationFilePath, true);
+                        totalSize += sourceFile.Length;
+                        filesCopied++;
+                    }
+                }
+                else
+                {
+                    // File does not exist in the destination directory, copy it
+                    string destinationDirectory = Path.GetDirectoryName(destinationFilePath)!;
+                    if (!Directory.Exists(destinationDirectory))
+                    {
+                        Directory.CreateDirectory(destinationDirectory);
+                    }
+
+                    sourceFile.CopyTo(destinationFilePath, false);
+                    totalSize += sourceFile.Length;
+                    filesCopied++;
+                }
+            }
+
+            // Update saveModel or any other necessary progress tracking here
+            if (Convert.ToBoolean(saveModel.EncryptChoice)) EncryptFile(OutPath);
+            return true;
+        }
+
+        private void EncryptFile(string sourcePath)
+        {
+            string additionalArgument = "abcabcab";
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            string FileName = @"Library\Cryptosoft.exe"; // Assuming Cryptosoft.exe is located in the Library directory relative to the current working directory
+            startInfo.FileName = FileName;
+            startInfo.Arguments = $" {sourcePath} {additionalArgument} .png";
+
+            Process.Start(startInfo);
+        }
 
         public (ObservableCollection<SaveModel>,bool) LoadSave()
         { 

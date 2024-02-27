@@ -12,6 +12,7 @@
     </Window.Resources>
 
     <Window.DataContext>
+
         <local:MainViewModel/>
     </Window.DataContext>
 

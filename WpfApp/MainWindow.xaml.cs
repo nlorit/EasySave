@@ -32,7 +32,7 @@ namespace WpfApp
         }
         private void LangBtns_Click(object sender, RoutedEventArgs e)
         {
-            SetLang(((Button)sender).Tag.ToString());
+            SetLang(((Button)sender).Tag.ToString()!);
         }
 
         private void SetLang(string lang)
@@ -119,7 +119,7 @@ namespace WpfApp
         {
             OpenFolderDialog dialog = new OpenFolderDialog(); //Declaration of the method to open the window to choose the folder path.
             dialog.DefaultDirectory = "";
-            if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog()!)
             {
                 SourceName.Text = dialog.FolderName;
             }
@@ -131,7 +131,7 @@ namespace WpfApp
         {
             OpenFolderDialog dialog = new OpenFolderDialog(); //Declaration of the method to open the window to choose the folder path.
             dialog.DefaultDirectory = "";
-            if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog()!)
             {
                 DestinationName.Text = dialog.FolderName;
             }
