@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime">
+    
+    <System:String x:Key="HomeText">Accueil</System:String>
+    <System:String x:Key="LogsText">Logs</System:String>
+    <System:String x:Key="RealTimeText">Temps Réel</System:String>
+    <System:String x:Key="LanguageText">Langage</System:String>
+    <System:String x:Key="QuitText">Quitter</System:String>
+    <System:String x:Key="ControlsText">Controles</System:String>
+    <System:String x:Key="AddSaveText">Ajouter une sauvegarde :</System:String>
+    <System:String x:Key="SaveNameText">Nom de la sauvegarde *</System:String>
+    <System:String x:Key="SourceText">Source *</System:String>
+    <System:String x:Key="DestinationFileText">Destination *</System:String>
+    <System:String x:Key="EncryptedButton">Chiffrement</System:String>
+    <System:String x:Key="CompleteButton">Complète</System:String>
+    <System:String x:Key="AddButton">Ajouter</System:String>
+    <System:String x:Key="ActionButton">Action :</System:String>
+    <System:String x:Key="PressRunText">Appuyez pour exécuter une sauvegarde :</System:String>
+    <System:String x:Key="StartButton">Exécuter</System:String>
+    <System:String x:Key="PressDeleteText">Appuyez pour supprimer une sauvegarde :</System:String>
+    <System:String x:Key="DeleteButton">Supprimer</System:String>
+
+</ResourceDictionary>

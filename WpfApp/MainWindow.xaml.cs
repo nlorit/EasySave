@@ -1,6 +1,7 @@
 ﻿using App.Core.Models;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -23,6 +24,40 @@ namespace WpfApp
             List_Save.Items.Clear();
             LoadSave();
             List_Save.ItemsSource = this.Saves;
+        }
+
+        private void LangBtns_Click(object sender, RoutedEventArgs e)
+        {
+            SetLang(((Button)sender).Tag.ToString());
+        }
+
+        private void SetLang(string lang)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(lang);
+
+            Application.Current.Resources.MergedDictionaries.Clear();
+            ResourceDictionary resdict = new ResourceDictionary()
+            {
+                Source = new Uri($"/Dictionary-{lang}.xaml", UriKind.Relative)
+            };
+            Application.Current.Resources.MergedDictionaries.Add(resdict);
+
+            EnglishBtn.IsEnabled = true;
+            FrenchBtn.IsEnabled = true;
+
+            switch (lang)
+            {
+                case "en-US":
+                    EnglishBtn.IsEnabled = false;
+                    break;
+                case "fr-FR":
+                    FrenchBtn.IsEnabled = false;
+                    break;
+                default:
+                    break;
+            }
+
         }
 
         private void LoadSave()
