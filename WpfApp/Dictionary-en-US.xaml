@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime">
+    
+    <System:String x:Key="HomeText">Home</System:String>
+    <System:String x:Key="LogsText">Logs</System:String>
+    <System:String x:Key="RealTimeText">Real Time</System:String>
+    <System:String x:Key="LanguageText">Language</System:String>
+    <System:String x:Key="QuitText">Quit</System:String>
+    <System:String x:Key="ControlsText">Controls</System:String>
+    <System:String x:Key="AddSaveText">Add a save:</System:String>
+    <System:String x:Key="SaveNameText">Save Name *</System:String>
+    <System:String x:Key="SourceText">Source *</System:String>
+    <System:String x:Key="DestinationFileText">Destination *</System:String>
+    <System:String x:Key="EncryptedButton">Encrypted</System:String>
+    <System:String x:Key="CompleteButton">Complete</System:String>
+    <System:String x:Key="AddButton">Add</System:String>
+    <System:String x:Key="ActionButton">Action:</System:String>
+    <System:String x:Key="PressRunText">Press to run a save :</System:String>
+    <System:String x:Key="StartButton">Start</System:String>
+    <System:String x:Key="PressDeleteText">Press to delete a save :</System:String>
+    <System:String x:Key="DeleteButton">Delete</System:String>
+</ResourceDictionary>
