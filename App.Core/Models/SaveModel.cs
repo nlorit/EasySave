@@ -11,7 +11,7 @@ namespace App.Core.Models
         public string OutPath { get; set; } = "";           // Path of the target file
         public string Type { get; set; } = "";              // Type of the save (false = Complete, true = Sequential)          
         public string SaveName { get; set; } = "";          // Name of the save
-        public string EncryptChoice { get; set; } = "";
+        public string EncryptChoice { get; set; } = "";     // Choice of the encryption
         public DateTime Date { get; } = DateTime.Now;       // Date of the save
 
         public float percentage
@@ -26,6 +26,9 @@ namespace App.Core.Models
                 }
             }
         }
+
+        public long fileDo { get;  set; }
+        public long fileTotal { get;  set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

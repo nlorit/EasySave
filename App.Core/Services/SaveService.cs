@@ -3,6 +3,10 @@ using System.Text.Json;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System;
+using System.Security.Policy;
+using System.IO;
+using System.Reflection;
 
 namespace App.Core.Services
 {
@@ -14,20 +18,22 @@ namespace App.Core.Services
 
         public string? priority = "txt,docx,xlsx,pptx,doc,pdf,zip,rar,7z,mp3,mp4,avi,flv,wmv,mpg,mov,exe,msi,apk,iso,img";
 
-        private long fileDo = 0;
-        private long fileTotal = 0;
+
 
         JsonSerializerOptions options = new JsonSerializerOptions
         {
             WriteIndented = true
         };
 
-        private readonly StateManagerService stateManagerService;
+        private readonly LoggerService? loggerService = new();
+        private readonly StateManagerService? stateManagerService = new();
+
+        private LoggerModel loggerModel = new();
+        private StateManagerModel stateManagerModel = new();
 
 
         public SaveService()
         {
-            stateManagerService = new StateManagerService();
             ObservableCollection<SaveModel> ListSaveModel = new();
             (ListSaveModel, _) = LoadSave();
         }
@@ -40,6 +46,7 @@ namespace App.Core.Services
         public void LaunchSave(SaveModel saveModel)
         {
             //TODO : Detection logicel Métier
+            
 
             foreach (var item in listThreads)
             {
@@ -59,11 +66,13 @@ namespace App.Core.Services
                     if (element.savemodel.SaveName == saveModel.SaveName)
                     {
                         saveModel.percentage = 0;
+                        saveModel.fileDo = 0;
+                        saveModel.fileTotal = CountFiles(saveModel.InPath);
                         listThreads[i].stopEvent.Reset();
                         listThreads[i].resumeEvent.Set(); // Signal the resume event to allow the save operation to proceed
                         Thread thread = new Thread(() =>
                         {
-                            CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel, i);
+                            CompleteSave(saveModel.InPath, saveModel.OutPath, saveModel, i);
                         });
                         element.thread = thread; // Assign the newly created thread
 
@@ -88,11 +97,13 @@ namespace App.Core.Services
                     if (element.savemodel.SaveName == saveModel.SaveName)
                     {
                         saveModel.percentage = 0;
+                        saveModel.fileDo = 0;
+                        saveModel.fileTotal = CountFiles(saveModel.InPath);
                         listThreads[i].stopEvent.Reset();
                         listThreads[i].resumeEvent.Set(); // Signal the resume event to allow the save operation to proceed
                         Thread thread = new Thread(() =>
                         {
-                            IncrementalSave(saveModel.InPath, saveModel.OutPath, true, saveModel, i);
+                            IncrementalSave(saveModel.InPath, saveModel.OutPath, saveModel, i);
                         });
                         element.thread = thread; // Assign the newly created thread
 
@@ -106,6 +117,20 @@ namespace App.Core.Services
                         break; // Exit the loop since we found the matching element
                     }
                 }
+            }
+        }
+
+        public void IncrementalSave(string InPath, string OutPath, SaveModel saveModel, int index)
+        {
+            DirectoryInfo DirIn = new DirectoryInfo(InPath);
+            DirectoryInfo DirOut = new DirectoryInfo(OutPath);
+
+
+            CopyDifferential(DirIn, DirOut, saveModel, index);
+
+            if (saveModel.EncryptChoice == "True")
+            {
+                EncryptFile(OutPath);
             }
         }
 
@@ -146,153 +171,32 @@ namespace App.Core.Services
             } // Reset the resume event to block it until it's signaled again
         }
 
-        private bool CompleteSave(string InPath, string OutPath, bool verif, SaveModel saveModel, int index)
+        private void CompleteSave(string InPath, string OutPath, SaveModel saveModel, int index)
         {
 
-            // Wait for pauseEvent to be signaled before proceeding
-            listThreads[index].Item2.WaitOne(0);
+            DirectoryInfo DirIn = new DirectoryInfo(InPath);
+            DirectoryInfo DirOut = new DirectoryInfo(OutPath);
 
-            while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
-            {
-                // Software is running, wait for it to close
-                Thread.Sleep(1000);
-                // Display message box to inform the user that the software is still running
-            }
 
-            if (listThreads[index].Item4.WaitOne(0))
+            CopyAll(DirIn, DirOut, saveModel, index);
+
+            if(saveModel.EncryptChoice == "True")
             {
-                return false;
+                EncryptFile(OutPath);
             }
 
 
-            // Implement the logic with the event resume, pause, and stop
-
-            // Wait for resumeEvent to be signaled before continuing
-            listThreads[index].Item3.WaitOne();
-
-            fileTotal += Directory.GetFiles(InPath).Length;
-
-            // Recursively count files in subdirectories
-
-            fileTotal += CountFiles(InPath);
-
-            // Recursively count files in subdirectories
-
-            fileTotal += CountFiles(InPath);
-
-            StateManagerModel stateModel = new()
-            {
-                SaveName = saveModel.SaveName,
-                State = "END"
-            };
-
-            foreach (StateManagerModel item in stateManagerService.listStateModel!)
-            {
-                if (item.SaveName == stateModel.SaveName)
-                {
-                    stateModel = item;
-                }
-            }
-
-            long TotalSize = 0;
-            long nbfilesmax = 0;
-            long size = 0;
-            long nbfiles = 0;
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start(); // Starting the timed for the log file
-
-            DirectoryInfo dir = new DirectoryInfo(InPath);  // Get the subdirectories for the specified directory.
-
-            if (!dir.Exists) // Check if the file is present
-            {
-                throw new DirectoryNotFoundException("ERROR 404 : Directory Not Found ! " + InPath);
-            }
-
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            Directory.CreateDirectory(OutPath); // If the destination directory doesn't exist, create it.  
-
-            FileInfo[] files = dir.GetFiles(); // Get the files in the directory and copy them to the new location.
-
-            List<string> priorities = priority?.Split(',')?.ToList() ?? new List<string>();
-
-            // Prioritize files based on the extension's presence in the priorities list
-            var sourcefiles = files.OrderBy(x => priorities.Contains(Path.GetExtension(x.FullName).ToLower())).Reverse().ToList();
-
-            if (verif) // Check for the status file if it needs to reset the variables
-            {
-                TotalSize = 0;
-                nbfilesmax = 0;
-                size = 0;
-                nbfiles = 0;
-
-                foreach (FileInfo file in sourcefiles) // Loop to allow calculation of files and folder size
-                {
-                    TotalSize += file.Length;
-                    nbfilesmax++;
-                }
-                foreach (DirectoryInfo subdir in dirs) // Loop to allow calculation of subfiles and subfolder size
-                {
-                    FileInfo[] Maxfiles = subdir.GetFiles();
-                    foreach (FileInfo file in Maxfiles)
-                    {
-                        TotalSize += file.Length;
-                        nbfilesmax++;
-                    }
-                }
-
-            }
-
-            // Loop that allows to copy the files to make the backup
-            foreach (FileInfo file in sourcefiles)
-            {
-                string tempPath = Path.Combine(OutPath, file.Name);
-
-                stateModel.SourceFilePath = Path.Combine(OutPath, file.Name);
-                stateModel.TargetFilePath = tempPath;
-                stateModel.TotalFilesToCopy = nbfilesmax;
-                stateModel.TotalFilesSize = TotalSize;
-                stateModel.NbFilesLeftToDo = nbfilesmax - nbfiles;
-                stateModel.State = "IN PROGRESS";
-
-                stateManagerService.UpdateStateFile(stateManagerService.listStateModel!);
-
-                // Systems which allows to insert the values of each file in the report file.
-
-                file.CopyTo(tempPath, true); // Function that allows you to copy the file to its new folder.
-                nbfiles++;
-                fileDo += nbfiles;
-                size += file.Length;
-                saveModel.percentage = (int)((fileDo * 100) / fileTotal);
-
-                // Calculate the global percentage of execution and store it in saveModel.percentage
-
-                // Calculate the global percentage of execution and store it in saveModel.percentage
-
-            }
-
-            // If copying subdirectories, copy them and their contents to new location.
-
-            foreach (DirectoryInfo subdir in dirs)
-            {
-                string tempPath = Path.Combine(OutPath, subdir.Name);
-                CompleteSave(subdir.FullName, tempPath, true, saveModel, index);
-            }
-
-            stopwatch.Stop(); // Stop the stopwatch
-            if (Convert.ToBoolean(saveModel.EncryptChoice)) EncryptFile(OutPath); // Encrypt the file
-            return false;
         }
-        private bool IncrementalSave(string InPath, string OutPath, bool verif, SaveModel saveModel, int index)
+
+
+        private bool CopyAll(DirectoryInfo source, DirectoryInfo target, SaveModel saveModel, int index)
         {
-            // Wait for pauseEvent to be signaled before proceeding
+
             listThreads[index].Item2.WaitOne(0);
 
             while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
             {
-                // Software is running, wait for it to close
                 Thread.Sleep(1000);
-                // Display message box to inform the user that the software is still running
             }
 
             if (listThreads[index].Item4.WaitOne(0))
@@ -300,89 +204,71 @@ namespace App.Core.Services
                 return false;
             }
 
-            // Implement the logic with the event resume, pause, and stop
-
-            // Wait for resumeEvent to be signaled before continuing
             listThreads[index].Item3.WaitOne();
 
-            DirectoryInfo sourceDir = new DirectoryInfo(InPath);
-            DirectoryInfo destinationDir = new DirectoryInfo(OutPath);
 
-            // Create the destination directory if it doesn't exist
-            if (!destinationDir.Exists)
+            Directory.CreateDirectory(target.FullName);
+
+            // Copy each file into the new directory.
+            foreach (FileInfo fi in source.GetFiles())
             {
-                destinationDir.Create();
+
+                saveModel.percentage = (long)(((float)saveModel.fileDo++ / (float)saveModel.fileTotal) * 100);
+                Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
+                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
             }
 
-            long totalSize = 0;
-            long filesCopied = 0;
-
-
-            FileInfo[] sourceFiles = sourceDir.GetFiles("*.*", SearchOption.AllDirectories);
-
-            List<string> priorities = priority?.Split(',')?.ToList() ?? new List<string>();
-
-            // Prioritize files based on the extension's presence in the priorities list
-            var fileList = sourceFiles.OrderBy(x => priorities.Contains(Path.GetExtension(x.FullName).ToLower())).Reverse().ToList();
-
-
-
-            // Get the list of files in the destination directory
-            FileInfo[] destinationFiles = destinationDir.GetFiles("*.*", SearchOption.AllDirectories);
-
-            // Dictionary to store the last modified time of files in the destination directory
-            Dictionary<string, DateTime> destinationFileLastModified = new Dictionary<string, DateTime>();
-            foreach (FileInfo file in destinationFiles)
+            // Copy each subdirectory using recursion.
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
             {
-                destinationFileLastModified[file.FullName] = file.LastWriteTimeUtc;
+                DirectoryInfo nextTargetSubDir =
+                    target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyAll(diSourceSubDir, nextTargetSubDir,saveModel, index);
             }
-
-
-            foreach (FileInfo sourceFile in sourceFiles)
-            {
-                string relativePath = sourceFile.FullName.Substring(sourceDir.FullName.Length + 1);
-                string destinationFilePath = Path.Combine(OutPath, relativePath);
-                DateTime lastModifiedTime;
-
-                saveModel.percentage = (int)((++filesCopied * 100) / sourceFiles.Length);
-                stateManagerService.UpdateStateFile(stateManagerService.listStateModel!);
-
-                if (destinationFileLastModified.TryGetValue(destinationFilePath, out lastModifiedTime))
-                {
-                    // Compare last modified time of source and destination files
-                    if (sourceFile.LastWriteTimeUtc > lastModifiedTime)
-                    {
-                        // File in source directory is newer, copy it to destination
-                        string destinationDirectory = Path.GetDirectoryName(destinationFilePath)!;
-                        if (!Directory.Exists(destinationDirectory))
-                        {
-                            Directory.CreateDirectory(destinationDirectory);
-                        }
-
-                        sourceFile.CopyTo(destinationFilePath, true);
-                        totalSize += sourceFile.Length;
-                        filesCopied++;
-                    }
-                }
-                else
-                {
-                    // File does not exist in the destination directory, copy it
-                    string destinationDirectory = Path.GetDirectoryName(destinationFilePath)!;
-                    if (!Directory.Exists(destinationDirectory))
-                    {
-                        Directory.CreateDirectory(destinationDirectory);
-                    }
-
-                    sourceFile.CopyTo(destinationFilePath, false);
-                    totalSize += sourceFile.Length;
-                    filesCopied++;
-                }
-            }
-
-            // Update saveModel or any other necessary progress tracking here
-            if (Convert.ToBoolean(saveModel.EncryptChoice)) EncryptFile(OutPath);
             return true;
         }
+
+        private bool CopyDifferential(DirectoryInfo source, DirectoryInfo target, SaveModel saveModel, int index)
+        {
+            listThreads[index].Item2.WaitOne(0);
+
+            while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
+            {
+                Thread.Sleep(1000);
+            }
+
+            if (listThreads[index].Item4.WaitOne(0))
+            {
+                return false;
+            }
+
+            listThreads[index].Item3.WaitOne();
+
+            Directory.CreateDirectory(target.FullName);
+
+            // Copy each file into the new directory if it's modified or doesn't exist in target
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                FileInfo targetFile = new FileInfo(Path.Combine(target.FullName, fi.Name));
+
+                if (!targetFile.Exists || fi.LastWriteTimeUtc > targetFile.LastWriteTimeUtc)
+                {
+                    saveModel.percentage = (long)(((float)saveModel.fileDo++ / (float)saveModel.fileTotal) * 100);
+                    Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
+                    fi.CopyTo(targetFile.FullName, true);
+                }
+            }
+
+            // Recursively copy subdirectories differentially
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDifferential(diSourceSubDir, nextTargetSubDir, saveModel, index);
+            }
+
+            return true;
+        }
+
 
         private void EncryptFile(string sourcePath)
         {

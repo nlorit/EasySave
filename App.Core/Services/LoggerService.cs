@@ -8,18 +8,19 @@ namespace App.Core.Services
 {
     public class LoggerService
     {
-        public LoggerModel? loggerModel;
         private readonly string jsonlogFilePath = "logs.json";
         private readonly string xmlLogFilePath = "logs.xml";
         private readonly ConfigService configService = new ConfigService();
+
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
         };
 
+        private StreamWriter? streamWriter;
+
         public LoggerService()
         {
-            loggerModel = new();
         }
 
         public void OpenLogFile()
@@ -46,7 +47,7 @@ namespace App.Core.Services
             else return xmlLogFilePath;
         }
 
-        public void AddEntryLog(StreamWriter streamWriter)
+        public void AddEntryLog(LoggerModel loggerModel)
         {
             if (configService.LogsFormat == "JSON")
             {
@@ -54,7 +55,7 @@ namespace App.Core.Services
                 {
                     using (streamWriter = File.AppendText(jsonlogFilePath)) ;
                     { 
-                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ","); 
+                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options)); 
                     }
                 }
                 catch (InvalidOperationException)
