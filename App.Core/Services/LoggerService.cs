@@ -49,19 +49,14 @@ namespace App.Core.Services
 
         public void AddEntryLog(LoggerModel loggerModel)
         {
-            if (configService.LogsFormat == "JSON")
+            //TODO : refaire le config service cassé ?
+            if (true)
             {
-                try
+                using (StreamWriter streamWriter = File.AppendText(jsonlogFilePath))
                 {
-                    using (streamWriter = File.AppendText(jsonlogFilePath)) ;
-                    { 
-                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options)); 
-                    }
+                    streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options));
                 }
-                catch (InvalidOperationException)
-                {
-                    CreateLogFile();
-                }
+
             }
             else
             {

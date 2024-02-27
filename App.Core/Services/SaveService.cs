@@ -126,6 +126,12 @@ namespace App.Core.Services
             DirectoryInfo DirOut = new DirectoryInfo(OutPath);
 
 
+            //give me the loggermodel variables
+            loggerModel.Name = saveModel.SaveName;
+
+
+
+
             CopyDifferential(DirIn, DirOut, saveModel, index);
 
             if (saveModel.EncryptChoice == "True")
@@ -177,6 +183,8 @@ namespace App.Core.Services
             DirectoryInfo DirIn = new DirectoryInfo(InPath);
             DirectoryInfo DirOut = new DirectoryInfo(OutPath);
 
+            loggerModel.Name = saveModel.SaveName;
+
 
             CopyAll(DirIn, DirOut, saveModel, index);
 
@@ -214,8 +222,18 @@ namespace App.Core.Services
             {
 
                 saveModel.percentage = (long)(((float)saveModel.fileDo++ / (float)saveModel.fileTotal) * 100);
-                Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
+
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
                 fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                stopwatch.Stop();
+
+                loggerModel.FileSource = fi.FullName;
+                loggerModel.FileTarget = Path.Combine(target.FullName, fi.Name);
+                loggerModel.FileTransferTime = stopwatch.ElapsedMilliseconds.ToString();
+                loggerModel.FileSize = fi.Length.ToString();
+
+                loggerService!.AddEntryLog(loggerModel);
             }
 
             // Copy each subdirectory using recursion.
@@ -254,8 +272,17 @@ namespace App.Core.Services
                 if (!targetFile.Exists || fi.LastWriteTimeUtc > targetFile.LastWriteTimeUtc)
                 {
                     saveModel.percentage = (long)(((float)saveModel.fileDo++ / (float)saveModel.fileTotal) * 100);
-                    Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
-                    fi.CopyTo(targetFile.FullName, true);
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                    stopwatch.Stop();
+
+                    loggerModel.FileSource = fi.FullName;
+                    loggerModel.FileTarget = Path.Combine(target.FullName, fi.Name);
+                    loggerModel.FileTransferTime = stopwatch.ElapsedMilliseconds.ToString();
+                    loggerModel.FileSize = fi.Length.ToString();
+
+                    loggerService!.AddEntryLog(loggerModel);
                 }
             }
 
