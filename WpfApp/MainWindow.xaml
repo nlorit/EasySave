@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp.ViewModels"
         mc:Ignorable="d"
-        Title="EasySave" Height="475" Width="800" MinHeight="475" MinWidth="800">
+        Title="EasySave" Height="475" Width="800" MinHeight="525" MinWidth="800"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime">
+    <Window.Resources>
+        <System:String x:Key="DestinationText">Destination *</System:String>
+    </Window.Resources>
 
     <Window.DataContext>
         <local:MainViewModel/>
@@ -13,11 +17,139 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.5*"/>
+         
+            <ColumnDefinition Width="175"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="1">
+        <!--Navigation Column-->
+        
+        <Border Grid.Column="0" Margin="10,20,0,0">
+            <StackPanel>
+                
+                <DockPanel Margin="10,20,10,10">
+                    <Image Source="../Pictures/logoEasySave.png" Height="30px" Width="auto"/>
+                    <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="Medium" Margin="15,0,0,0">EasySave</TextBlock>
+                </DockPanel>
+
+                <DockPanel  Margin="10,30,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconHomeSelected.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="{DynamicResource HomeText}" FontFamily="Segoe UI" FontSize="15" Foreground="#319af6" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,20,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconLogs.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="Logs" FontFamily="Segoe UI" FontSize="15" Foreground="Black" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,20,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconRealTime.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="{DynamicResource RealTimeText}" FontSize="15" FontFamily="Segoe UI" Foreground="Black" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel  Margin="10,20,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconLanguage.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="{DynamicResource LanguageText}" FontSize="15" FontFamily="Segoe UI" Foreground="Black" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DockPanel Margin="20,0,0,0">
+                    <Button x:Name="FrenchBtn" Tag="fr-FR" IsEnabled="false" Width="30" Background="Transparent" BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,0" Foreground="#8b959d" Click="LangBtns_Click">FR</Button>
+
+
+                    <Button x:Name="EnglishBtn" Tag="en-US" Width="30" Background="Transparent" BorderThickness="1" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="#8b959d" Click="LangBtns_Click">EN</Button>
+                </DockPanel>
+
+                <Border BorderBrush="#8b959d" BorderThickness="0,0.5,0,0" Margin="0,40,0,10"/>
+
+                <DockPanel  Margin="10,20,10,10">
+                    <Button Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Margin="4,0,0,0">
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Source="../Pictures/iconExit.png" Height="20px" Width="auto"/>
+                            <TextBlock Text="{DynamicResource QuitText}" FontSize="15" FontFamily="Segoe UI" Foreground="Black" FontWeight="Regular" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+
+            </StackPanel>
+        </Border>
+        
+        <Border Grid.Column="1" BorderBrush="#8b959d" BorderThickness="0.5,0,0,0" VerticalAlignment="Stretch" Margin="5,0"/>
+
+        <!--Forms Column-->
+        <Border Grid.Column="2" Margin="20,0,30,0">
+            <StackPanel HorizontalAlignment="Left">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="{DynamicResource ControlsText}" FontSize="20" FontFamily="Segoe UI" Margin="0,20,0,0"/>
+                    <Border BorderBrush="#319af6" BorderThickness="0,2,0,0" Margin="0,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel HorizontalAlignment="Left">
+                    <TextBlock Text="{DynamicResource AddSaveText}" FontSize="15" FontFamily="Segoe UI" Margin="10,25,0,0"/>
+                    <Border BorderBrush="#8b959d" BorderThickness="0,1,0,0" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <TextBlock Text="{DynamicResource SaveNameText}" FontSize="12" FontFamily="Segoe UI" Margin="10,15,0,0"/>
+                <TextBox x:Name="SaveName" HorizontalAlignment="Left" Margin="10,3,0,0" FontSize="12" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="200" Height="20" />
+
+                <TextBlock Text="{DynamicResource SourceText}" FontSize="12" FontFamily="Segoe UI" Margin="10,10,0,0"/>
+                <DockPanel Margin="10,3,0,0">
+                    <TextBox x:Name="SourceName" FontSize="12" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="200" Height="20"/>
+                    <Button x:Name="SourcePopup" Content="..." HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="25" Click="SourcePopup_Click"/>
+                </DockPanel>
+
+                <TextBlock Text="{DynamicResource DestinationFileText}" FontSize="12" FontFamily="Segoe UI" Margin="10,10,0,0"/>
+                <DockPanel Margin="10,3,0,0">
+                    <TextBox x:Name="DestinationName" FontSize="12" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="200" Height="20"/>
+                    <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
+                </DockPanel>
+                
+                <CheckBox x:Name="IsEncrypted" Content="{DynamicResource EncryptedButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <CheckBox x:Name="IsComplete" Content="{DynamicResource CompleteButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
+
+                <DockPanel HorizontalAlignment="Center">
+                    <Button x:Name="addSave" Content="{DynamicResource AddButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="230" Click="addSave_Click"/>
+                </DockPanel>
+
+                <StackPanel HorizontalAlignment="Left">
+                    <TextBlock Text="{DynamicResource ActionButton}" FontSize="15" FontFamily="Segoe UI" Margin="10,25,0,0"/>
+                    <Border BorderBrush="#8b959d" BorderThickness="0,1,0,0" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource PressRunText}" Margin="10,10,0,0"/>
+                        <Button x:Name="StartSave" Content="{DynamicResource StartButton}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
+                    </StackPanel>
+                        
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource PressDeleteText}"  Margin="10,10,0,0"/>
+                        <Button x:Name="DeleteSave" Content="{DynamicResource DeleteButton}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
+                    </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--DashBoard Column-->
+        <Border Grid.Column="3">
             <DataGrid  x:Name="List_Save" ItemsSource="{Binding saves}"  IsReadOnly="True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
                     <!-- Name save -->
@@ -78,30 +210,7 @@
             
         </Border>
 
-        
 
-        <Border Grid.Column="0"> 
-            <StackPanel>
-                <Button x:Name="addSave" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addSave_Click"/>
-                <TextBox x:Name="SaveName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="75"/>
-                
-                <CheckBox x:Name="IsEncrypted" Content="Encrypted" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
-
-                <CheckBox x:Name="IsComplete" Content="Complete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75"/>
-
-                <TextBox x:Name="SourceName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
-                <TextBlock x:Name="Source" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Source" VerticalAlignment="Top" Width="75"/>
-                <Button x:Name="SourcePopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="SourcePopup_Click"/>
-
-                <TextBox x:Name="DestinationName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
-                <TextBlock x:Name="Destination" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="75"/>
-                <Button x:Name="DestinationPopup" Content="..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="25" Click="DestinationPopup_Click"/>
-
-                <Button x:Name="StartSave" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="StartSave_Click"/>
-                <Button x:Name="DeleteSave" Content="Delete" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="DeleteSave_Click"/>
-
-            </StackPanel>
-        </Border>
 
     </Grid>
 </Window>
