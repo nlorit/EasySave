@@ -27,8 +27,8 @@ namespace App.Core.Models
             }
         }
 
-        public long fileDo { get;  set; }
-        public long fileTotal { get;  set; }
+        public long fileDo { get; set; }
+        public long fileTotal { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
