@@ -1,6 +1,8 @@
-﻿namespace App.Core.Models
+﻿using System.ComponentModel;
+
+namespace App.Core.Models
 {
-    public class LoggerModel
+    public class LoggerModel : INotifyPropertyChanged
     {
         public string Name { get; set; } = string.Empty;                            // Name of the save
         public string FileSource { get; set; } = string.Empty;                      // Path of the source file
@@ -9,5 +11,7 @@
         public string FileTransferTime { get; set; } = string.Empty;                // Time of the transfer
         public string FileEncryptionTime { get; set; } = string.Empty;                // Time of the encryption
         public DateTime Time { get; set; } = DateTime.Now;                          // Date of the save
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

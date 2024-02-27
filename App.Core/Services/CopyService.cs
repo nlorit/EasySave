@@ -1,61 +1,57 @@
 ﻿using App.Core.Models;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 
 namespace App.Core.Services
 {
-    public class CopyService
+    public class CopyService 
     {
         public LoggerService loggerService = new();
         public StateManagerService stateManagerService = new();
-        private bool isStopped;
-        private bool isPaused;
         public bool isEncrypted;
-        private long totalFile = 0;
-        private long totalSize = 0;
-        private float progress =0;
 
+        private readonly object locker = new();
         public CopyModel CopyModel { get; set; }
+
+        public event EventHandler<BackupEventArgs>? BackupStarted;
+        public event EventHandler<BackupEventArgs>? BackupCompleted;
+
+
 
         public CopyService()
         {
             this.CopyModel = new();
         }
 
-        public CopyService(StateManagerService stateManagerService)
+
+        public void ExecuteCopy(SaveModel saveModel, StreamWriter logWriter, StreamWriter stateWriter)
         {
-            this.CopyModel = new();
-            this.stateManagerService = stateManagerService;
+            
+            Thread thread = new Thread(() =>
+            {
+                OnBackupStarted(saveModel);
+                BackupDirectory(saveModel.InPath, saveModel.OutPath, logWriter, stateWriter);
+                OnBackupCompleted(saveModel);
+            });
+            thread.Start();
+            
         }
 
-        public void ExecuteCopy(SaveModel saveModel)
+        public void PauseCopy()
         {
-            isPaused = false;
-            isStopped = false;
-            totalFile = 0;
-            totalSize = 0;
-            ProcessCopy(saveModel);
         }
 
-        public void PauseCopy(SaveModel saveModel)
+        public void ResumeCopy()
         {
-            isPaused = true;
-            // Implement any necessary logic for pausing the copying process
+
         }
 
-        public void StopCopy(SaveModel saveModel)
+        public void StopCopy()
         {
-            isStopped = true;
-            // Implement any necessary logic for stopping the copying process
         }
 
-        public void ResumeCopy(SaveModel saveModel)
-        {
-            isPaused = false;
-            // Implement any necessary logic for resuming the copying process
-            ProcessCopy(saveModel);
-        }
 
         private void EncryptFile(string sourcePath)
         {
@@ -69,138 +65,395 @@ namespace App.Core.Services
             Process.Start(startInfo);
         }
 
-
-        private void ProcessCopy(SaveModel saveModel)
+        void BackupDirectory(string sourceDirPath, string targetDirPath, StreamWriter logWriter, StreamWriter stateWriter)
         {
-            if (isPaused || isStopped)
-                return;
+            while (true)
+            { // Wait until manualReset is set
 
-            foreach (var item in Directory.GetFiles(this.CopyModel.SourcePath, "*", SearchOption.AllDirectories))
-            {
-                totalFile += 1;
-                totalSize += new FileInfo(item).Length;
-            }
-
-            foreach (StateManagerModel stateModel in stateManagerService.listStateModel!)
-            {
-                if (stateModel.SaveName == saveModel.SaveName)
+                int TotalFailed = 0;
+                // Stage 1: Create the destination folder
+                if (!Directory.Exists(targetDirPath))
                 {
-
-                    stateModel.TotalFilesToCopy += totalFile;
-                    stateModel.NbFilesLeftToDo = totalFile;
-                    stateModel.TotalFilesSize = totalSize;
-                    stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
-                    progress = stateModel.Progression;
-                    stateModel.State = "ACTIVE";
-                    stateManagerService.UpdateStateFile();
-
-                    if (File.Exists(this.CopyModel.SourcePath))
+                    try
                     {
-                        // File copying operation
-
-                        stateModel.SourceFilePath = this.CopyModel.SourcePath;
-                        stateModel.TargetFilePath = this.CopyModel.TargetPath;
-                        stateManagerService.UpdateStateFile();
-                            
-
-
-                        File.Copy(this.CopyModel.SourcePath, this.CopyModel.TargetPath, true);
-                        stateModel.Progression = 100 - ((stateModel.NbFilesLeftToDo / totalFile) * 100);
-                        progress = stateModel.Progression;
-                        stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
-
-                        stateManagerService.UpdateStateFile();
-
-
-                        loggerService!.loggerModel!.Name = saveModel.SaveName;
-                        loggerService.loggerModel.FileSource = this.CopyModel.SourcePath;
-                        loggerService.loggerModel.FileTarget = this.CopyModel.TargetPath;
-                        loggerService.loggerModel.FileSize = new FileInfo(this.CopyModel.SourcePath).Length.ToString();
-                        loggerService.AddEntryLog();
-
+                        Directory.CreateDirectory(targetDirPath);
+                        logWriter.WriteLine($"Create folder: {targetDirPath}");
                     }
-                    else if (Directory.Exists(this.CopyModel.SourcePath))
+                    catch (Exception ex)
                     {
-                        // Directory copying operation
-                        CopyDirectory(this.CopyModel.SourcePath, this.CopyModel.TargetPath, stateModel);
-
+                        // Cannot create folder
+                        stateWriter.WriteLine($"Failed to create folder: {targetDirPath}\r\nAccess Denied\r\n");
+                        return;
                     }
-                    else
-                    {
-                        // Log the error and handle it gracefully
-                        loggerService!.loggerModel!.Name = saveModel.SaveName;
-                        loggerService.AddEntryLog();
-                    }
-
-                    
-
-                    stateModel.State = "END";
-                    stateManagerService.UpdateStateFile();
                 }
+
+                // Stage 2: Get all files from the source folder
+                string[] files = null;
+                try
+                {
+                    files = Directory.GetFiles(sourceDirPath);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Access denied, cannot read folder or files
+                    stateWriter.WriteLine($"{sourceDirPath}\r\nAccess Denied\r\n");
+                }
+                catch (Exception e)
+                {
+                    // Other unknown read errors
+                    stateWriter.WriteLine($"{sourceDirPath}\r\n{e.Message}\r\n");
+                }
+
+                // Stage 3: Copy all files from source to destination folder
+                if (files != null && files.Length > 0)
+                {
+                    foreach (string file in files)
+                    {
+
+                        try
+                        {
+                            string name = Path.GetFileName(file);
+                            string dest = Path.Combine(targetDirPath, name);
+
+                            File.Copy(file, dest, true);
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            // Access denied, cannot write file
+                            stateWriter.WriteLine($"{file}\r\nAccess Denied\r\n");
+                            TotalFailed++;
+                        }
+                        catch (Exception e)
+                        {
+                            // Other unknown error
+                            TotalFailed++;
+                            stateWriter.WriteLine($"{file}\r\n{e.Message}\r\n");
+                        }
+                    }
+                }
+
+                // Stage 4: Get all sub-folders
+                string[] folders = null;
+                try
+                {
+                    folders = Directory.GetDirectories(sourceDirPath);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Access denied, cannot read folders
+                    stateWriter.WriteLine($"{sourceDirPath}\r\nAccess denied\r\n");
+                }
+                catch (Exception e)
+                {
+                    // Other unknown read errors
+                    stateWriter.WriteLine($"{sourceDirPath}\r\nAccess {e.Message}\r\n");
+                }
+
+                // Stage 5: Backup files and "sub-sub-folders" in the sub-folder
+                if (folders != null && folders.Length > 0)
+                {
+                    foreach (string folder in folders)
+                    {
+
+                        try
+                        {
+                            string name = Path.GetFileName(folder);
+                            string dest = Path.Combine(targetDirPath, name);
+
+                            // recursive call with updated source and target paths
+                            BackupDirectory(folder, dest, logWriter, stateWriter);
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            // Access denied, cannot read folders
+                            stateWriter.WriteLine($"{folder}\r\nAccess denied\r\n");
+                        }
+                        catch (Exception e)
+                        {
+                            // Other unknown read errors
+                            stateWriter.WriteLine($"{targetDirPath}\r\nAccess {e.Message}\r\n");
+                        }
+                    }
+                }
+
+                // Perform encryption if required
+                if (this.isEncrypted)
+                {
+                    EncryptFile(this.CopyModel.TargetPath);
+                }
+                
+                 
             }
-
-
-            if (isEncrypted) EncryptFile(this.CopyModel.TargetPath);
-
-
         }
 
 
-        private void CopyDirectory(string sourceDirPath, string targetDirPath, StateManagerModel stateModel)
+
+        //public void CompleteSave(string inputpathsave, string inputDestToSave, bool copyDir, bool verif) //Function for full folder backup
+        //{
+        //    StateManagerModel stateModel = new StateManagerModel();
+        //    stateModel.State = "ACTIVE";
+        //    Stopwatch stopwatch = new Stopwatch();
+        //    Stopwatch cryptwatch = new Stopwatch();
+        //    stopwatch.Start(); //Starting the timed for the log file
+
+        //    DirectoryInfo dir = new DirectoryInfo(inputpathsave);  // Get the subdirectories for the specified directory.
+
+        //    if (!dir.Exists) //Check if the file is present
+        //    {
+        //        throw new DirectoryNotFoundException("ERROR 404 : Directory Not Found ! " + inputpathsave);
+        //    }
+
+        //    DirectoryInfo[] dirs = dir.GetDirectories();
+        //    Directory.CreateDirectory(inputDestToSave); // If the destination directory doesn't exist, create it.  
+
+        //    FileInfo[] files = dir.GetFiles(); // Get the files in the directory and copy them to the new location.
+
+        //    if (!verif) //  Check for the status file if it needs to reset the variables
+        //    {
+        //        TotalSize = 0;
+        //        nbfilesmax = 0;
+        //        size = 0;
+        //        nbfiles = 0;
+        //        progs = 0;
+
+        //        foreach (FileInfo file in files) // Loop to allow calculation of files and folder size
+        //        {
+        //            TotalSize += file.Length;
+        //            nbfilesmax++;
+        //        }
+        //        foreach (DirectoryInfo subdir in dirs) // Loop to allow calculation of subfiles and subfolder size
+        //        {
+        //            FileInfo[] Maxfiles = subdir.GetFiles();
+        //            foreach (FileInfo file in Maxfiles)
+        //            {
+        //                TotalSize += file.Length;
+        //                nbfilesmax++;
+        //            }
+        //        }
+
+        //    }
+
+        //    Loop that allows to copy the files to make the backup
+        //    foreach (FileInfo file in files)
+        //    {
+        //        if (this.button_pause == true)
+        //        {
+        //            MessageBox.Show("test");
+        //        }
+        //        if (this.button_stop == true)
+        //        {
+        //            Thread.ResetAbort();
+        //        }
+
+        //        string tempPath = Path.Combine(inputDestToSave, file.Name);
+
+        //        if (size > 0)
+        //        {
+        //            progs = ((float)size / TotalSize) * 100;
+        //        }
+
+        //        Systems which allows to insert the values ​​of each file in the report file.
+        //        DataState.SourceFile = Path.Combine(inputpathsave, file.Name);
+        //        DataState.TargetFile = tempPath;
+        //        DataState.TotalSize = nbfilesmax;
+        //        DataState.TotalFile = TotalSize;
+        //        DataState.TotalSizeRest = TotalSize - size;
+        //        DataState.FileRest = nbfilesmax - nbfiles;
+        //        DataState.Progress = progs;
+        //        UpdateStatefile(); //Call of the function to start the state file system
+
+        //        if (PriorityExt(Path.GetExtension(file.Name)))
+        //        {
+        //            if (CryptExt(Path.GetExtension(file.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            if (CryptExt(Path.GetExtension(file.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+        //        }
+
+        //        nbfiles++;
+        //        size += file.Length;
+
+        //    }
+
+        //    If copying subdirectories, copy them and their contents to new location.
+        //    if (copyDir)
+        //    {
+        //        foreach (DirectoryInfo subdir in dirs)
+        //        {
+        //            string tempPath = Path.Combine(inputDestToSave, subdir.Name);
+        //            CompleteSave(subdir.FullName, tempPath, copyDir, true);
+        //        }
+        //    }
+        //    System which allows the values ​​to be reset to 0 at the end of the backup
+        //    DataState.TotalSize = TotalSize;
+        //    DataState.SourceFile = null;
+        //    DataState.TargetFile = null;
+        //    DataState.TotalFile = 0;
+        //    DataState.TotalSize = 0;
+        //    DataState.TotalSizeRest = 0;
+        //    DataState.FileRest = 0;
+        //    DataState.Progress = 0;
+        //    DataState.SaveState = false;
+
+        //    UpdateStatefile(); //Call of the function to start the state file system
+
+        //    stopwatch.Stop(); //Stop the stopwatch
+        //    cryptwatch.Stop();
+        //    this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
+        //    this.CryptTransfert = cryptwatch.Elapsed;
+        //}
+
+        //public void DifferentialSave(string pathA, string pathB, string pathC) // Function that allows you to make a differential backup
+        //{
+        //    DataState = new DataState(NameStateFile); //Instattation of the method
+        //    Stopwatch stopwatch = new Stopwatch(); // Instattation of the method
+        //    Stopwatch cryptwatch = new Stopwatch();
+        //    stopwatch.Start(); //Starting the stopwatch
+
+        //    DataState.SaveState = true;
+        //    TotalSize = 0;
+        //    nbfilesmax = 0;
+
+        //    System.IO.DirectoryInfo dir1 = new System.IO.DirectoryInfo(pathA);
+        //    System.IO.DirectoryInfo dir2 = new System.IO.DirectoryInfo(pathB);
+
+        //    Take a snapshot of the file system.
+        //   IEnumerable<System.IO.FileInfo> list1 = dir1.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+        //    IEnumerable<System.IO.FileInfo> list2 = dir2.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+        //    A custom file comparer defined below
+        //    FileCompare myFileCompare = new FileCompare();
+
+        //    var queryList1Only = (from file in list1 select file).Except(list2, myFileCompare);
+        //    size = 0;
+        //    nbfiles = 0;
+        //    progs = 0;
+
+        //    foreach (var v in queryList1Only)
+        //    {
+        //        TotalSize += v.Length;
+        //        nbfilesmax++;
+
+        //    }
+
+        //    Loop that allows the backup of different files
+        //    foreach (var v in queryList1Only)
+        //    {
+        //        string tempPath = Path.Combine(pathC, v.Name);
+        //        Systems which allows to insert the values ​​of each file in the report file.
+        //        DataState.SourceFile = Path.Combine(pathA, v.Name);
+        //        DataState.TargetFile = tempPath;
+        //        DataState.TotalSize = nbfilesmax;
+        //        DataState.TotalFile = TotalSize;
+        //        DataState.TotalSizeRest = TotalSize - size;
+        //        DataState.FileRest = nbfilesmax - nbfiles;
+        //        DataState.Progress = progs;
+
+        //        UpdateStatefile();//Call of the function to start the state file system
+
+        //        if (PriorityExt(Path.GetExtension(v.Name)))
+        //        {
+        //            if (CryptExt(Path.GetExtension(v.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                v.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (CryptExt(Path.GetExtension(v.Name)))
+        //            {
+        //                cryptwatch.Start();
+        //                Encrypt(DataState.SourceFile, tempPath);
+        //                cryptwatch.Stop();
+        //            }
+        //            else
+        //            {
+        //                v.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+        //            }
+        //        }
+
+        //        size += v.Length;
+        //        nbfiles++;
+        //    }
+
+        //    System which allows the values ​​to be reset to 0 at the end of the backup
+        //    DataState.SourceFile = null;
+        //    DataState.TargetFile = null;
+        //    DataState.TotalFile = 0;
+        //    DataState.TotalSize = 0;
+        //    DataState.TotalSizeRest = 0;
+        //    DataState.FileRest = 0;
+        //    DataState.Progress = 0;
+        //    DataState.SaveState = false;
+        //    UpdateStatefile();//Call of the function to start the state file system
+
+        //    stopwatch.Stop(); //Stop the stopwatch
+        //    this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
+        //    this.CryptTransfert = cryptwatch.Elapsed;
+        //}
+
+
+
+
+
+
+        protected void OnBackupStarted(SaveModel save)
         {
-
-
-            // Vérifie si le répertoire source existe
-            if (!Directory.Exists(sourceDirPath))
+            BackupStarted?.Invoke(this, new BackupEventArgs
             {
-                Console.WriteLine("Le répertoire source n'existe pas.");
-                return;
-            }
+                SourcePath = save.InPath,
+                TargetPath = save.OutPath,
+                StartTime = DateTime.Now
+            });
+        }
 
-            // Crée le répertoire cible s'il n'existe pas encore
-            if (!Directory.Exists(targetDirPath))
+        protected void OnBackupCompleted(SaveModel save)
+        {
+            BackupCompleted?.Invoke(this, new BackupEventArgs
             {
-                Directory.CreateDirectory(targetDirPath);
-            }
-
-            // Obtient la liste des fichiers et des sous-répertoires dans le répertoire source
-            string[] files = Directory.GetFiles(sourceDirPath);
-            string[] subdirectories = Directory.GetDirectories(sourceDirPath);
-
-            
-            // Copie les fichiers
-            foreach (string filePath in files)
-            {
-                string fileName = Path.GetFileName(filePath);
-                string targetFilePath = Path.Combine(targetDirPath, fileName);
-                stateModel.SourceFilePath = filePath;
-                stateModel.TargetFilePath = targetFilePath;
-
-                stateManagerService.UpdateStateFile();
-
-                DateTime start = DateTime.Now;
-                File.Copy(filePath, targetFilePath, true); // Le paramètre true permet d'écraser le fichier s'il existe déjà dans le répertoire cible
-                stateModel.NbFilesLeftToDo = stateModel.NbFilesLeftToDo > 0 ? stateModel.NbFilesLeftToDo - 1 : 0;
-                start = DateTime.Now;
-
-                loggerService!.loggerModel!.FileEncryptionTime = (DateTime.Now - start).ToString();
-
-                stateManagerService.UpdateStateFile();
-                loggerService!.loggerModel!.Name = stateModel.SaveName;
-                loggerService!.loggerModel!.FileSource = filePath;
-                loggerService!.loggerModel.FileTarget = targetFilePath;
-                loggerService!.loggerModel.FileSize = new FileInfo(filePath).Length.ToString();
-                loggerService!.loggerModel.FileTransferTime = (DateTime.Now - start).ToString();
-                loggerService.AddEntryLog();
-            }
-
-            // Copie les sous-répertoires récursivement
-            foreach (string subdirectory in subdirectories)
-            {
-                string subdirectoryName = Path.GetFileName(subdirectory);
-                string targetSubdirectoryPath = Path.Combine(targetDirPath, subdirectoryName);
-                CopyDirectory(subdirectory, targetSubdirectoryPath, stateModel); // Appel récursif pour copier les sous-répertoires
-            }
+                SourcePath = save.InPath,
+                TargetPath = save.OutPath,
+                EndTime = DateTime.Now
+            });
         }
     }
+
+
+         
 }
+
+public class BackupEventArgs : EventArgs
+{
+    public string SourcePath { get; set; }
+    public string TargetPath { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
+}
+
+

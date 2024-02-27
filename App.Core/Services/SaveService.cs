@@ -5,55 +5,259 @@ using System.Diagnostics;
 
 namespace App.Core.Services
 {
-    public class SaveService
+    public class SaveService : IDisposable
     {
 
-        public required ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
-        public required ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
-        private readonly ConfigService configService = new();
+        public ObservableCollection<StateManagerModel> ListStateManager { get; set; } = [];
+        public ObservableCollection<SaveModel> ListSaveModel { get; set; } = [];
+        public ManualResetEvent pauseEvent { get; private set; } = new ManualResetEvent(false);
+        public ManualResetEvent resumeEvent { get; private set; } = new ManualResetEvent(true);
+        public ManualResetEvent stopEvent { get; private set; } = new ManualResetEvent(false);
+
+        //TODO : Mettre manualResetsEvent et autre event resume 
+
+        private readonly StreamWriter? logWriter ;
+        private readonly StreamWriter? stateWriter;
+
+        private readonly StateManagerService stateManagerService = new();
         public CopyService copyService = new();
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
         };
 
+        private Thread saveThread;
+
 
         public SaveService() 
         { 
+            //logWriter = new StreamWriter(loggerService.GetLogFormat());
+            //stateWriter = new StreamWriter(StateManagerService.stateFilePath);
             LoadSave();
             copyService.stateManagerService.listStateModel = ListStateManager;
-            copyService.stateManagerService.UpdateStateFile();
+            //copyService.stateManagerService.UpdateStateFile(stateWriter);
         }
 
         public bool IsSoftwareRunning()
         {
             // Check if the software is running (e.g., "notepad.exe")
-            Process[] processes = Process.GetProcessesByName(configService.Software);
-            if (processes.Length > 0)
+
+            Process[] processes = Process.GetProcessesByName("mspaint");
+            return processes.Length > 0;
+            
+
+        }
+
+        public void ExecuteSave(List<SaveModel> saveModel, ThreadManagerService threadManagerService)
+        {
+            foreach (SaveModel save in saveModel)
             {
-                return true;
+                copyService = new();
+                copyService.CopyModel.SourcePath = save.InPath;
+                copyService.CopyModel.TargetPath = save.OutPath;
+                copyService.stateManagerService.listStateModel = ListStateManager;
+
+                // Start copying process in a separate thread
+
+
+                copyService.BackupStarted += (sender, args) =>Console.WriteLine($"Backup started from {args.SourcePath} to {args.TargetPath} at {args.StartTime}");
+
+                copyService.BackupCompleted += (sender, args) => Console.WriteLine($"Backup completed from {args.SourcePath} to {args.TargetPath} at {args.EndTime}");
+
+
+                Thread thread = new Thread(() => copyService.ExecuteCopy(save, logWriter!, stateWriter!));
+                threadManagerService.AddThread(thread);
+                thread.Start();
+
+                copyService.BackupStarted -= (sender, args) => Console.WriteLine($"Backup started from {args.SourcePath} to {args.TargetPath} at {args.StartTime}");
+
+                copyService.BackupCompleted -= (sender, args) =>Console.WriteLine($"Backup completed from {args.SourcePath} to {args.TargetPath} at {args.EndTime}");
+
+
             }
-            else
+        }
+
+        public void LaunchSave(SaveModel saveModel)
+        {
+            //TODO : Detection logicel Métier
+
+            if (saveModel.Type == "Complete")
             {
+                 // Set the resume event to allow it to be resumed later
+                saveThread = new Thread(() =>
+                {
+                    //resumeEvent.Set();
+                    //pauseEvent.Set();
+
+                    //stopEvent.Set();
+                    CompleteSave(saveModel.InPath, saveModel.OutPath, true, saveModel);
+                });
+
+                // Start the thread
+                saveThread.Start();
+
+            }
+
+            if (saveModel.Type == "Incremental")
+            {
+                //IncrementalSave(saveModel.InPath, saveModel.OutPath, true);
+            }
+        }
+
+        public void PauseSave()
+        {
+            pauseEvent.Set(); // Reset the pause event to block threads
+            resumeEvent.Reset(); // Set the resume event to allow it to be resumed later
+        }
+
+        public void StopSave()
+        {
+            stopEvent.Set(); // Signal the stop event to stop the save operation
+        }
+
+        public void ResumeSave()
+        {
+            pauseEvent.Reset(); // Signal the pause event to resume the save operation
+            resumeEvent.Set(); // Reset the resume event to block it until it's signaled again
+        }
+
+
+
+        private bool CompleteSave(string InPath, string OutPath, bool verif, SaveModel saveModel)
+        {
+            //DataState = new DataState(NameStateFile);
+            //this.DataState.SaveState = true;
+
+            // Wait for pauseEvent to be signaled before proceeding
+            pauseEvent.WaitOne(0);
+
+            while (IsSoftwareRunning() && !stopEvent.WaitOne(0))
+            {
+                // Software is running, wait for it to close
+                Thread.Sleep(1000);
+                // Display message box to inform the user that the software is still running
+            }
+
+            if (stopEvent.WaitOne(0))
+            {
+                // Stop event has been signaled, return false to indicate incomplete save
                 return false;
             }
 
+            // Implement the logic with the event resume, pause, and stop
+
+            // Wait for resumeEvent to be signaled before continuing
+            resumeEvent.WaitOne();
+
+
+            StateManagerModel stateModel = new()
+            {
+                SaveName = saveModel.SaveName,
+                State = "END"
+            };
+
+            foreach (StateManagerModel item in ListStateManager)
+            {
+                if (item.SaveName == stateModel.SaveName)
+                {
+                    stateModel = item;
+                }
+            }
+
+            long TotalSize = 0;
+            long nbfilesmax = 0;
+            long size = 0;
+            long nbfiles = 0;
+            float progs = 0;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start(); //Starting the timed for the log file
+
+            DirectoryInfo dir = new DirectoryInfo(InPath);  // Get the subdirectories for the specified directory.
+
+            if (!dir.Exists) //Check if the file is present
+            {
+                throw new DirectoryNotFoundException("ERROR 404 : Directory Not Found ! " + InPath);
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            Directory.CreateDirectory(OutPath); // If the destination directory doesn't exist, create it.  
+
+            FileInfo[] files = dir.GetFiles(); // Get the files in the directory and copy them to the new location.
+
+            if (!verif) //  Check for the status file if it needs to reset the variables
+            {
+                TotalSize = 0;
+                nbfilesmax = 0;
+                size = 0;
+                nbfiles = 0;
+                progs = 0;
+
+                foreach (FileInfo file in files) // Loop to allow calculation of files and folder size
+                {
+                    TotalSize += file.Length;
+                    nbfilesmax++;
+                }
+                foreach (DirectoryInfo subdir in dirs) // Loop to allow calculation of subfiles and subfolder size
+                {
+                    FileInfo[] Maxfiles = subdir.GetFiles();
+                    foreach (FileInfo file in Maxfiles)
+                    {
+                        TotalSize += file.Length;
+                        nbfilesmax++;
+                    }
+                }
+
+            }
+
+            //Loop that allows to copy the files to make the backup
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(OutPath, file.Name);
+
+                if (size > 0)
+                {
+                    progs = ((float)size / TotalSize) * 100;
+                }
+
+                stateModel.SourceFilePath = Path.Combine(OutPath, file.Name);
+                stateModel.TargetFilePath = tempPath;
+                stateModel.TotalFilesToCopy = nbfilesmax;
+                stateModel.TotalFilesSize = TotalSize;
+                stateModel.NbFilesLeftToDo = nbfilesmax - nbfiles;
+                stateModel.Progression = progs;
+                stateModel.State = "IN PROGRESS";
+         
+                stateManagerService.UpdateStateFile(ListStateManager);
+
+                //Systems which allows to insert the values ​​of each file in the report file.
+
+                file.CopyTo(tempPath, true); //Function that allows you to copy the file to its new folder.
+                nbfiles++;
+                size += file.Length;
+
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                string tempPath = Path.Combine(OutPath, subdir.Name);
+                CompleteSave(subdir.FullName, tempPath, true, saveModel);
+            }
+
+
+            stopwatch.Stop(); //Stop the stopwatch
+            return false;
+            //this.TimeTransfert = stopwatch.Elapsed; // Transfer of the chrono time to the variable
         }
 
-        public void ExecuteSave(SaveModel saveModel)
-        {
-            // Method to execute the copy service
-            // Execute the copy service
-            copyService.CopyModel.SourcePath = saveModel.InPath;
-            copyService.CopyModel.TargetPath = saveModel.OutPath;
-            copyService.stateManagerService.listStateModel = ListStateManager;
-            copyService.ExecuteCopy(saveModel);
-
-        }
+        
 
 
 
-    public void LoadSave()
+
+        public ObservableCollection<SaveModel> LoadSave()
         {
 
             if (File.Exists("saves.json"))
@@ -78,27 +282,21 @@ namespace App.Core.Services
                 File.WriteAllText("saves.json", "[]");
             }
 
+            return ListSaveModel;
+
         }
 
-        /// <summary>
-        /// Show info of a save
-        /// </summary>
-        /// <param name="saveModel"></param>
-        /// <returns></returns>
         public Tuple<string, string, string, string, DateTime> ShowInfo(SaveModel saveModel)
         {
             return Tuple.Create(saveModel.SaveName, saveModel.InPath, saveModel.OutPath, saveModel.Type, saveModel.Date);
         }
 
-
-       
-
-        public bool CreateSave(string inPath, string outPath, string type, string saveName)
+        public bool CreateSave(SaveModel saveModel)
         {
             try
             {
-                ListSaveModel.Add(new SaveModel { InPath = inPath, OutPath = outPath, Type = type, SaveName = saveName});
-                ListStateManager.Add(new StateManagerModel { SaveName = saveName, SourceFilePath = inPath, TargetFilePath = outPath });
+                ListSaveModel.Add(saveModel);
+                ListStateManager.Add(new StateManagerModel { SaveName = saveModel.SaveName, SourceFilePath = saveModel.InPath, TargetFilePath = saveModel.OutPath });
                 File.WriteAllText("saves.json", JsonSerializer.Serialize(ListSaveModel, options));
                 return true;
             }
@@ -107,16 +305,17 @@ namespace App.Core.Services
                 return false;
             }
         }
-
-
+       
 
         public void DeleteSave(SaveModel saveModel)
         {
             ListSaveModel.Remove(saveModel);
         }
-        
 
-
-
+        public void Dispose()
+        {
+            logWriter?.Dispose();
+            stateWriter?.Dispose();
+        }
     }
 }

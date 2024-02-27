@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Text.Json;
 using System.Xml.Serialization;
 using App.Core.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -21,40 +22,6 @@ namespace App.Core.Services
             loggerModel = new();
         }
 
-
-        //public void WriteLog()
-        //{
-        //    //TODO : Gerer les exeptions
-
-        //    try
-        //    { 
-        //        // Serialize the log model to JSON
-
-        //        string logEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
-        //        string jsonlogEntry = JsonSerializer.Serialize(loggerModel, options) + ",";
-        //        // Append the log entry to the log file or create if not exist
-        //        using StreamWriter LogWriter = File.AppendText(jsonlogFilePath);
-        //        LogWriter.WriteLineAsync(jsonlogEntry);
-
-        //        // Serialize the log model to XML
-        //        using StringWriter xmlStringWriter = new();
-        //        XmlSerializer xmlSerializer = new(typeof(loggerModel));
-        //        xmlSerializer.Serialize(xmlStringWriter, loggerModel);
-        //        string xmlLogEntry = xmlStringWriter.ToString();
-        //        // Append the XML log entry to the XML log file or create if not exist
-
-        //        using StreamWriter xmlLogWriter = File.AppendText(xmlLogFilePath);
-        //        xmlLogWriter.WriteLineAsync(xmlLogEntry);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error writing to log file: {ex.Message}");
-
-        //    }
-        //}
-            /// <summary>
-            /// Method to open the log file
-            /// </summary>
             public void OpenLogFile()
         {
             // Open the log file in notepad
@@ -73,14 +40,22 @@ namespace App.Core.Services
             File.WriteAllText(jsonlogFilePath, "[]");
         }
 
-        public void AddEntryLog()
+        public string GetLogFormat()
+        {
+            if (configService.LogsFormat == "JSON") return jsonlogFilePath;
+            else return xmlLogFilePath;
+        }
+
+        public void AddEntryLog(StreamWriter streamWriter)
         {
             if (configService.LogsFormat == "JSON")
             {
                 try
                 {
-                    using StreamWriter logWriter = File.AppendText(jsonlogFilePath);
-                    logWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ",");
+                    using (streamWriter = File.AppendText(jsonlogFilePath)) ;
+                    { 
+                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ","); 
+                    }
                 }
                 catch (InvalidOperationException)
                 {
@@ -93,7 +68,7 @@ namespace App.Core.Services
                 {
                     XmlSerializer xmlSerializer = new XmlSerializer(typeof(LoggerModel));
 
-                    using (StreamWriter streamWriter = File.AppendText(xmlLogFilePath))
+                    using (streamWriter = File.AppendText(xmlLogFilePath))
                     {
                         xmlSerializer.Serialize(streamWriter, loggerModel );
                     }
