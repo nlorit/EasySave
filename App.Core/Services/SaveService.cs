@@ -2,11 +2,6 @@
 using System.Text.Json;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Xml.Linq;
-using System;
-using System.Security.Policy;
-using System.IO;
-using System.Reflection;
 
 namespace App.Core.Services
 {
@@ -16,8 +11,9 @@ namespace App.Core.Services
         public ObservableCollection<(Thread thread, ManualResetEvent pauseEvent, ManualResetEvent resumeEvent, ManualResetEvent stopEvent, SaveModel savemodel)> listThreads { get; private set; } = new ObservableCollection<(Thread, ManualResetEvent, ManualResetEvent, ManualResetEvent, SaveModel)>();
         public (Thread thread, ManualResetEvent pauseEvent, ManualResetEvent resumeEvent, ManualResetEvent stopEvent, SaveModel savemodel) currentThread { get; private set; }
 
-        public string? priority = "txt,docx,xlsx,pptx,doc,pdf,zip,rar,7z,mp3,mp4,avi,flv,wmv,mpg,mov,exe,msi,apk,iso,img";
+        private readonly ConfigService? configService = new();
 
+        public string? priority { get; set; }
 
 
         JsonSerializerOptions options = new JsonSerializerOptions
@@ -29,18 +25,18 @@ namespace App.Core.Services
         private readonly StateManagerService? stateManagerService = new();
 
         private LoggerModel loggerModel = new();
-        private StateManagerModel stateManagerModel = new();
-
 
         public SaveService()
         {
             ObservableCollection<SaveModel> ListSaveModel = new();
             (ListSaveModel, _) = LoadSave();
-        }
 
-        public bool IsProcessRunning(string processName)
+            priority = configService!.Priority;
+    }
+
+        public bool IsProcessRunning()
         {
-            return Process.GetProcesses().Any(process => process.ProcessName.Equals("mspaint.exe", StringComparison.OrdinalIgnoreCase));
+            return Process.GetProcesses().Any(process => process.ProcessName.Equals(configService!.Software, StringComparison.OrdinalIgnoreCase));
         }
 
         public void LaunchSave(SaveModel saveModel)
@@ -129,7 +125,7 @@ namespace App.Core.Services
             //give me the loggermodel variables
             loggerModel.Name = saveModel.SaveName;
 
-
+            stateManagerService!.listStateModel![index].TotalFilesSize = new DirectoryInfo(InPath).GetFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length); ;
 
 
             CopyDifferential(DirIn, DirOut, saveModel, index);
@@ -138,6 +134,11 @@ namespace App.Core.Services
             {
                 EncryptFile(OutPath);
             }
+
+
+            stateManagerService!.listStateModel![index].State = "END";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+            saveModel.percentage = 100;
         }
 
         public void PauseSave(SaveModel saveModel)
@@ -185,6 +186,7 @@ namespace App.Core.Services
 
             loggerModel.Name = saveModel.SaveName;
 
+            stateManagerService!.listStateModel![index].TotalFilesSize = new DirectoryInfo(InPath).GetFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length);
 
             CopyAll(DirIn, DirOut, saveModel, index);
 
@@ -192,6 +194,10 @@ namespace App.Core.Services
             {
                 EncryptFile(OutPath);
             }
+
+            stateManagerService!.listStateModel![index].State = "END";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+            saveModel.percentage = 100;
 
 
         }
@@ -202,7 +208,7 @@ namespace App.Core.Services
 
             listThreads[index].Item2.WaitOne(0);
 
-            while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
+            while (IsProcessRunning() && !listThreads[index].Item3.WaitOne(0))
             {
                 Thread.Sleep(1000);
             }
@@ -214,6 +220,23 @@ namespace App.Core.Services
 
             listThreads[index].Item3.WaitOne();
 
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+
+            int i = 0;
+            foreach (var item in stateManagerService!.listStateModel!)
+            {
+                if (item.SaveName == saveModel.SaveName)
+                {
+                    break;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            stateManagerService!.listStateModel![i].State = "ACTIVE";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
             Directory.CreateDirectory(target.FullName);
 
@@ -233,6 +256,13 @@ namespace App.Core.Services
                 loggerModel.FileTransferTime = stopwatch.ElapsedMilliseconds.ToString();
                 loggerModel.FileSize = fi.Length.ToString();
 
+                stateManagerService!.listStateModel![i].SourceFilePath = fi.FullName;
+                stateManagerService!.listStateModel![i].TargetFilePath = Path.Combine(target.FullName, fi.Name);
+                stateManagerService!.listStateModel![i].Progression = saveModel.percentage;
+                stateManagerService!.listStateModel![i].TotalFilesToCopy = saveModel.fileTotal;
+                stateManagerService!.listStateModel![i].NbFilesLeftToDo = saveModel.fileTotal - saveModel.fileDo;
+                stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+
                 loggerService!.AddEntryLog(loggerModel);
             }
 
@@ -250,7 +280,7 @@ namespace App.Core.Services
         {
             listThreads[index].Item2.WaitOne(0);
 
-            while (IsProcessRunning("mspaint.exe") && !listThreads[index].Item3.WaitOne(0))
+            while (IsProcessRunning() && !listThreads[index].Item3.WaitOne(0))
             {
                 Thread.Sleep(1000);
             }
@@ -262,7 +292,25 @@ namespace App.Core.Services
 
             listThreads[index].Item3.WaitOne();
 
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+
+            int i = 0;
+            foreach (var item in stateManagerService!.listStateModel!)
+            {
+                if (item.SaveName == saveModel.SaveName)
+                {
+                    break;
+                }
+                else
+                {
+                    i ++;
+                }
+            }
+
             Directory.CreateDirectory(target.FullName);
+
+            stateManagerService!.listStateModel![i].State = "ACTIVE";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
             // Copy each file into the new directory if it's modified or doesn't exist in target
             foreach (FileInfo fi in source.GetFiles())
@@ -281,6 +329,13 @@ namespace App.Core.Services
                     loggerModel.FileTarget = Path.Combine(target.FullName, fi.Name);
                     loggerModel.FileTransferTime = stopwatch.ElapsedMilliseconds.ToString();
                     loggerModel.FileSize = fi.Length.ToString();
+
+                    stateManagerService!.listStateModel![i].SourceFilePath = fi.FullName;
+                    stateManagerService!.listStateModel![i].TargetFilePath = Path.Combine(target.FullName, fi.Name);
+                    stateManagerService!.listStateModel![i].Progression = saveModel.percentage;
+                    stateManagerService!.listStateModel![i].TotalFilesToCopy = saveModel.fileTotal;
+                    stateManagerService!.listStateModel![i].NbFilesLeftToDo = saveModel.fileTotal - saveModel.fileDo;
+                    stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
                     loggerService!.AddEntryLog(loggerModel);
                 }
@@ -317,9 +372,10 @@ namespace App.Core.Services
                 if (File.Exists("saves.json"))
                 {
                     ObservableCollection<SaveModel> listSaveModel = JsonSerializer.Deserialize<ObservableCollection<SaveModel>>(File.ReadAllText("saves.json"))!;
+                    stateManagerService!.listStateModel!.Clear();
                     foreach (SaveModel saveModel in listSaveModel)
                     {
-                        stateManagerService.listStateModel!.Clear();
+                        
                         stateManagerService.listStateModel!.Add(new StateManagerModel { SaveName = saveModel.SaveName, State = "END" });
                     }
 

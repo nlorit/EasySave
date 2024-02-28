@@ -19,9 +19,7 @@ namespace App.Core.Services
 
         private StreamWriter? streamWriter;
 
-        public LoggerService()
-        {
-        }
+        public LoggerService() { }
 
         public void OpenLogFile()
         {
@@ -49,13 +47,16 @@ namespace App.Core.Services
 
         public void AddEntryLog(LoggerModel loggerModel)
         {
-            //TODO : refaire le config service cassé ?
-            if (true)
+            if (configService.LogsFormat == "JSON")
             {
-                using (StreamWriter streamWriter = File.AppendText(jsonlogFilePath))
+                try
                 {
-                    streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options));
+                    using (StreamWriter streamWriter = File.AppendText(jsonlogFilePath))
+                    {
+                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options));
+                    }
                 }
+                catch (IOException) { }
 
             }
             else
@@ -69,10 +70,7 @@ namespace App.Core.Services
                         xmlSerializer.Serialize(streamWriter, loggerModel );
                     }
                 }
-                catch (InvalidOperationException)
-                {
-                    CreateLogFile();
-                }
+                catch (IOException) { }
             }
         }
     }
