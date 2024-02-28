@@ -20,4 +20,6 @@
     <System:String x:Key="StartButton">Start</System:String>
     <System:String x:Key="PressDeleteText">Press to delete a save :</System:String>
     <System:String x:Key="DeleteButton">Delete</System:String>
+    <System:String x:Key="ConfigText">Press to open config file</System:String>
+    <System:String x:Key="Configbutton">Open</System:String>
 </ResourceDictionary>

@@ -20,5 +20,7 @@
     <System:String x:Key="StartButton">Exécuter</System:String>
     <System:String x:Key="PressDeleteText">Appuyez pour supprimer une sauvegarde :</System:String>
     <System:String x:Key="DeleteButton">Supprimer</System:String>
+    <System:String x:Key="ConfigText">Appuyez pour ouvrir le fichier de configuration :</System:String>
+    <System:String x:Key="Configbutton">Ouvrir</System:String>
 
 </ResourceDictionary>
