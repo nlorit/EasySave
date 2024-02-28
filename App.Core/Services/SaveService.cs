@@ -238,6 +238,12 @@ namespace App.Core.Services
             stateManagerService!.listStateModel![i].State = "ACTIVE";
             stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
+            List<string> priorities = priority!.Split(',').ToList();
+
+            var fileList = source.GetFiles()
+                     .OrderByDescending(x => priorities.Contains(Path.GetExtension(x.FullName)?.ToLower()))
+                     .ToList();
+
             Directory.CreateDirectory(target.FullName);
 
             // Copy each file into the new directory.
@@ -312,8 +318,15 @@ namespace App.Core.Services
             stateManagerService!.listStateModel![i].State = "ACTIVE";
             stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
+            List<string> priorities = priority!.Split(',').ToList();
+
+            var fileList = source.GetFiles()
+                     .OrderByDescending(x => priorities.Contains(Path.GetExtension(x.FullName)?.ToLower()))
+                     .ToList();
+
+
             // Copy each file into the new directory if it's modified or doesn't exist in target
-            foreach (FileInfo fi in source.GetFiles())
+            foreach (FileInfo fi in fileList)
             {
                 FileInfo targetFile = new FileInfo(Path.Combine(target.FullName, fi.Name));
 
