@@ -2,11 +2,6 @@
 using System.Text.Json;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Xml.Linq;
-using System;
-using System.Security.Policy;
-using System.IO;
-using System.Reflection;
 
 namespace App.Core.Services
 {
@@ -129,7 +124,7 @@ namespace App.Core.Services
             //give me the loggermodel variables
             loggerModel.Name = saveModel.SaveName;
 
-
+            stateManagerService!.listStateModel![index].TotalFilesSize = new DirectoryInfo(InPath).GetFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length); ;
 
 
             CopyDifferential(DirIn, DirOut, saveModel, index);
@@ -138,6 +133,11 @@ namespace App.Core.Services
             {
                 EncryptFile(OutPath);
             }
+
+
+            stateManagerService!.listStateModel![index].State = "END";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+            saveModel.percentage = 100;
         }
 
         public void PauseSave(SaveModel saveModel)
@@ -185,6 +185,7 @@ namespace App.Core.Services
 
             loggerModel.Name = saveModel.SaveName;
 
+            stateManagerService!.listStateModel![index].TotalFilesSize = new DirectoryInfo(InPath).GetFiles("*.*", SearchOption.AllDirectories).Sum(fi => fi.Length);
 
             CopyAll(DirIn, DirOut, saveModel, index);
 
@@ -192,6 +193,10 @@ namespace App.Core.Services
             {
                 EncryptFile(OutPath);
             }
+
+            stateManagerService!.listStateModel![index].State = "END";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+            saveModel.percentage = 100;
 
 
         }
@@ -214,6 +219,23 @@ namespace App.Core.Services
 
             listThreads[index].Item3.WaitOne();
 
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+
+            int i = 0;
+            foreach (var item in stateManagerService!.listStateModel!)
+            {
+                if (item.SaveName == saveModel.SaveName)
+                {
+                    break;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            stateManagerService!.listStateModel![i].State = "ACTIVE";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
             Directory.CreateDirectory(target.FullName);
 
@@ -232,6 +254,13 @@ namespace App.Core.Services
                 loggerModel.FileTarget = Path.Combine(target.FullName, fi.Name);
                 loggerModel.FileTransferTime = stopwatch.ElapsedMilliseconds.ToString();
                 loggerModel.FileSize = fi.Length.ToString();
+
+                stateManagerService!.listStateModel![i].SourceFilePath = fi.FullName;
+                stateManagerService!.listStateModel![i].TargetFilePath = Path.Combine(target.FullName, fi.Name);
+                stateManagerService!.listStateModel![i].Progression = saveModel.percentage;
+                stateManagerService!.listStateModel![i].TotalFilesToCopy = saveModel.fileTotal;
+                stateManagerService!.listStateModel![i].NbFilesLeftToDo = saveModel.fileTotal - saveModel.fileDo;
+                stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
                 loggerService!.AddEntryLog(loggerModel);
             }
@@ -262,7 +291,25 @@ namespace App.Core.Services
 
             listThreads[index].Item3.WaitOne();
 
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
+
+            int i = 0;
+            foreach (var item in stateManagerService!.listStateModel!)
+            {
+                if (item.SaveName == saveModel.SaveName)
+                {
+                    break;
+                }
+                else
+                {
+                    i ++;
+                }
+            }
+
             Directory.CreateDirectory(target.FullName);
+
+            stateManagerService!.listStateModel![i].State = "ACTIVE";
+            stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
             // Copy each file into the new directory if it's modified or doesn't exist in target
             foreach (FileInfo fi in source.GetFiles())
@@ -281,6 +328,13 @@ namespace App.Core.Services
                     loggerModel.FileTarget = Path.Combine(target.FullName, fi.Name);
                     loggerModel.FileTransferTime = stopwatch.ElapsedMilliseconds.ToString();
                     loggerModel.FileSize = fi.Length.ToString();
+
+                    stateManagerService!.listStateModel![i].SourceFilePath = fi.FullName;
+                    stateManagerService!.listStateModel![i].TargetFilePath = Path.Combine(target.FullName, fi.Name);
+                    stateManagerService!.listStateModel![i].Progression = saveModel.percentage;
+                    stateManagerService!.listStateModel![i].TotalFilesToCopy = saveModel.fileTotal;
+                    stateManagerService!.listStateModel![i].NbFilesLeftToDo = saveModel.fileTotal - saveModel.fileDo;
+                    stateManagerService!.UpdateStateFile(stateManagerService.listStateModel!);
 
                     loggerService!.AddEntryLog(loggerModel);
                 }
@@ -317,9 +371,10 @@ namespace App.Core.Services
                 if (File.Exists("saves.json"))
                 {
                     ObservableCollection<SaveModel> listSaveModel = JsonSerializer.Deserialize<ObservableCollection<SaveModel>>(File.ReadAllText("saves.json"))!;
+                    stateManagerService!.listStateModel!.Clear();
                     foreach (SaveModel saveModel in listSaveModel)
                     {
-                        stateManagerService.listStateModel!.Clear();
+                        
                         stateManagerService.listStateModel!.Add(new StateManagerModel { SaveName = saveModel.SaveName, State = "END" });
                     }
 
