@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using WpfApp.ViewModels;
+using System.Diagnostics;
 
 namespace WpfApp
 {
@@ -20,6 +21,8 @@ namespace WpfApp
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowState = WindowState.Maximized;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;  
             viewModel = new MainViewModel();
             List_Save.Items.Clear();
             LoadSave();
@@ -201,5 +204,32 @@ namespace WpfApp
             }
             viewModel!.StopSave(selectedItem);
         }
+
+        private void OpenConfig_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Obtenez le chemin complet du fichier app.config dans le même dossier que votre application
+                string appConfigPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WpfApp.dll.config");
+
+
+
+                // Vérifiez si le fichier existe
+                if (System.IO.File.Exists(appConfigPath))
+                {
+                    // Ouvrez le fichier app.config avec l'application par défaut associée à ce type de fichier
+                    Process.Start("notepad.exe", appConfigPath);
+                }
+                else
+                {
+                    MessageBox.Show("The file app.config doesn't exist");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while trying to opening the file app.config : {ex.Message}");
+            }
+        }
+        
     }
 }
