@@ -16,3 +16,5 @@
 /App.WPF
 /WpfApp/bin/Debug/net8.0-windows
 /._.gitignore
+/ClientAPP/bin/Debug/net8.0-windows
+/ClientAPP/obj
