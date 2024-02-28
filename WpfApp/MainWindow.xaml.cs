@@ -69,7 +69,7 @@ namespace WpfApp
             if (viewModel!.IsLoadCorrectly)
             {
                 this.Saves = viewModel!.saves;
-                MessageBox.Show("Saves loaded successfully", "Succes" ,MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Saves loaded successfully", "Succes" ,MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
@@ -91,9 +91,9 @@ namespace WpfApp
             };
             try
             {
-                if (false)
+                if (string.IsNullOrEmpty(SaveName.Text) || string.IsNullOrEmpty(SourceName.Text) || string.IsNullOrEmpty(DestinationName.Text))
                 {
-                    MessageBox.Show("Please fill in all the fields");
+                    MessageBox.Show("Please fill in all the fields", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
