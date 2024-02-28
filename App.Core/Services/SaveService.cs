@@ -493,7 +493,12 @@ namespace App.Core.Services
             int fileCount = 0;
 
             // Count files in the current directory
-            fileCount += Directory.GetFiles(directoryPath).Length;
+            try
+            {
+
+                fileCount += Directory.GetFiles(directoryPath).Length;
+            }
+            catch { return 0; }
 
             // Recursively count files in subdirectories
             foreach (string subDirectory in Directory.GetDirectories(directoryPath))

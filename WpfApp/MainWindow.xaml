@@ -152,6 +152,10 @@
                     <Button x:Name="OpenConfig" Content="{DynamicResource Configbutton}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="75" Click="OpenConfig_Click"/>
                 </StackPanel>
 
+                <StackPanel>
+                    <Button x:Name="button_Message" Click="button_Message_Click" Content="message"/>
+                </StackPanel>
+
             </StackPanel>
         </Border>
 
@@ -216,6 +220,8 @@
             </DataGrid>
             
         </Border>
+
+        
 
 
 

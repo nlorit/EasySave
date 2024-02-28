@@ -1,82 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Net.Sockets;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace App.Core.Services
+public static class ServerService
 {
-    public class ServerService
+    public static string? message;
+    private static TcpListener listener = new TcpListener(IPAddress.Any, 52286);
+    private static bool isRunning;
+
+
+    public static void Start()
     {
-        public TcpListener tcpListener;
-        public TcpClient tcpClient;
-        public NetworkStream networkStream;
+        isRunning = true;
+        Console.WriteLine("Serveur démarré. En attente de connexions...");
 
-        public ServerService() 
+        listener.Start();
+
+        while (isRunning)
         {
-            
-        }
-
-        public void StartServer()
-        {
-            tcpListener = new TcpListener(IPAddress.Any, 12345); // Port à écouter
-            tcpListener.Start();
-            Console.WriteLine("Server started. Waiting for clients...");
-
-            Thread clientThread = new Thread(ListenToClients);
-            clientThread.Start();
-        }
-
-
-        private void ListenToClients()
-        {
-            while (true)
+            try
             {
-                tcpClient = tcpListener.AcceptTcpClient();
-                networkStream = tcpClient.GetStream();
-                Console.WriteLine("Client connected.");
+                TcpClient client = listener.AcceptTcpClient();
+                Console.WriteLine("Nouvelle connexion acceptée.");
 
-                Thread receiveThread = new Thread(ReceiveProgress);
-                receiveThread.Start();
-            }
-        }
-
-        private void ReceiveProgress()
-        {
-            while (true)
-            {
+                // Récupérer les données envoyées par le client
                 byte[] buffer = new byte[1024];
-                int bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                string clientProgress = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                Console.WriteLine("Received from client: " + clientProgress);
+                NetworkStream stream = client.GetStream();
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                string receivedMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                Console.WriteLine($"Message reçu du client : {receivedMessage}");
+                message = receivedMessage;
+                // Traiter la connexion ici
 
-                // Mise à jour de la barre de progression du serveur avec la valeur de progression reçue du client
-                //Dispacher.Invoke(() =>
-                //{
-                //    pbstatus1.Value = int.Parse(clientProgress.Replace("%", ""));
-                //    lb_etat_prog_server.Content = "Progression du client : " + clientProgress;
-                //});
-
-                if (clientProgress == "disconnect")
-                {
-                    tcpClient.Close();
-                    break;
-                }
+                // Envoyer une réponse au client
+                byte[] response = Encoding.ASCII.GetBytes("Message reçu par le serveur.");
+                stream.Write(response, 0, response.Length);
+            }
+            catch (SocketException ex)
+            {
+                Console.WriteLine($"Erreur lors de la connexion du client : {ex.Message}");
             }
         }
+    }
 
-
-        public void StopServer()
-        {
-            // Stop the server
-        }
-
-        public void SendData(string data)
-        {
-            throw new NotImplementedException();
-        }
+    public static void Stop()
+    {
+        isRunning = false;
+        listener.Stop();
+        Console.WriteLine("Serveur arrêté.");
     }
 }

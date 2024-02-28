@@ -15,15 +15,20 @@ namespace WpfApp.ViewModels
         public readonly SaveService saveService = new();
         private readonly LoggerService loggerService = new();
         private readonly StateManagerService stateManagerService = new();
+        public string? message;
+
+
         private readonly HashSet<SaveModel> runningSaves = new(); // HashSet to store the IDs of running saves
         public int percentage { get; set; } = 100;
         public bool IsLoadCorrectly { get; set; }
 
+       
 
 
         public MainViewModel()
         {
             (saves,IsLoadCorrectly) = saveService.LoadSave();
+            message = ServerService.message;
         }
 
         public void AddSave(SaveModel save)

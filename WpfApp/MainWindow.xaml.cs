@@ -230,6 +230,10 @@ namespace WpfApp
                 MessageBox.Show($"Error while trying to opening the file app.config : {ex.Message}");
             }
         }
-        
+
+        private void button_Message_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(ServerService.message, "Message from client", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }

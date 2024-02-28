@@ -1,4 +1,5 @@
-﻿using System;
+﻿using App.Core.Services;
+using System;
 using System.Threading;
 using System.Windows;
 
@@ -10,7 +11,15 @@ namespace WpfApp
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            const string appName = "MyAppName";
+            base.OnStartup(e);
+
+            // Créez et démarrez le serveur au lancement de l'application
+            
+            Thread serverThread = new Thread(ServerService.Start);
+            serverThread.Start();
+
+
+            const string appName = "EasySave";
             bool createdNew;
 
             _mutex = new Mutex(true, appName, out createdNew);
@@ -24,6 +33,15 @@ namespace WpfApp
             }
 
             base.OnStartup(e);
+        }
+
+       
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            // Arrêtez le serveur lors de la fermeture de l'application
+            ServerService.Stop();
         }
     }
 }
