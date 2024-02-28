@@ -15,6 +15,7 @@
     <Company>CESI A3 Info 2023-2026</Company>
     <Product>EasySave</Product>
     <PackageIcon>logoEasySave.png</PackageIcon>
+    <ApplicationIcon>logoEasySave.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,6 +41,10 @@
     <None Remove="Pictures\iconSaveDashboard.png" />
     <None Remove="Pictures\iconSaveDashboardSelected.png" />
     <None Remove="Pictures\iconShowSave.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="logoEasySave.ico" />
   </ItemGroup>
 
   <ItemGroup>

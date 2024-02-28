@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp.ViewModels"
         mc:Ignorable="d"
-        Title="EasySave" Height="600" Width="800" MinHeight="525" MinWidth="800"
+        Title="EasySave" Height="600" Width="1000" MinHeight="525" MinWidth="1000"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
     <Window.Resources>
         <System:String x:Key="DestinationText">Destination *</System:String>

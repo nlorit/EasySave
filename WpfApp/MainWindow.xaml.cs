@@ -21,6 +21,8 @@ namespace WpfApp
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowState = WindowState.Maximized;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;  
             viewModel = new MainViewModel();
             List_Save.Items.Clear();
             LoadSave();
