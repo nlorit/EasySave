@@ -1,22 +1,34 @@
 ﻿using App.Core.Models;
 using App.Core.Services;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
+using WpfApp.ViewModels;
 
 namespace WpfApp.ViewModels
 {
     public class MainViewModel
     {
         public readonly ObservableCollection<SaveModel> saves = new();
-        private readonly SaveService saveService = new();
-        private readonly HashSet<SaveModel> runningSaves = new(); // HashSet to store the IDs of running saves
+        public readonly SaveService saveService = new();
+        private readonly LoggerService loggerService = new();
+        private readonly StateManagerService stateManagerService = new();
+        public string? message;
 
+
+        private readonly HashSet<SaveModel> runningSaves = new(); // HashSet to store the IDs of running saves
+        public int percentage { get; set; } = 100;
+        public bool IsLoadCorrectly { get; set; }
+
+       
 
 
         public MainViewModel()
         {
-            saves = saveService.LoadSave();
+            (saves,IsLoadCorrectly) = saveService.LoadSave();
+            message = ServerService.message;
         }
 
         public void AddSave(SaveModel save)
@@ -24,26 +36,29 @@ namespace WpfApp.ViewModels
             saveService.CreateSave(save);
         }
 
-
-
         public void DeleteSave(SaveModel saveModel)
         {
             saveService.DeleteSave(saveModel);
+            saves.Clear();
+            foreach (var item in saveService.listThreads)
+            {
+                saves.Add(item.savemodel);
+            }
         }
 
-        public void PlaySave()
+        public void PlaySave(SaveModel saveModel)
         {
-            saveService.ResumeSave();
+            saveService.ResumeSave(saveModel);
         }
 
-        public void PauseSave()
+        public void PauseSave(SaveModel saveModel)
         {
-            saveService.PauseSave();
+            saveService.PauseSave(saveModel);
         }
 
-        public void StopSave()
+        public void StopSave(SaveModel saveModel)
         {
-            saveService.StopSave();
+            saveService.StopSave(saveModel);
         }
 
         public bool IsSaveRunning(SaveModel saveModel)
@@ -61,7 +76,26 @@ namespace WpfApp.ViewModels
             
         }
 
+        public ObservableCollection<SaveModel> LoadSave()
+        {
+            (ObservableCollection<SaveModel> saves,IsLoadCorrectly) = saveService.LoadSave();
+            return saves ;
+        }
 
+        private RelayCommand openLog;
+        public ICommand OpenLog => openLog ??= new RelayCommand(PerformOpenLog);
 
+        private void PerformOpenLog()
+        {
+            loggerService.OpenLogFile();
+        }
+
+        private RelayCommand openState;
+        public ICommand OpenState => openState ??= new RelayCommand(PerformOpenState);
+
+        private void PerformOpenState()
+        {
+            stateManagerService.OpenStateFile();
+        }
     }
 }

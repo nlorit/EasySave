@@ -15,7 +15,15 @@
     <Company>CESI A3 Info 2023-2026</Company>
     <Product>EasySave</Product>
     <PackageIcon>logoEasySave.png</PackageIcon>
+    <ApplicationIcon>logoEasySave.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\**" />
+    <EmbeddedResource Remove="Views\**" />
+    <None Remove="Views\**" />
+    <Page Remove="Views\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Font\Poppins\Poppins-Black.ttf" />
@@ -27,11 +35,16 @@
     <None Remove="Pictures\iconMenu.png" />
     <None Remove="Pictures\iconMoon.png" />
     <None Remove="Pictures\iconPlanSave.png" />
+    <None Remove="Pictures\IconQuit.png" />
     <None Remove="Pictures\iconRealTime.png" />
     <None Remove="Pictures\iconRunSave.png" />
     <None Remove="Pictures\iconSaveDashboard.png" />
     <None Remove="Pictures\iconSaveDashboardSelected.png" />
     <None Remove="Pictures\iconShowSave.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="logoEasySave.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +65,7 @@
     <Resource Include="Pictures\iconMenu.png" />
     <Resource Include="Pictures\iconMoon.png" />
     <Resource Include="Pictures\iconPlanSave.png" />
+    <Resource Include="Pictures\IconQuit.png" />
     <Resource Include="Pictures\iconRealTime.png" />
     <Resource Include="Pictures\iconRunSave.png" />
     <Resource Include="Pictures\iconSaveDashboard.png" />
@@ -65,10 +79,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\" />
   </ItemGroup>
 
 </Project>

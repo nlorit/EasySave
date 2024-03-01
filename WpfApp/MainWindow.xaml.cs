@@ -1,10 +1,12 @@
 ﻿using App.Core.Models;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using WpfApp.ViewModels;
+using System.Diagnostics;
 
 namespace WpfApp
 {
@@ -19,15 +21,65 @@ namespace WpfApp
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowState = WindowState.Maximized;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;  
             viewModel = new MainViewModel();
             List_Save.Items.Clear();
             LoadSave();
             List_Save.ItemsSource = this.Saves;
         }
 
+        private void QuitBtns_CLick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+        private void LangBtns_Click(object sender, RoutedEventArgs e)
+        {
+            SetLang(((Button)sender).Tag.ToString()!);
+        }
+
+        private void SetLang(string lang)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(lang);
+
+            Application.Current.Resources.MergedDictionaries.Clear();
+            ResourceDictionary resdict = new ResourceDictionary()
+            {
+                Source = new Uri($"/Dictionary-{lang}.xaml", UriKind.Relative)
+            };
+            Application.Current.Resources.MergedDictionaries.Add(resdict);
+
+            EnglishBtn.IsEnabled = true;
+            FrenchBtn.IsEnabled = true;
+
+            switch (lang)
+            {
+                case "en-US":
+                    EnglishBtn.IsEnabled = false;
+                    break;
+                case "fr-FR":
+                    FrenchBtn.IsEnabled = false;
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
         private void LoadSave()
         {
-            this.Saves = viewModel!.saves;
+            if (viewModel!.IsLoadCorrectly)
+            {
+                this.Saves = viewModel!.saves;
+                //MessageBox.Show("Saves loaded successfully", "Succes" ,MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                //error message box
+                MessageBox.Show("Error loading saves", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private void addSave_Click(object sender, RoutedEventArgs e)
@@ -42,26 +94,35 @@ namespace WpfApp
             };
             try
             {
-                if (string.IsNullOrEmpty(SaveName.Text) || SourceName.Text == "" || DestinationName.Text == "" || Destination.Text == "Destination" || Source.Text == "Source" )
+                if (string.IsNullOrEmpty(SaveName.Text) || string.IsNullOrEmpty(SourceName.Text) || string.IsNullOrEmpty(DestinationName.Text))
                 {
-                    MessageBox.Show("Please fill in all the fields");
+                    MessageBox.Show("Please fill in all the fields", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 viewModel!.AddSave(save);
-                MessageBox.Show("Save added successfully");
+                
+                this.Saves = viewModel!.LoadSave();
+                List_Save.ItemsSource = this.Saves;
+                MessageBox.Show("Save added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
             }
             catch
             {
                 // TODO : Handle exception
             }
+            DestinationName.Text = string.Empty;
+            SourceName.Text = string.Empty;
+            SaveName.Text = string.Empty;
         }
+
 
         private void SourcePopup_Click(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog dialog = new OpenFolderDialog(); //Declaration of the method to open the window to choose the folder path.
             dialog.DefaultDirectory = "";
-            if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog()!)
             {
                 SourceName.Text = dialog.FolderName;
             }
@@ -73,7 +134,7 @@ namespace WpfApp
         {
             OpenFolderDialog dialog = new OpenFolderDialog(); //Declaration of the method to open the window to choose the folder path.
             dialog.DefaultDirectory = "";
-            if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog()!)
             {
                 DestinationName.Text = dialog.FolderName;
             }
@@ -99,17 +160,14 @@ namespace WpfApp
             }
         }
 
-
-
-
-
-
         private void DeleteSave_Click(object sender, RoutedEventArgs e)
         {
             if (List_Save.SelectedItem != null)
             {
                 // Start the save operation
                 viewModel!.DeleteSave((SaveModel)List_Save.SelectedItem);
+                this.Saves = viewModel!.saves;
+                List_Save.ItemsSource = this.Saves;
             }
         }
 
@@ -121,7 +179,7 @@ namespace WpfApp
             {
                 row_init.Background = Brushes.Green;
             }
-            viewModel!.PlaySave();
+            viewModel!.PlaySave(selectedItem);
         }
 
         private void PauseSave_Click(object sender, RoutedEventArgs e)
@@ -132,7 +190,7 @@ namespace WpfApp
             {
                 row_init.Background = Brushes.Orange;
             }
-            viewModel!.PauseSave();
+            viewModel!.PauseSave(selectedItem);
         }
 
 
@@ -144,7 +202,38 @@ namespace WpfApp
             {
                 row_init.Background = Brushes.Red;
             }
-            viewModel!.StopSave();
+            viewModel!.StopSave(selectedItem);
+        }
+
+        private void OpenConfig_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Obtenez le chemin complet du fichier app.config dans le même dossier que votre application
+                string appConfigPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WpfApp.dll.config");
+
+
+
+                // Vérifiez si le fichier existe
+                if (System.IO.File.Exists(appConfigPath))
+                {
+                    // Ouvrez le fichier app.config avec l'application par défaut associée à ce type de fichier
+                    Process.Start("notepad.exe", appConfigPath);
+                }
+                else
+                {
+                    MessageBox.Show("The file app.config doesn't exist");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while trying to opening the file app.config : {ex.Message}");
+            }
+        }
+
+        private void button_Message_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(ServerService.message, "Message from client", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

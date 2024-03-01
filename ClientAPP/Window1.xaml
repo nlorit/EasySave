@@ -1,0 +1,26 @@
+﻿<Window x:Class="ClientAPP.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientAPP"
+        mc:Ignorable="d"
+        Title="Window" Height="450" Width="800">
+
+
+            <Grid>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Button x:Name="ConnectButton" Content="Connect to Server" Click="ConnectButton_Click" Margin="5"/>
+                    <TextBox x:Name="MessageTextBox" Text="Enter Message" Margin="5"/>
+                    <Button x:Name="SendButton" Content="Send Message" Click="SendButton_Click" Margin="5"/>
+                    <Button x:Name="DisconnectButton" Content="Disconnect from Server" Click="DisconnectButton_Click" Margin="5"/>
+                    <TextBlock x:Name="ServerResponseTextBlock" Text="Server Response Will Appear Here" Margin="5"/>
+
+
+
+                </StackPanel>
+
+
+
+    </Grid>
+</Window>

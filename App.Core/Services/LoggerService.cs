@@ -8,21 +8,20 @@ namespace App.Core.Services
 {
     public class LoggerService
     {
-        public LoggerModel? loggerModel;
         private readonly string jsonlogFilePath = "logs.json";
         private readonly string xmlLogFilePath = "logs.xml";
         private readonly ConfigService configService = new ConfigService();
+
         private readonly JsonSerializerOptions options = new()
         {
             WriteIndented = true
         };
 
-        public LoggerService()
-        {
-            loggerModel = new();
-        }
+        private StreamWriter? streamWriter;
 
-            public void OpenLogFile()
+        public LoggerService() { }
+
+        public void OpenLogFile()
         {
             // Open the log file in notepad
             System.Diagnostics.Process.Start("notepad.exe", jsonlogFilePath);
@@ -46,21 +45,19 @@ namespace App.Core.Services
             else return xmlLogFilePath;
         }
 
-        public void AddEntryLog(StreamWriter streamWriter)
+        public void AddEntryLog(LoggerModel loggerModel)
         {
             if (configService.LogsFormat == "JSON")
             {
                 try
                 {
-                    using (streamWriter = File.AppendText(jsonlogFilePath)) ;
-                    { 
-                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options) + ","); 
+                    using (StreamWriter streamWriter = File.AppendText(jsonlogFilePath))
+                    {
+                        streamWriter.WriteLineAsync(JsonSerializer.Serialize(loggerModel, options));
                     }
                 }
-                catch (InvalidOperationException)
-                {
-                    CreateLogFile();
-                }
+                catch (IOException) { }
+
             }
             else
             {
@@ -73,10 +70,7 @@ namespace App.Core.Services
                         xmlSerializer.Serialize(streamWriter, loggerModel );
                     }
                 }
-                catch (InvalidOperationException)
-                {
-                    CreateLogFile();
-                }
+                catch (IOException) { }
             }
         }
     }

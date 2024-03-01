@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Configuration;
 
 namespace App.Core.Services
 {
@@ -13,12 +8,14 @@ namespace App.Core.Services
         public string ActiveLanguage { get; set; } 
         public string Software { get; set; }
         public string LogsFormat { get; set; }
+        public string Priority { get; set; }
        
         public ConfigService() 
         {
-            ActiveLanguage = ConfigurationManager.AppSettings["Language"];
-            Software = ConfigurationManager.AppSettings["LogicielMetier"];
-            LogsFormat =  ConfigurationManager.AppSettings["LogsExtension"];
+            ActiveLanguage = ConfigurationManager.AppSettings["Language"]!;
+            Software = ConfigurationManager.AppSettings["LogicielMetier"]!;
+            LogsFormat =  ConfigurationManager.AppSettings["LogsExtension"]!;
+            Priority = ConfigurationManager.AppSettings["priority"]!;
 
         }
     }   
