@@ -18,3 +18,7 @@
 /._.gitignore
 /ClientAPP/bin/Debug/net8.0-windows
 /ClientAPP/obj
+/*.DS_Store
+/*.DS_Store
+/saves.json
+/state.json
